@@ -788,6 +788,13 @@
         box-shadow 0.3s;
       transition-delay: calc(var(--i, 0) * 0.08s);
       isolation: isolate;
+      cursor: pointer;
+      text-align: left;
+      padding: 0;
+      font: inherit;
+      color: inherit;
+      -webkit-appearance: none;
+      appearance: none;
     }
 
     .work-project-card.visible {
@@ -861,6 +868,90 @@
       .work-project-title-wrap {
         padding: 20px 24px;
       }
+    }
+
+    /* ── Work Project Modal ── */
+    .work-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 210;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(6, 6, 8, 0.88);
+      backdrop-filter: blur(18px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.35s, visibility 0.35s;
+    }
+
+    .work-modal.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .work-modal-inner {
+      position: relative;
+      width: min(100%, 420px);
+      padding: 40px 32px 36px;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: radial-gradient(120% 100% at 50% 0%, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 42%, rgba(6, 6, 8, 0.96) 100%);
+      text-align: center;
+      transform: scale(0.94) translateY(8px);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .work-modal.open .work-modal-inner {
+      transform: scale(1) translateY(0);
+    }
+
+    .work-modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 32px;
+      height: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .work-modal-close:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.16);
+    }
+
+    .work-modal-art {
+      width: min(100%, 220px);
+      margin: 0 auto 24px;
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    .work-modal-art svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .work-modal-title {
+      font-size: clamp(18px, 3vw, 22px);
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: rgba(255, 255, 255, 0.95);
+      margin-bottom: 8px;
+    }
+
+    .work-modal-subtitle {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.45);
+      line-height: 1.5;
     }
 
     /* ── Life Gallery ── */
@@ -1508,6 +1599,32 @@
     </div>
   </div>
 
+  <div class="work-modal" id="work-modal" aria-hidden="true" role="dialog" aria-labelledby="work-modal-title">
+    <div class="work-modal-inner">
+      <button class="work-modal-close" id="work-modal-close" type="button" aria-label="关闭">×</button>
+      <div class="work-modal-art" aria-hidden="true">
+        <svg viewBox="0 0 220 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="28" y="118" width="164" height="8" rx="4" fill="currentColor" opacity="0.12"/>
+          <path d="M44 118V92" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.35"/>
+          <path d="M176 118V92" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.35"/>
+          <rect x="36" y="72" width="148" height="20" rx="6" stroke="currentColor" stroke-width="2" opacity="0.55"/>
+          <path d="M52 72L68 52H152L168 72" stroke="currentColor" stroke-width="2" stroke-linejoin="round" opacity="0.55"/>
+          <path d="M78 52V38M110 52V34M142 52V38" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.35"/>
+          <path d="M62 98H158" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.25"/>
+          <path d="M88 98V82M132 98V82" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.25"/>
+          <path d="M98 34H122" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="98" cy="34" r="3" fill="currentColor"/>
+          <circle cx="122" cy="34" r="3" fill="currentColor"/>
+          <path d="M54 126H166" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="5 7" opacity="0.28"/>
+          <path d="M92 24L98 34L112 34L118 24" stroke="#F5A623" stroke-width="2" stroke-linejoin="round"/>
+          <rect x="92" y="18" width="26" height="8" rx="2" fill="#F5A623" opacity="0.9"/>
+        </svg>
+      </div>
+      <h3 class="work-modal-title" id="work-modal-title">Under construction</h3>
+      <p class="work-modal-subtitle" id="work-modal-subtitle"></p>
+    </div>
+  </div>
+
   <!-- 内嵌 JSON，支持 file:// 直接打开 -->
   <script type="application/json" id="portfolio-data">
 {
@@ -2004,7 +2121,41 @@
       renderFooter(data.footer);
       setupInteractions(data);
       setupLifeGallery();
+      setupWorkProjectModal();
       document.getElementById('home')?.classList.add('visible');
+    }
+
+    function setupWorkProjectModal() {
+      const modal = document.getElementById('work-modal');
+      const closeBtn = document.getElementById('work-modal-close');
+      const subtitle = document.getElementById('work-modal-subtitle');
+
+      function openModal(title) {
+        subtitle.textContent = title || '';
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeModal() {
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      }
+
+      document.querySelectorAll('.work-project-card').forEach(card => {
+        card.addEventListener('click', () => {
+          openModal(card.dataset.projectTitle || '');
+        });
+      });
+
+      closeBtn?.addEventListener('click', closeModal);
+      modal?.addEventListener('click', e => {
+        if (e.target === modal) closeModal();
+      });
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && modal?.classList.contains('open')) closeModal();
+      });
     }
 
     function setupLifeGallery() {
@@ -2172,12 +2323,8 @@
           ${projects.map((item, i) => {
             const align = item.titleAlign === 'center' ? ' data-align="center"' : '';
             const noTitle = item.showTitle === false ? ' data-no-title="true"' : '';
-            const tag = item.href
-              ? `<a class="work-project-card"${align}${noTitle} href="${item.href}" target="_blank" rel="noopener" style="--i:${i}">`
-              : `<article class="work-project-card"${align}${noTitle} style="--i:${i}">`;
-            const endTag = item.href ? '</a>' : '</article>';
             return `
-              ${tag}
+              <button type="button" class="work-project-card"${align}${noTitle} style="--i:${i}" data-project-title="${item.title}">
                 <img src="${item.image}" alt="${item.title}" loading="lazy" />
                 <div class="work-project-overlay"></div>
                 ${item.showTitle !== false ? `
@@ -2185,7 +2332,7 @@
                   <h3 class="work-project-title">${item.title}</h3>
                 </div>
                 ` : ''}
-              ${endTag}
+              </button>
             `;
           }).join('')}
           </div>
