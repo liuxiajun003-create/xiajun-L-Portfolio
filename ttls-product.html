@@ -1,0 +1,1849 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>商家端发品链路核心优化 — TTLS</title>
+  <link rel="icon" href="./assets/favicon.jpg" type="image/jpeg" />
+  <style>
+    /* Figma node 283:8170 — 仅文字区块，按稿字号/间距 */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #000;
+      color: #fff;
+      font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    .back {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 20;
+      color: rgba(255, 255, 255, 0.55);
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1;
+      text-decoration: none;
+    }
+
+    .back:hover { color: #fff; }
+
+    .page {
+      width: min(100%, 1920px);
+      margin: 0 auto;
+      /* 稿内 Frame 283:8170 位于 x=108 y=108 */
+      padding: 108px 108px 120px;
+    }
+
+    @media (max-width: 860px) {
+      .page { padding: 72px 24px 80px; }
+    }
+
+    /* ===== 工作内容回顾 — Figma 386:46743 ===== */
+    .work-review {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 56px;
+      width: 100%;
+      max-width: 1525px;
+    }
+
+    .work-review__copy {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 24px;
+      width: min(100%, 937px);
+      padding: 0 32px;
+      box-sizing: border-box;
+    }
+
+    .work-review__title {
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 500;
+      font-size: 40px;
+      line-height: normal;
+      color: #fff;
+      width: min(100%, 484px);
+    }
+
+    .work-review__intro {
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 500;
+      font-size: 20px;
+      line-height: 32px;
+      color: #fff;
+      width: 100%;
+    }
+
+    .work-review__hero {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 24px;
+      object-fit: cover;
+    }
+
+    /* ===== 283:8186 — 工作内容回顾之后；整块随页宽自适应 ===== */
+    .block-283-8186 {
+      margin-top: 120px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    /* PART TWO 中插图 389:106866 — x=606 w=709，居中偏上 */
+    .part2-mid {
+      margin-top: 64px;
+      margin-left: calc(606 / var(--art) * 100%);
+      width: calc(709 / var(--art) * 100%);
+      max-width: 709px;
+    }
+
+    /* Before / After 标签行（落在媒体栏内） */
+    .ba-labels {
+      margin-top: 12px;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 22px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* PART FIVE 末尾三角流程图 — 稿 x=277 w=1243 h=765 */
+    .flow-tri {
+      position: relative;
+      margin-top: 64px;
+      margin-left: calc(277 / var(--art) * 100%);
+      width: calc(1243 / var(--art) * 100%);
+      aspect-ratio: 1243 / 765;
+    }
+
+    .flow-tri__phone {
+      position: absolute;
+      width: calc(576 / 1243 * 100%);
+      height: auto;
+      display: block;
+      border-radius: 12px;
+    }
+
+    .flow-tri__phone--library {
+      left: 0;
+      top: calc(204 / 765 * 100%);
+    }
+
+    .flow-tri__phone--single {
+      left: calc(667 / 1243 * 100%);
+      top: 0;
+    }
+
+    .flow-tri__phone--bundle {
+      left: calc(667 / 1243 * 100%);
+      top: calc(392 / 765 * 100%);
+    }
+
+    .flow-tri__arrow {
+      position: absolute;
+      pointer-events: none;
+    }
+
+    .flow-tri__arrow--up {
+      left: calc(522 / 1243 * 100%);
+      top: calc(171 / 765 * 100%);
+      width: calc(144 / 1243 * 100%);
+    }
+
+    /* 起点对齐菜品库「Create bundle」按钮，不再落在卡片下方 */
+    .flow-tri__arrow--down {
+      left: calc(559 / 1243 * 100%);
+      top: calc(505 / 765 * 100%);
+      width: calc(108 / 1243 * 100%);
+    }
+
+    .flow-tri__label {
+      position: absolute;
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 22px;
+      color: rgba(255, 255, 255, 0.85);
+      white-space: nowrap;
+    }
+
+    .flow-tri__label--library {
+      left: calc(255 / 1243 * 100%);
+      top: calc(556 / 765 * 100%);
+    }
+
+    .flow-tri__label--single {
+      left: calc(917 / 1243 * 100%);
+      top: calc(352 / 765 * 100%);
+    }
+
+    .flow-tri__label--bundle {
+      left: calc(914 / 1243 * 100%);
+      top: calc(743 / 765 * 100%);
+    }
+
+    /* 图/视频：等比缩放 */
+    .case-showcase {
+      display: block;
+      width: 100%;
+      max-width: min(100%, 1198px);
+      height: auto;
+      margin-left: auto;
+      margin-right: auto;
+      object-fit: contain;
+      object-position: center;
+    }
+
+    .media-fluid {
+      display: block;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      object-position: center;
+    }
+
+    /* 283:8187：相对视觉区 y=954-858=96；左缘与上方展示图对齐 */
+    .case-meta {
+      margin-top: 96px;
+      width: 100%;
+    }
+
+    .case-meta-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 96px;
+      width: min(100%, 937px);
+      /* 与 .case-showcase（max 1198 居中）左缘对齐 */
+      margin-left: max(0px, calc((100% - min(100%, 1198px)) / 2));
+    }
+
+    /* 44px Medium */
+    .case-title {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      width: min(100%, 484px);
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 500;
+      font-size: 44px;
+      line-height: normal;
+      color: #fff;
+    }
+
+    .case-title .accent {
+      color: #25f4ee;
+    }
+
+    .meta-cols {
+      display: flex;
+      align-items: flex-start;
+      gap: 158.646px;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    .meta-col {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 24px;
+    }
+
+    .meta-col--timeline {
+      width: min(100%, 373.951px);
+    }
+
+    .meta-col--toc {
+      width: min(100%, 404.403px);
+    }
+
+    .meta-label {
+      display: flex;
+      align-items: center;
+      gap: 6.319px;
+    }
+
+    .meta-label img {
+      width: 20px;
+      height: 20px;
+      display: block;
+    }
+
+    .meta-label span {
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 700;
+      font-size: 20px;
+      line-height: 20.22px;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .meta-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 7.583px;
+    }
+
+    .meta-item strong {
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 500;
+      font-size: 18px;
+      line-height: 18.956px;
+      color: #fff;
+    }
+
+    .meta-item ul {
+      margin: 0;
+      padding-left: 18.957px;
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 400;
+      font-size: 12.638px;
+      line-height: 18.956px;
+      color: #fff;
+      opacity: 0.8;
+    }
+
+    .meta-toc-list {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .meta-toc-list p {
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 500;
+      font-size: 18px;
+      line-height: 18.956px;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    /* ===== PART ONE：按稿面 1920 坐标等比缩放还原 =====
+       媒体 x=361 w=1198；虚线 x=453/1467（压在媒体上，左右各探出 92）
+       标题/正文 x=517（落在两虚线之间） */
+    .block-part-one {
+      /* 撑满 .page 内容宽（抵消左右 108 padding，对齐 1920 画板） */
+      --art: 1920;
+      margin-top: 206px;
+      margin-left: -108px;
+      margin-right: -108px;
+      width: calc(100% + 216px);
+      max-width: none;
+      position: relative;
+      box-sizing: border-box;
+    }
+
+    /* 横分割线 + 下方短标：整组强制下移 */
+    .section-rule {
+      position: relative;
+      margin-left: calc(197 / var(--art) * 100%);
+      width: calc(1525 / var(--art) * 100%);
+      height: 16px;
+    }
+
+    .section-rule--full {
+      margin-left: 0;
+      width: 100%;
+    }
+
+    .section-rule__line {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 100%;
+      height: 1px;
+      object-fit: fill;
+      transform: translateY(-50%);
+    }
+
+    /* 短标与细线垂直居中叠齐；水平居中 */
+    .section-rule__mark {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: calc(93 / 1525 * 100%);
+      max-width: 93px;
+      height: 3px;
+      display: block;
+      transform: translate(-50%, -50%);
+    }
+
+    .section-rule--full .section-rule__mark {
+      width: calc(93 / var(--art) * 100%);
+    }
+
+    /* 标题 x=517 w=484；距分割线 96px */
+    .part-heading {
+      margin-top: 96px;
+      margin-left: calc(517 / var(--art) * 100%);
+      width: calc(484 / var(--art) * 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 20px;
+      color: #fff;
+    }
+
+    .part-heading .part-label {
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 500;
+      font-size: 24px;
+      line-height: normal;
+      opacity: 0.7;
+      width: 100%;
+    }
+
+    .part-heading .part-title {
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 500;
+      font-size: 44px;
+      line-height: normal;
+      width: 100%;
+    }
+
+    /* PART FOUR 长标题：稿面 whitespace-nowrap，不受 484 宽限制 */
+    .part-heading--wide {
+      width: max-content;
+      max-width: 100%;
+    }
+
+    .part-heading--wide .part-title {
+      width: auto;
+      white-space: nowrap;
+    }
+
+    /* 正文 x=517 w=875；距标题 51px */
+    .part-body {
+      margin-top: 51px;
+      margin-left: calc(517 / var(--art) * 100%);
+      width: calc(875 / var(--art) * 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 24px;
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 1.8;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* 媒体块 x=361 w=1198；虚线相对媒体 left 92/1198 */
+    .media-rail-stage {
+      position: relative;
+      margin-top: 51px;
+      margin-left: calc(361 / var(--art) * 100%);
+      width: calc(1198 / var(--art) * 100%);
+    }
+
+    .media-frame {
+      width: 100%;
+      border-radius: 32px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* 稿 259:167827 — design-story 视频描边 */
+    .media-frame--stroke {
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: transparent;
+    }
+
+    /* 虚线：再上移，底边远离下方图片；左右仍 inset 92 */
+    .rail {
+      position: absolute;
+      /* 高 419 + 上留 120 → 整体再抬高 */
+      top: calc(-539 / 705 * 100%);
+      width: 1px;
+      height: calc(419 / 705 * 100%);
+      pointer-events: none;
+      z-index: 2;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.3) 0,
+        rgba(255, 255, 255, 0.3) 6px,
+        transparent 6px,
+        transparent 12px
+      );
+    }
+
+    .rail--left { left: calc(92 / 1198 * 100%); }
+    .rail--right { left: auto; right: calc(92 / 1198 * 100%); }
+
+    .rail--short {
+      top: calc(-283 / 538 * 100%);
+      height: calc(163 / 538 * 100%);
+    }
+
+    /* PART TWO 媒体高 715；轨顶再上提，底距媒体约 120 */
+    .rail--p2 {
+      top: calc(-846 / 715 * 100%);
+      height: calc(726 / 715 * 100%);
+    }
+
+    /* PART THREE 首图高 517、轨高 302 */
+    .rail--p3a {
+      top: calc(-422 / 517 * 100%);
+      height: calc(302 / 517 * 100%);
+    }
+
+    /* PART THREE 次图/全屏对比：轨顶再上提，底距媒体约 80 */
+    .rail--p3b {
+      top: calc(-348 / 674 * 100%);
+      height: calc(268 / 674 * 100%);
+    }
+
+    /* caption 居中于画板（稿 x=843） */
+    .media-caption {
+      margin-top: 32px;
+      margin-left: calc(361 / var(--art) * 100%);
+      width: calc(1198 / var(--art) * 100%);
+      text-align: center;
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Background x=499 */
+    .bgq-title {
+      margin-top: 82px;
+      margin-left: calc(499 / var(--art) * 100%);
+      width: calc(413 / var(--art) * 100%);
+      font-family: "TikTok Sans", "PingFang SC", sans-serif;
+      font-weight: 700;
+      font-style: italic;
+      font-size: 36px;
+      line-height: normal;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .bgq-desc {
+      margin-top: 17px;
+      margin-left: calc(499 / var(--art) * 100%);
+      width: max-content;
+      max-width: none;
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.7);
+      white-space: nowrap;
+    }
+
+    /* insights / metrics 同媒体 x=361 w=1198 */
+    .part-figure {
+      position: relative;
+      margin-top: 75px;
+      margin-left: calc(361 / var(--art) * 100%);
+      width: calc(1198 / var(--art) * 100%);
+    }
+
+    .part-figure--metrics {
+      margin-top: 148px;
+    }
+
+    /* 分割线距上/距下同为 122，整组视觉居中 */
+    .section-rule--after {
+      margin-top: 122px;
+    }
+
+    /* ===== PART TWO / THREE：同 1920 坐标栏 ===== */
+    .block-part {
+      --art: 1920;
+      margin-left: -108px;
+      margin-right: -108px;
+      width: calc(100% + 216px);
+      max-width: none;
+      position: relative;
+      box-sizing: border-box;
+    }
+
+    .block-part .part-heading {
+      margin-top: 122px;
+    }
+
+    .part-body--single {
+      /* 单段正文 */
+    }
+
+    /* 正文区小节标题：稿 24 / Heavy / #fff */
+    .part-body__title {
+      margin: 0;
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 900;
+      font-size: 24px;
+      line-height: normal;
+      color: #fff;
+    }
+
+    .media-rail-stage--gap64 {
+      margin-top: 64px;
+    }
+
+    .media-rail-stage--gap83 {
+      margin-top: 83px;
+    }
+
+    .part-subhead {
+      margin-top: 99px;
+      margin-left: calc(519 / var(--art) * 100%);
+      width: calc(882 / var(--art) * 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+      color: #fff;
+    }
+
+    .part-subhead h3 {
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 550;
+      font-size: 18px;
+      line-height: normal;
+      width: 100%;
+    }
+
+    .part-subhead p {
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: normal;
+      opacity: 0.6;
+      width: 100%;
+    }
+
+    .part-figure--gap100 {
+      margin-top: 100px;
+    }
+
+    .part-subhead--gap111 { margin-top: 56px; }
+    .part-subhead--gap100 { margin-top: 100px; }
+    .part-subhead--gap48 { margin-top: 48px; }
+    .part-subhead--gap65 { margin-top: 65px; }
+    .part-subhead--gap34 { margin-top: 34px; }
+    .part-subhead--gap70 { margin-top: 70px; }
+
+    .media-rail-stage--gap58 { margin-top: 58px; }
+    .media-rail-stage--gap77 { margin-top: 77px; }
+    .media-rail-stage--gap100 { margin-top: 100px; }
+    .media-rail-stage--gap107 { margin-top: 107px; }
+    .media-rail-stage--gap114 { margin-top: 114px; }
+    .media-rail-stage--gap234 { margin-top: 234px; }
+
+    /* 表单视觉一致性对比图：稿 x=274 w=1371 */
+    .media-rail-stage--wide1371 {
+      margin-left: calc(274 / var(--art) * 100%);
+      width: calc(1371 / var(--art) * 100%);
+      max-width: 1371px;
+    }
+
+    /* 轨高 168 / 媒体 549；上移对齐标题区 */
+    .rail--p3visual {
+      top: calc(-280 / 549 * 100%);
+      height: calc(168 / 549 * 100%);
+    }
+
+    .rail--p3visual.rail--left { left: calc(174 / 1371 * 100%); }
+    .rail--p3visual.rail--right { left: auto; right: calc(183 / 1371 * 100%); }
+
+    /* 轨高 302 / 媒体 673；整组再下移约 60 */
+    .rail--p3c {
+      top: calc(-362 / 673 * 100%);
+      height: calc(302 / 673 * 100%);
+    }
+
+    /* 轨高 290 / 媒体 673；整组再下移约 40 */
+    .rail--p3d {
+      top: calc(-370 / 673 * 100%);
+      height: calc(290 / 673 * 100%);
+    }
+
+    /* PART FOUR：窄菜单图落在 1198 媒体栏内（x=589 → inset 228） */
+    .media-frame--menu {
+      width: calc(743 / 1198 * 100%);
+      margin-left: calc(228 / 1198 * 100%);
+    }
+
+    /*
+      菜单窄于虚线栏，线可走两侧接到导入上方；
+      在导入图前 120px 停住，不碰到导入图。
+      上留 120 + 图 489 + 间距 234 − 底距 120 = 1025
+    */
+    .rail--p4menu {
+      top: calc(-502 / 489 * 100%);
+      height: calc(1105 / 489 * 100%);
+    }
+
+    /* 导入图高 715：同上方，轨在图上 120px 外，不压图 */
+    .rail--p4-long {
+      top: calc(-422 / 715 * 100%);
+      height: calc(302 / 715 * 100%);
+    }
+
+    /* PART FIVE 预填图：虚线顶再上提，底仍落在小节正文附近 */
+    .rail--p4b {
+      top: calc(-555 / 547 * 100%);
+      height: calc(455 / 547 * 100%);
+    }
+
+    .part-subhead--gap98 { margin-top: 98px; }
+    .media-rail-stage--gap244 { margin-top: 244px; }
+
+    /* 277:8072 — 稿面标题 24/Heavy、正文 16/Regular 60%；两侧虚线 277:8070/8071 */
+    .flow-copy-stage {
+      position: relative;
+      margin-top: 98px;
+      margin-left: calc(361 / var(--art) * 100%);
+      width: calc(1198 / var(--art) * 100%);
+      min-height: 168px;
+    }
+
+    .flow-copy-stage .part-subhead {
+      margin-top: 0;
+      margin-left: calc(158 / 1198 * 100%);
+      width: calc(882 / 1198 * 100%);
+    }
+
+    .rail--p5flow {
+      top: 0;
+      height: 168px;
+    }
+
+    .part-subhead--flow {
+      gap: 16px;
+    }
+
+    .part-subhead--flow h3 {
+      font-weight: 900;
+      font-size: 24px;
+    }
+
+    .part-subhead--flow p {
+      font-size: 16px;
+      line-height: normal;
+    }
+
+    /* ===== PART FIVE：验收问题 / 工程化沟通 ===== */
+    .block-part-five .part-heading {
+      margin-top: 96px;
+    }
+
+    .p5-rail-stage {
+      margin-top: 100px;
+      padding-bottom: 80px;
+    }
+
+    /* 虚线从标题顶附近拉起，盖住标题+正文+后文 */
+    .rail--p5 {
+      top: -280px;
+      height: calc(100% + 280px);
+    }
+
+    .p5-inner {
+      margin-left: calc(154 / 1198 * 100%);
+      width: calc(884 / 1198 * 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      color: #fff;
+    }
+
+    .block-part-five .part-body {
+      margin-left: calc(515 / var(--art) * 100%);
+      width: calc(875 / var(--art) * 100%);
+    }
+
+    .p5-section-title {
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 700;
+      font-size: 24px;
+      line-height: normal;
+      width: 100%;
+      color: #fff;
+    }
+
+    .p5-section-title--gap100 {
+      margin-top: 100px;
+    }
+
+    .p5-stack {
+      margin-top: 40px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 32px;
+    }
+
+    .p5-stack--tight {
+      gap: 8px;
+    }
+
+    .p5-item {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .p5-item h3 {
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 500;
+      font-size: 20px;
+      line-height: 1.5;
+      width: 100%;
+      color: #fff;
+    }
+
+    .p5-item p {
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 1.5;
+      width: 100%;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .p5-item p + p {
+      margin-top: 16px;
+    }
+
+    .p5-figure {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .p5-figure img {
+      display: block;
+      width: calc(625 / 884 * 100%);
+      max-width: 625px;
+      height: auto;
+      border-radius: 12px;
+    }
+
+    /* Form 规范对比图：稿 x≈363 w=1186，相对正文栏左移 */
+    .p5-figure--form {
+      margin-top: 40px;
+      margin-left: calc(-152 / 884 * 100%);
+      width: calc(1186 / 884 * 100%);
+      justify-content: flex-start;
+    }
+
+    .p5-figure--form img {
+      width: 100%;
+      max-width: none;
+      border-radius: 16px;
+    }
+
+    .p5-chat-pair {
+      margin-top: 40px;
+      width: 100%;
+      display: flex;
+      align-items: flex-start;
+      gap: calc(36 / 884 * 100%);
+    }
+
+    .p5-chat-pair img {
+      display: block;
+      height: auto;
+      border-radius: 8px;
+    }
+
+    .p5-chat-pair img:first-child {
+      width: calc(441 / 884 * 100%);
+    }
+
+    .p5-chat-pair img:last-child {
+      width: calc(406 / 884 * 100%);
+    }
+
+    /* ===== SMB 注册登入流程优化 — Figma 239:45098 ===== */
+    /* 正文 x=517 w=886 */
+    .part-body--w886 {
+      width: calc(886 / var(--art) * 100%);
+    }
+
+    /* 369:44909 — 飞书文档入口 */
+    .part-doclink {
+      align-self: flex-start;
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      transition: color 0.2s ease;
+    }
+
+    a.part-doclink:hover {
+      color: #fff;
+    }
+
+    /* 标题距分割线 96px（稿 178 → 274） */
+    .block-part-smb .part-heading {
+      margin-top: 96px;
+    }
+
+    /* 流程图 x=197 w=1525，距正文 59px */
+    .smb-flow-stage {
+      margin-top: 59px;
+      margin-left: calc(197 / var(--art) * 100%);
+      width: calc(1525 / var(--art) * 100%);
+    }
+
+    /* 竖虚线 x=453 / 1467；纵向框住标题+正文（稿 y 210→579） */
+    .rail--smb {
+      top: 40px;
+      height: 369px;
+      left: calc(453 / var(--art) * 100%);
+    }
+
+    .rail--smb.rail--right {
+      left: auto;
+      right: calc(453 / var(--art) * 100%);
+    }
+
+    /* 创建商品 / Bundle：步骤文案绝对定位在视频旁，整体偏下 */
+    .flow-split__row {
+      position: relative;
+      width: 100%;
+    }
+
+    .flow-split__media {
+      width: calc(877 / 1197 * 100%);
+    }
+
+    .flow-split__media--right {
+      margin-left: calc(320 / 1197 * 100%);
+    }
+
+    .flow-steps {
+      position: absolute;
+      z-index: 2;
+      width: calc(228 / 1197 * 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      font-family: "TikTok Sans", "PingFang SC", sans-serif;
+      font-weight: 700;
+      font-size: 22px;
+      line-height: 1.25;
+      letter-spacing: 0.2144px;
+      color: rgba(255, 255, 255, 0.5);
+      /* 整块与图片垂直居中 */
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .flow-steps li {
+      width: 100%;
+      transition: color 0.35s ease;
+    }
+
+    .flow-steps li.is-active {
+      color: #fff;
+    }
+
+    .flow-steps--left {
+      left: calc(48 / 1197 * 100%);
+    }
+
+    .flow-steps--right {
+      left: calc(969 / 1197 * 100%);
+      text-align: right;
+      align-items: flex-end;
+    }
+
+    @media (max-width: 860px) {
+      .page { padding: 72px 24px 80px; }
+      .hero-brand { font-size: 40px; }
+      .hero-subtitle { font-size: 22px; }
+      .hero-intro { font-size: 16px; }
+      .hero-copy { gap: 40px; }
+      .work-review__title { font-size: 28px; }
+      .work-review__intro { font-size: 16px; line-height: 1.6; }
+      .work-review__copy { padding: 0; }
+      .work-review__hero { border-radius: 16px; }
+      .meta-toc-list p { white-space: normal; }
+      .block-283-8186 { margin-top: 72px; }
+      .part2-mid,
+      .flow-tri,
+      .flow-copy-stage {
+        margin-left: 0;
+        width: 100%;
+        max-width: none;
+      }
+      .flow-copy-stage .part-subhead {
+        margin-left: 0;
+        width: 100%;
+      }
+      .flow-tri { aspect-ratio: 1243 / 765; }
+      .block-part-one,
+      .block-part {
+        margin-top: 80px;
+        margin-left: -24px;
+        margin-right: -24px;
+        width: calc(100% + 48px);
+      }
+      .block-part-one { margin-top: 80px; }
+      .part-heading .part-title { font-size: 28px; }
+      .part-heading .part-label { font-size: 18px; }
+      .part-heading--wide .part-title { white-space: normal; }
+      .bgq-title { font-size: 24px; white-space: normal; }
+      .bgq-desc { width: 100%; white-space: normal; }
+      .media-frame { border-radius: 16px; }
+      .rail { display: none; }
+      .smb-flow-stage {
+        margin-top: 40px;
+        margin-left: 24px;
+        width: calc(100% - 48px);
+      }
+      .p5-chat-pair { flex-direction: column; gap: 16px; }
+      .p5-chat-pair img:first-child,
+      .p5-chat-pair img:last-child { width: 100%; }
+      .p5-figure img { width: 100%; max-width: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="back" href="./index.html#work">← 返回</a>
+
+  <main class="page">
+    <!-- Figma 386:46743 — 工作内容回顾 -->
+    <section class="work-review" data-node-id="386:46743">
+      <div class="work-review__copy" data-node-id="386:48289">
+        <h1 class="work-review__title" data-node-id="386:48292">工作内容回顾</h1>
+        <p class="work-review__intro" data-node-id="386:48299">
+          工作一年半余,共负责业务需求30+,从内容生态体验到TikTok生服商家,深耕To B赛道,在TTLS期间负责10+业务需求,以下将从两个重点项目开始本次答辩
+        </p>
+      </div>
+      <img
+        class="work-review__hero"
+        src="./assets/case-ttls/work-review-hero-2x.png"
+        alt="在TTLS期间共负责10+业务需求"
+        width="3051"
+        height="1717"
+        data-node-id="389:106852"
+      />
+    </section>
+
+    <!-- Figma 283:8186 — margin-top 314px -->
+    <section class="block-283-8186" data-node-id="283:8186">
+      <img
+        class="case-showcase"
+        src="./assets/case-ttls/hero-showcase-283.png"
+        alt="Improving Product Launch Efficiency"
+        width="1525"
+        height="858"
+        data-node-id="259:165608"
+      />
+
+      <div class="case-meta" data-node-id="283:8187">
+        <div class="case-meta-inner" data-node-id="283:8185">
+          <div class="case-title" data-node-id="283:8184">
+            <p data-node-id="259:165607">TTLS生活服务</p>
+            <p data-node-id="261:169299">
+              商家端<span class="accent">发品链路</span>核心优化
+            </p>
+          </div>
+
+          <div class="meta-cols" data-node-id="261:169302">
+            <div class="meta-col meta-col--timeline" data-node-id="261:169303">
+              <div class="meta-label" data-node-id="261:169304">
+                <img src="./assets/case-ttls/icon-clock.svg" alt="" width="20" height="20" />
+                <span data-node-id="261:169307">时间线</span>
+              </div>
+              <div class="meta-stack" data-node-id="280:8088">
+                <div class="meta-item" data-node-id="261:169309">
+                  <strong data-node-id="261:169310">01/ Timeline</strong>
+                  <ul data-node-id="261:169311"><li>2026.7 - Now</li></ul>
+                </div>
+                <div class="meta-item" data-node-id="261:169344">
+                  <strong data-node-id="261:169345">02/ Teammate</strong>
+                  <ul data-node-id="261:169346"><li>Designer</li></ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="meta-col meta-col--toc" data-node-id="261:169322">
+              <div class="meta-label" data-node-id="261:169323">
+                <img src="./assets/case-ttls/icon-doc.svg" alt="" width="20" height="20" />
+                <span data-node-id="261:169327">内容概览</span>
+              </div>
+              <div class="meta-toc-list" data-node-id="261:169328">
+                <p data-node-id="261:169331">01/ 项目背景</p>
+                <p data-node-id="261:169337">02/ 业务场景的拆分</p>
+                <p data-node-id="261:169340">03/ 表单信息的重构</p>
+                <p data-node-id="261:169349">04/ 新增菜品库提高商家发品效率</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PART ONE：按稿面 1920 坐标还原 -->
+    <section class="block-part-one" data-node-id="part-one">
+      <div class="section-rule section-rule--full" data-node-id="261:170819">
+        <img class="section-rule__line" src="./assets/case-ttls/section-rule-h.svg" alt="" width="1525" height="1" />
+        <img class="section-rule__mark" src="./assets/case-ttls/section-rule-mark.svg" alt="" width="93" height="3" data-node-id="261:170822" />
+      </div>
+
+      <div class="part-heading" data-node-id="262:3130">
+        <p class="part-label" data-node-id="262:3128">PART ONE</p>
+        <h2 class="part-title" data-node-id="262:3129">项目背景</h2>
+      </div>
+
+      <div class="part-body" data-node-id="262:3134">
+        <p data-node-id="262:3133">
+          当前商家发品链路存在三大核心痛点，多重因素叠加导致发品时长中位数高达 5.5 分钟,当前一套团购券的表单实际在同时服务两种场景：42% 的单品场景和 58% 的套餐场景。75% 的混合商家每次商品发布都要在心里切换两种心智、11.4%的商家只发单品但也需要填复杂的Item Group信息
+        </p>
+        <p data-node-id="262:3131">
+          除此之外商家仍面临两个卡点:菜品信息从零手填/已发布菜品无法复用当前没有任何 item 复用机制，每次发 Bundle 都要重新填组内菜品信息
+        </p>
+      </div>
+
+      <!-- 媒体比虚线宽：虚线压在媒体上（左右各 inset 92） -->
+      <div class="media-rail-stage" data-node-id="262:3154">
+        <span class="rail rail--left" aria-hidden="true" data-node-id="262:3125"></span>
+        <span class="rail rail--right" aria-hidden="true" data-node-id="262:3127"></span>
+        <div class="media-frame">
+          <video
+            class="media-fluid js-lazy-video"
+            src="./assets/case-ttls/tokopedia-flow-web.mp4"
+            poster="./assets/case-ttls/tokopedia-flow-poster.webp"
+            width="2400" height="1350"
+            preload="none" muted loop playsinline
+            data-node-id="262:6544"
+          ></video>
+        </div>
+      </div>
+      <p class="media-caption" data-node-id="262:3155">商家端线上发品核心页面节选(改版前)</p>
+
+      <h3 class="bgq-title" data-node-id="262:3169">Background &amp; Questions</h3>
+      <p class="bgq-desc" data-node-id="262:3170">
+        分析当前商家的反馈情况,针对性给出设计策略通过设计手段来达到最后的预期收益
+      </p>
+
+      <figure class="part-figure" data-node-id="259:167155">
+        <span class="rail rail--left rail--short" aria-hidden="true" data-node-id="262:3167"></span>
+        <span class="rail rail--right rail--short" aria-hidden="true" data-node-id="262:3168"></span>
+        <img
+          class="media-fluid"
+          src="./assets/case-ttls/part1-insights-2x.png"
+          alt="商家发品核心流失卡点与竞品对比"
+          width="2399"
+          height="1079"
+        />
+      </figure>
+
+      <figure class="part-figure part-figure--metrics" data-node-id="251:371">
+        <img
+          class="media-fluid"
+          src="./assets/case-ttls/part1-metrics-2x.png"
+          alt="预期核心收益与设计解决方案（含交互链路重构）"
+          width="2396"
+          height="620"
+        />
+      </figure>
+
+      <div class="section-rule section-rule--full section-rule--after" data-node-id="262:3156">
+        <img class="section-rule__line" src="./assets/case-ttls/section-rule-h.svg" alt="" width="1525" height="1" />
+        <img class="section-rule__mark" src="./assets/case-ttls/section-rule-mark.svg" alt="" width="93" height="3" data-node-id="268:6558" />
+      </div>
+    </section>
+
+    <!-- PART TWO -->
+    <section class="block-part block-part-two" data-node-id="part-two">
+      <div class="part-heading part-heading--wide" data-node-id="262:3161">
+        <p class="part-label" data-node-id="262:3162">PART TWO</p>
+        <h2 class="part-title" data-node-id="262:3163">业务场景的拆分与重构</h2>
+      </div>
+
+      <div class="part-body part-body--single" data-node-id="262:3164">
+        <p data-node-id="262:3165">
+          我们在商品创建页做了哪些内容的改动呢?  将 Discount Voucher 拆分为「Single」和「Bundle」通过视觉卡片+C端PDP场景示例强化对选品页理解.
+        </p>
+      </div>
+
+      <div class="part2-mid" data-node-id="389:106866">
+        <img
+          class="media-fluid"
+          src="./assets/case-ttls/part2-mid-2x.png"
+          alt="Create a product — Single / Bundle 选品页"
+          width="1418"
+          height="808"
+          loading="lazy"
+        />
+      </div>
+
+      <div class="media-rail-stage media-rail-stage--gap64" data-node-id="262:3273">
+        <span class="rail rail--left rail--p2" aria-hidden="true" data-node-id="262:3159"></span>
+        <span class="rail rail--right rail--p2" aria-hidden="true" data-node-id="262:3160"></span>
+        <div class="media-frame">
+          <img
+            class="media-fluid"
+            src="./assets/case-ttls/part2-ui-2x.png"
+            alt="Create a product — Single / Bundle"
+            width="2399"
+            height="1435"
+          />
+        </div>
+      </div>
+
+      <div class="section-rule section-rule--full section-rule--after" data-node-id="262:6548">
+        <img class="section-rule__line" src="./assets/case-ttls/section-rule-h.svg" alt="" width="1525" height="1" />
+        <img class="section-rule__mark" src="./assets/case-ttls/section-rule-mark.svg" alt="" width="93" height="3" />
+      </div>
+    </section>
+
+    <!-- PART THREE -->
+    <section class="block-part block-part-three" data-node-id="part-three">
+      <div class="part-heading" data-node-id="262:6545">
+        <p class="part-label" data-node-id="262:6546">PART THREE</p>
+        <h2 class="part-title" data-node-id="262:6547">视觉层优化</h2>
+      </div>
+
+      <div class="part-body part-body--single" data-node-id="262:6551">
+        <h3 class="part-body__title" data-node-id="390:106889">表单信息分类</h3>
+        <p data-node-id="262:6552">
+          首先,我们针对表单在交互侧进行信息布局的重构,将20+的核心字段缩减为7+的核心字段,将其余字段收起默认填写.在视觉层,我们通过拉大间距、遵守栅格体系、修改样式来达到强化分组关系，梳理信息结构,进行视觉降噪.
+        </p>
+      </div>
+
+      <div class="media-rail-stage media-rail-stage--gap83" data-node-id="259:167697">
+        <span class="rail rail--left rail--p3a" aria-hidden="true" data-node-id="262:6549"></span>
+        <span class="rail rail--right rail--p3a" aria-hidden="true" data-node-id="262:6550"></span>
+        <div class="media-frame">
+          <img
+            class="media-fluid"
+            src="./assets/case-ttls/part3-form-2x.png"
+            alt="表单信息架构重构"
+            width="2399"
+            height="1038"
+          />
+        </div>
+      </div>
+
+      <div class="part-subhead" data-node-id="262:6555">
+        <h3 data-node-id="262:6556">表单的视觉侧我们做了哪些改动?</h3>
+        <p data-node-id="262:6557">
+          通过拉大间距、遵守栅格体系、修改样式来达到强化分组关系，梳理信息结构,进行视觉降噪.
+        </p>
+      </div>
+
+      <figure class="part-figure part-figure--gap100" data-node-id="259:167825">
+        <span class="rail rail--left rail--p3b" aria-hidden="true" data-node-id="262:6553"></span>
+        <span class="rail rail--right rail--p3b" aria-hidden="true" data-node-id="262:6554"></span>
+        <div class="media-frame media-frame--stroke">
+          <video
+            class="media-fluid js-lazy-video"
+            src="./assets/case-ttls/design-story-combined-web.mp4"
+            poster="./assets/case-ttls/design-story-combined-poster.webp"
+            width="2400"
+            height="1350"
+            preload="none"
+            muted
+            loop
+            playsinline
+          ></video>
+        </div>
+      </figure>
+
+      <div class="part-subhead part-subhead--gap100" data-node-id="390:106893">
+        <h3 data-node-id="390:106894">首先: 优化首屏信息透传,实现页面全屏下钻</h3>
+        <p data-node-id="390:106895">
+          将原先的抽屉样式表单填写,修改为全局页面下钻,使用户填写表单信息更加聚集
+        </p>
+      </div>
+
+      <div class="media-rail-stage media-rail-stage--gap100" data-node-id="391:110046">
+        <span class="rail rail--left rail--p3b" aria-hidden="true" data-node-id="390:106891"></span>
+        <span class="rail rail--right rail--p3b" aria-hidden="true" data-node-id="390:106892"></span>
+        <div class="media-frame media-frame--stroke">
+          <img
+            class="media-fluid"
+            src="./assets/case-ttls/part3-fullscreen-ba-2x.png"
+            alt="抽屉表单 Before / 全屏下钻 After"
+            width="2394"
+            height="706"
+            loading="lazy"
+          />
+        </div>
+        <div class="ba-labels">
+          <span data-node-id="391:110047">Before</span>
+          <span data-node-id="391:110048">After</span>
+        </div>
+      </div>
+
+      <div class="part-subhead part-subhead--gap100" data-node-id="339:98362">
+        <h3 data-node-id="339:98363">组件全局更新,扩大Padding,进行视觉信息降噪</h3>
+        <p data-node-id="339:98364">
+          将Radio/Checkbox等组件与input形态对齐与视觉基因统一,并扩充交互热区.
+        </p>
+      </div>
+
+      <div class="media-rail-stage media-rail-stage--gap114 media-rail-stage--wide1371" data-node-id="339:100100">
+        <span class="rail rail--left rail--p3visual" aria-hidden="true" data-node-id="339:98360"></span>
+        <span class="rail rail--right rail--p3visual" aria-hidden="true" data-node-id="339:98361"></span>
+        <div class="media-frame">
+          <img
+            class="media-fluid"
+            src="./assets/case-ttls/part3-form-visual-2x.png"
+            alt="组件全局更新 — New / Old 对比"
+            width="2742"
+            height="1098"
+            loading="lazy"
+          />
+        </div>
+      </div>
+
+      <div class="part-subhead part-subhead--gap100" data-node-id="269:6562">
+        <h3 data-node-id="269:6563">为什么采用28px间距?</h3>
+        <p data-node-id="269:6564">
+          通过一下几种方式来验证28px的间距是否合理,并能让其他B端场景的表单页follow该间距逻辑,赋能团队.
+        </p>
+      </div>
+
+      <div class="part-subhead part-subhead--gap48" data-node-id="270:23489">
+        <h3 data-node-id="270:23490">5s眼动模糊实验</h3>
+        <p data-node-id="270:23491">
+          给页面加一个 5px 的模糊滤镜,24px 下标签、输入框和辅助提示文案全部黏成了一块灰色的斑块，分不清区隔。但在28px下模糊后仍然能清晰看到每一个“区块（Chunk）”之间的白边，层级依然成立。
+        </p>
+      </div>
+
+      <div class="media-rail-stage media-rail-stage--gap58" data-node-id="270:23162">
+        <span class="rail rail--left rail--p3c" aria-hidden="true" data-node-id="269:6560"></span>
+        <span class="rail rail--right rail--p3c" aria-hidden="true" data-node-id="269:6561"></span>
+        <div class="media-frame media-frame--stroke">
+          <img
+            class="media-fluid"
+            src="./assets/case-ttls/part3-blur-2x.png"
+            alt="24px / 28px / 32px 间距对比"
+            width="2394"
+            height="1346"
+          />
+        </div>
+      </div>
+
+      <div class="part-subhead part-subhead--gap65" data-node-id="270:23492">
+        <h3 data-node-id="270:23493">那为什么不给32px?</h3>
+        <p data-node-id="270:23494">
+          首先考虑屏效比,从视觉层出发,24px和28px在首屏上都透传7+核心字段,但32px的间距透传6+核心字段,且视觉层面Space与盒子之间的Padding保持一致了,需要保持Padding &gt; Space,将更会导致首屏核心字段透传的减少.
+        </p>
+      </div>
+
+      <div class="media-rail-stage media-rail-stage--gap107" data-node-id="258:165562">
+        <span class="rail rail--left rail--p3d" aria-hidden="true" data-node-id="270:23487"></span>
+        <span class="rail rail--right rail--p3d" aria-hidden="true" data-node-id="270:23488"></span>
+        <div class="media-frame media-frame--stroke">
+          <video
+            class="media-fluid js-lazy-video"
+            src="./assets/case-ttls/realtime-sync-preview-web.mp4"
+            poster="./assets/case-ttls/realtime-sync-preview-poster.webp"
+            width="2400"
+            height="1350"
+            preload="none"
+            muted
+            loop
+            playsinline
+          ></video>
+        </div>
+      </div>
+
+      <div class="section-rule section-rule--full section-rule--after" data-node-id="273:23501">
+        <img class="section-rule__line" src="./assets/case-ttls/section-rule-h.svg" alt="" width="1525" height="1" />
+        <img class="section-rule__mark" src="./assets/case-ttls/section-rule-mark.svg" alt="" width="93" height="3" data-node-id="273:23506" />
+      </div>
+    </section>
+
+    <!-- PART FOUR -->
+    <section class="block-part block-part-four" data-node-id="part-four">
+      <div class="part-heading" data-node-id="273:23498">
+        <p class="part-label" data-node-id="273:23499">PART FOUR</p>
+        <h2 class="part-title" data-node-id="273:23500">新增上传菜单功能</h2>
+      </div>
+
+      <div class="part-body part-body--single" data-node-id="273:23504">
+        <p data-node-id="273:23505">
+          支持商家通过上传线下菜单识别菜品,并导入到菜品库
+        </p>
+      </div>
+
+      <div class="part-subhead part-subhead--gap98" data-node-id="274:6148">
+        <h3 data-node-id="274:6149">新增上传菜单识别功能和菜品库</h3>
+        <p data-node-id="274:6152">
+          支持商家上传线下门店的菜单文件识别,通过菜品库菜品选择,来达到缩短发品时间的目的.
+        </p>
+      </div>
+
+      <div class="media-rail-stage media-rail-stage--gap107" data-node-id="273:302544">
+        <span class="rail rail--left rail--p4menu" aria-hidden="true"></span>
+        <span class="rail rail--right rail--p4menu" aria-hidden="true"></span>
+        <div class="media-frame media-frame--menu">
+          <img
+            class="media-fluid"
+            src="./assets/case-ttls/part4-menu-2x.png"
+            alt="菜品库与菜单识别"
+            width="1557"
+            height="1089"
+          />
+        </div>
+      </div>
+
+      <div class="media-rail-stage media-rail-stage--gap234" data-node-id="273:302598">
+        <span class="rail rail--left rail--p4-long" aria-hidden="true" data-node-id="273:23502"></span>
+        <span class="rail rail--right rail--p4-long" aria-hidden="true" data-node-id="273:23503"></span>
+        <div class="media-frame">
+          <img
+            class="media-fluid"
+            src="./assets/case-ttls/part4-import-2x.png"
+            alt="菜单识别导入预览"
+            width="1197"
+            height="715"
+          />
+        </div>
+      </div>
+
+      <div class="section-rule section-rule--full section-rule--after" data-node-id="393:110376">
+        <img class="section-rule__line" src="./assets/case-ttls/section-rule-h.svg" alt="" width="1525" height="1" />
+        <img class="section-rule__mark" src="./assets/case-ttls/section-rule-mark.svg" alt="" width="93" height="3" data-node-id="393:110385" />
+      </div>
+    </section>
+
+    <!-- PART FIVE — 交互层链路重构 -->
+    <section class="block-part block-part-five-flow" data-node-id="393:110373-section">
+      <div class="part-heading part-heading--wide" data-node-id="393:110373">
+        <p class="part-label" data-node-id="393:110374">PART FIVE</p>
+        <h2 class="part-title" data-node-id="393:110375">交互层链路重构</h2>
+      </div>
+
+      <div class="part-body part-body--single" data-node-id="393:110379">
+        <p data-node-id="393:110380">
+          商家通过菜品库可以快捷导入菜品信息到表单完成快速发品的目的.
+        </p>
+      </div>
+
+      <div class="part-subhead" data-node-id="274:6155">
+        <h3 data-node-id="274:6156">菜单库item导入一键预填</h3>
+        <p data-node-id="274:6157">
+          快速填充表单信息,大幅减少商家重复录入工作量,帮助商家快速完成发品.
+        </p>
+      </div>
+
+      <div class="media-rail-stage media-rail-stage--gap100" data-node-id="274:16286">
+        <span class="rail rail--left rail--p4b" aria-hidden="true" data-node-id="393:110377"></span>
+        <span class="rail rail--right rail--p4b" aria-hidden="true" data-node-id="393:110378"></span>
+        <div class="media-frame">
+          <img
+            class="media-fluid"
+            src="./assets/case-ttls/part4-flow-2x.png"
+            alt="从菜单库进入发品流程"
+            width="1199"
+            height="549"
+          />
+        </div>
+      </div>
+
+      <div class="media-rail-stage media-rail-stage--gap244" data-node-id="277:8069">
+        <div class="flow-split__row">
+          <ol class="flow-steps flow-steps--left" data-node-id="277:8066">
+            <li class="is-active" data-node-id="277:8056">Create product</li>
+            <li data-node-id="277:8057">Single item</li>
+            <li data-node-id="277:8058">Select item</li>
+            <li data-node-id="277:8060">Confirm</li>
+          </ol>
+          <div class="media-frame media-frame--stroke flow-split__media flow-split__media--right" data-node-id="277:8065">
+            <video
+              class="media-fluid js-flow-video js-lazy-video"
+              src="./assets/case-ttls/create-product-flow-web.mp4"
+              poster="./assets/case-ttls/create-product-flow-poster.webp"
+              width="1760"
+              height="1052"
+              data-steps="277:8066"
+              data-cuts="0,1.86,4.07,6.27"
+              preload="none"
+              muted
+              loop
+              playsinline
+            ></video>
+          </div>
+        </div>
+      </div>
+
+      <div class="media-rail-stage media-rail-stage--gap244" data-node-id="277:8075">
+        <div class="flow-split__row">
+          <div class="media-frame media-frame--stroke flow-split__media" data-node-id="280:8098">
+            <video
+              class="media-fluid js-flow-video js-lazy-video"
+              src="./assets/case-ttls/create-bundle-flow-web.mp4"
+              poster="./assets/case-ttls/create-bundle-flow-poster.webp"
+              width="1760"
+              height="1052"
+              data-steps="277:8076"
+              data-cuts="0,1.90,4.45"
+              preload="none"
+              muted
+              loop
+              playsinline
+            ></video>
+          </div>
+          <ol class="flow-steps flow-steps--right" data-node-id="277:8076">
+            <li class="is-active" data-node-id="277:8077">Create product</li>
+            <li data-node-id="277:8078">Bundle item</li>
+            <li data-node-id="277:8079">Confirm</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="flow-copy-stage" data-node-id="277:8070-wrap">
+        <span class="rail rail--left rail--p5flow" aria-hidden="true" data-node-id="277:8070"></span>
+        <span class="rail rail--right rail--p5flow" aria-hidden="true" data-node-id="277:8071"></span>
+        <div class="part-subhead part-subhead--flow" data-node-id="277:8072">
+          <h3 data-node-id="277:8073">拍照上传 : 快捷导入菜品信息</h3>
+          <p data-node-id="277:8074">
+            通过拍照上传导入菜品库支持快捷导入菜品到表单
+          </p>
+        </div>
+      </div>
+
+      <div class="flow-tri" data-node-id="393:flow-tri" aria-label="菜品库与 CreateSingle / CreateBundle 链路">
+        <img
+          class="flow-tri__phone flow-tri__phone--single"
+          src="./assets/case-ttls/part5-phone-single-2x.png"
+          alt="CreateSingle"
+          width="1152"
+          height="688"
+          loading="lazy"
+          data-node-id="393:114211"
+        />
+        <img
+          class="flow-tri__phone flow-tri__phone--library"
+          src="./assets/case-ttls/part5-phone-library-2x.png"
+          alt="菜品库"
+          width="1152"
+          height="688"
+          loading="lazy"
+          data-node-id="393:110386"
+        />
+        <img
+          class="flow-tri__phone flow-tri__phone--bundle"
+          src="./assets/case-ttls/part5-phone-bundle-2x.png"
+          alt="CreateBundle"
+          width="1152"
+          height="688"
+          loading="lazy"
+          data-node-id="393:114213"
+        />
+        <img
+          class="flow-tri__arrow flow-tri__arrow--up"
+          src="./assets/case-ttls/part5-arrow-up.svg"
+          alt=""
+          width="144"
+          height="184"
+          data-node-id="393:115669"
+        />
+        <img
+          class="flow-tri__arrow flow-tri__arrow--down"
+          src="./assets/case-ttls/part5-arrow-down.svg"
+          alt=""
+          width="108"
+          height="94"
+          data-node-id="393:115670"
+        />
+        <span class="flow-tri__label flow-tri__label--library" data-node-id="393:115680">菜品库</span>
+        <span class="flow-tri__label flow-tri__label--single" data-node-id="393:115682">CreateSingle</span>
+        <span class="flow-tri__label flow-tri__label--bundle" data-node-id="393:115681">CreateBundle</span>
+      </div>
+
+      <div class="section-rule section-rule--full section-rule--after" data-node-id="part-five-flow-rule">
+        <img class="section-rule__line" src="./assets/case-ttls/section-rule-h.svg" alt="" width="1525" height="1" />
+        <img class="section-rule__mark" src="./assets/case-ttls/section-rule-mark.svg" alt="" width="93" height="3" />
+      </div>
+    </section>
+
+    <!-- PART SIX — 深挖验收（文案同步 Figma 349:144194） -->
+    <section class="block-part block-part-five" data-node-id="349:144194">
+      <div class="part-heading part-heading--wide" data-node-id="349:144195">
+        <p class="part-label" data-node-id="349:144196">PART SIX</p>
+        <h2 class="part-title" data-node-id="349:144197">深挖验收背后潜在的问题</h2>
+      </div>
+
+      <div class="part-body part-body--single" data-node-id="349:144201">
+        <p data-node-id="349:144202">
+          对于验收,绝大部分人的看法如“苦中作乐”/“找不同”,只要找到与设计稿不一致的地方,便记录提交给研发对应的问题,假设一个字号为16px,研发做成了14px,一个Gap 12px做成了8px,真的是研发没有仔细看设计稿所导致的吗?
+        </p>
+      </div>
+
+      <div class="media-rail-stage p5-rail-stage" data-node-id="part-five-body">
+        <span class="rail rail--left rail--p5" aria-hidden="true" data-node-id="349:144199"></span>
+        <span class="rail rail--right rail--p5" aria-hidden="true" data-node-id="349:144200"></span>
+
+        <div class="p5-inner">
+          <h3 class="p5-section-title" data-node-id="349:144223">以发品需求为例-研发写代码存在哪几大类问题?</h3>
+
+          <div class="p5-stack" data-node-id="349:144203">
+            <div class="p5-item" data-node-id="349:144206">
+              <h3 data-node-id="349:144208">视觉层偏差</h3>
+              <p data-node-id="349:144210">
+                color:研发可能直接采用吸色 假设一个颜色为#041A1D 透明度为55%,研发对应呈现的内容为E5e7eb,  虽然在肉眼上是相似,这样写是错误的, 对应css写法为 bgc-#041A1D8c, 这里的8c为55%的透明度.总的来说研发需要靠“猜”,因为研发不能理解什么时候使用对应的Token,不如直接写代码来的快,这会在我后续设计系统方面去体现如何解决
+              </p>
+            </div>
+
+            <div class="p5-figure" data-node-id="349:144211">
+              <img
+                src="./assets/case-ttls/part5-color-2x.png"
+                alt="颜色透明度错误写法对比"
+                width="625"
+                height="356"
+              />
+            </div>
+
+            <div class="p5-item" data-node-id="349:144212">
+              <h3 data-node-id="349:144214">代码标签使用错误</h3>
+              <p data-node-id="349:144216">
+                在写代码过程中,盒子之间的margin或者padding节省工时,采用&lt;div&gt;换行,导致开发者工具测不出来,仅凭视觉上感受“相似”
+              </p>
+            </div>
+
+            <div class="p5-item" data-node-id="349:144217">
+              <h3 data-node-id="349:144219">“这个做不了”</h3>
+              <p data-node-id="349:144221">
+                研发在收到大量的走查问题清单,会尽可能的去避免一些问题,比如:组件就是这样做的,需要通知组件那边一起改, 这个问题改不了,等等一些结果性的回答. 具体解法需要先去了解组件是否样式达到了对齐,如果优先级比较高,建议对其做覆盖,不能单一的听研发说改不了,需要具体了解其逻辑才能保证我们的设计与开发达到一致对齐.
+              </p>
+            </div>
+
+            <div class="p5-item" data-node-id="378:44934">
+              <h3 data-node-id="378:44936">总结</h3>
+              <p data-node-id="378:44938">
+                从小的层面来说研发可能不知道对应的Token规范,开始时硬制编码写起来更快,Token收益未在研发流程中体现.大的层面来说整个设计系统与工程侧缺少映射关系,以及文档化建设.
+              </p>
+            </div>
+          </div>
+
+          <h3 class="p5-section-title p5-section-title--gap100" data-node-id="349:144226">从工程化的视角出发与开发沟通</h3>
+
+          <div class="p5-stack" data-node-id="349:144224">
+            <div class="p5-item" data-node-id="349:144230">
+              <h3 data-node-id="349:144232">以Form表单为例</h3>
+              <p data-node-id="349:144234">
+                研发在写代码过程中,涉及到Form表单会使用&lt;form&gt;标签,但是在早期对表单的定义含有Label且距离下方模块为8px,模块之间的Gap为24px,并适用于所有表单页,只要涉及&lt;Form&gt;标签,便逃不开这个数据,但是由于早期业务的快速发展,没有过多的时间关注具体的设计细节,表单涉及高密度和低密度场景都适用了一套semi设计规范
+              </p>
+              <p data-node-id="349:144235">
+                但是我们本期对Label距离下方的间距修改为12px,模块之间的间距改为28px,开发如何去实现? 短期需要做覆盖,我将把这套最舒适的布局适用于高密度场景表单中形成规范,推进研发新增一种适配.
+              </p>
+            </div>
+          </div>
+
+          <div class="p5-chat-pair" data-node-id="349:144236">
+            <img
+              src="./assets/case-ttls/part5-chat-a-2x.png"
+              alt="工程化沟通截图 A"
+              width="441"
+              height="503"
+              data-node-id="349:144237"
+            />
+            <img
+              src="./assets/case-ttls/part5-chat-b-2x.png"
+              alt="工程化沟通截图 B"
+              width="406"
+              height="503"
+              data-node-id="349:144238"
+            />
+          </div>
+
+          <h3 class="p5-section-title p5-section-title--gap100" data-node-id="349:144241">关于我的思考,并如何赋能团队</h3>
+
+          <div class="p5-stack" data-node-id="349:144239">
+            <div class="p5-item" data-node-id="349:144245">
+              <h3 data-node-id="349:144247">一些非组件层面的Token使用无规范化文档</h3>
+              <p data-node-id="349:144249">
+                在验收过程中发现，组件层由于已有 npm 组件和 Token 约束，规范执行较为稳定。但在 Typography、Color、Spacing 等非组件场景中，由于缺少明确的语义化使用指导，研发在实现过程中更多依赖个人经验，导致设计语言无法稳定传递。因此我进一步思考如何通过 Design System 文档化和 Usage Guideline，将 Token 从“设计资产”转化为“团队共识”。需推进设计系统文档化建设.
+              </p>
+            </div>
+
+            <div class="p5-item" data-node-id="352:144250">
+              <h3 data-node-id="352:144255">新增Form表单规范</h3>
+              <p data-node-id="352:144257">
+                当前在B侧业务场景涉及多个表单页的场景,一个表单含有不同的间距、字体大小等情况,我将其所有场景聚合进行分析,沉淀出针对高低密度场景下使用不同间距的规范
+              </p>
+            </div>
+
+            <div class="p5-figure p5-figure--form" data-node-id="353:159959">
+              <img
+                src="./assets/case-ttls/part5-form-spec-2x.png"
+                alt="高低密度 Form 表单规范对比"
+                width="2372"
+                height="1214"
+                loading="lazy"
+              />
+            </div>
+
+            <div class="p5-item" data-node-id="353:159962">
+              <h3 data-node-id="353:159963">工程化约束</h3>
+              <p data-node-id="353:159964">
+                当前设计侧 Token 已具备，但在非组件场景缺少工程化约束，因此需要推动 Foundation Token 的文档化、映射和流程接入，让设计规范从设计侧资产转变为研发侧可执行规范。
+              </p>
+              <p data-node-id="378:44932">
+                这在我后续的设计系统相关内容有所体现
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SMB 注册登入流程优化 — Figma 239:45098 -->
+    <section class="block-part block-part-smb" data-node-id="239:45098">
+      <span class="rail rail--left rail--smb" aria-hidden="true" data-node-id="356:29168"></span>
+      <span class="rail rail--right rail--smb" aria-hidden="true" data-node-id="356:29169"></span>
+
+      <div class="section-rule section-rule--full section-rule--after" data-node-id="356:29167">
+        <img class="section-rule__line" src="./assets/case-ttls/section-rule-h.svg" alt="" width="1525" height="1" />
+        <img class="section-rule__mark" src="./assets/case-ttls/section-rule-mark.svg" alt="" width="93" height="3" data-node-id="356:29173" />
+      </div>
+
+      <div class="part-heading part-heading--wide" data-node-id="356:29164">
+        <p class="part-label" data-node-id="356:29165">PART ONE</p>
+        <h2 class="part-title" data-node-id="356:29166">SMB注册登入流程优化</h2>
+      </div>
+
+      <div class="part-body part-body--w886" data-node-id="356:29170">
+        <p data-node-id="356:29171">
+          构建面向新商家的注册 / 入驻流程并上 App (区别于已有的“子账号注册”)。进入注册流程后提供入驻相关能力，底层逻辑与 PC 站一致。
+        </p>
+        <a
+          class="part-doclink"
+          href="https://bytedance.larkoffice.com/wiki/ZvnDwlnvWieOdDkgTTFcJwUAnzf"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-node-id="369:44909"
+        >点击这里打开飞书文档</a>
+      </div>
+
+      <div class="smb-flow-stage" data-node-id="358:44905">
+        <img
+          class="media-fluid"
+          src="./assets/case-ttls/part6-smb-flow-2x.png"
+          alt="ID Dining Log in - Sign up 注册登入流程"
+          width="3050"
+          height="785"
+          loading="lazy"
+        />
+      </div>
+    </section>
+  </main>
+  <script>
+    (function () {
+      function bindFlowSteps(video) {
+        var list = document.querySelector('[data-node-id="' + video.getAttribute("data-steps") + '"]');
+        if (!list) return;
+        var items = list.querySelectorAll("li");
+        var cuts = (video.getAttribute("data-cuts") || "0")
+          .split(",")
+          .map(function (n) { return parseFloat(n, 10); })
+          .filter(function (n) { return !isNaN(n); });
+
+        function sync() {
+          var t = video.currentTime || 0;
+          var idx = 0;
+          for (var i = 0; i < cuts.length; i++) {
+            if (t + 0.02 >= cuts[i]) idx = i;
+          }
+          if (idx > items.length - 1) idx = items.length - 1;
+          for (var j = 0; j < items.length; j++) {
+            items[j].classList.toggle("is-active", j === idx);
+          }
+        }
+
+        video.addEventListener("timeupdate", sync);
+        video.addEventListener("seeked", sync);
+        video.addEventListener("play", sync);
+        video.addEventListener("loadedmetadata", sync);
+        sync();
+      }
+
+      document.querySelectorAll(".js-flow-video").forEach(bindFlowSteps);
+
+      var lazy = document.querySelectorAll(".js-lazy-video");
+      if (!lazy.length) return;
+
+      function tryPlay(video) {
+        var p = video.play();
+        if (p && p.catch) p.catch(function () {});
+      }
+
+      if (!("IntersectionObserver" in window)) {
+        lazy.forEach(function (video) { video.preload = "auto"; tryPlay(video); });
+        return;
+      }
+
+      // 预取：接近视口就把 preload 打开，避免首屏并发拉取全部视频
+      var preloadIO = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            entry.target.preload = "auto";
+            preloadIO.unobserve(entry.target);
+          });
+        },
+        { rootMargin: "400px 0px" }
+      );
+
+      // 播放：必须真正可见才 play。这些视频没有音轨，
+      // Chrome 会强制暂停视口外的纯视频元素，提前 play 会被 AbortError 掐断。
+      var playIO = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            entry.target.dataset.visible = entry.isIntersecting ? "1" : "0";
+            if (entry.isIntersecting) tryPlay(entry.target);
+            else entry.target.pause();
+          });
+        },
+        { threshold: 0.25 }
+      );
+
+      lazy.forEach(function (video) {
+        preloadIO.observe(video);
+        playIO.observe(video);
+      });
+
+      // 切回标签页时观察器不会重新触发，需要手动恢复仍在视口内的视频
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden) return;
+        lazy.forEach(function (video) {
+          if (video.dataset.visible === "1") tryPlay(video);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

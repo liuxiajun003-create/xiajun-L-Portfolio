@@ -56,6 +56,15 @@
       left: 50%;
       transform: translateX(-50%);
       z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .nav-wrapper.is-visible {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
     }
 
     .nav {
@@ -126,7 +135,7 @@
     }
 
     #sections-container {
-      padding-top: 24px;
+      padding-top: clamp(80px, 11vw, 128px);
       background-color: var(--bg);
     }
 
@@ -169,97 +178,7 @@
       isolation: isolate;
     }
 
-    .hero-photo-fx {
-      position: absolute;
-      inset: 0;
-      border-radius: 28px;
-      overflow: hidden;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .hero-visual-bg {
-      position: absolute;
-      inset: -35% -28% 0;
-      pointer-events: none;
-      z-index: 0;
-      overflow: hidden;
-    }
-
-    .hero-orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.45;
-      animation: orbFloat 12s ease-in-out infinite;
-    }
-
-    .hero-orb-1 {
-      width: 320px;
-      height: 320px;
-      top: -6%;
-      right: 0;
-      background: radial-gradient(circle, rgba(232, 34, 42, 0.28) 0%, transparent 70%);
-    }
-
-    .hero-orb-2 {
-      width: 280px;
-      height: 280px;
-      bottom: 8%;
-      left: -8%;
-      background: radial-gradient(circle, rgba(245, 166, 35, 0.18) 0%, transparent 70%);
-      animation-delay: -4s;
-    }
-
-    .hero-orb-3 {
-      width: 220px;
-      height: 220px;
-      top: 36%;
-      left: 28%;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
-      animation-delay: -7s;
-    }
-
-    @keyframes orbFloat {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      50% { transform: translate(24px, -18px) scale(1.06); }
-    }
-
-    .hero-light-overlay {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-      overflow: hidden;
-    }
-
-    .hero-light-veil {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse 75% 60% at 50% 18%, rgba(255, 255, 255, 0.08) 0%, transparent 62%);
-    }
-
-    .hero-light-glow {
-      position: absolute;
-      width: 360px;
-      height: 360px;
-      top: -4%;
-      left: 50%;
-      transform: translateX(-50%);
-      border-radius: 50%;
-      filter: blur(90px);
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 42%, transparent 72%);
-      animation: heroLightDrift 14s ease-in-out infinite;
-    }
-
-    @keyframes heroLightDrift {
-      0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.78; }
-      50% { transform: translateX(calc(-50% - 10px)) scale(1.05); opacity: 1; }
-    }
-
     .hero-grid {
-      position: relative;
-      z-index: 1;
       display: grid;
       grid-template-columns: 1.05fr 0.95fr;
       gap: clamp(32px, 5vw, 72px);
@@ -281,6 +200,219 @@
       display: flex;
       flex-direction: column;
       gap: 0;
+      position: relative;
+    }
+
+    /* ── Design System Auto-Assembly ── */
+    .hero-asm-grid {
+      position: absolute;
+      inset: -32px -40px -24px -24px;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        linear-gradient(rgba(96, 165, 250, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(96, 165, 250, 0.08) 1px, transparent 1px);
+      background-size: 24px 24px;
+      border: 1px dashed rgba(96, 165, 250, 0.18);
+      border-radius: 4px;
+      opacity: 0;
+    }
+
+    .hero-asm-wrap {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-asm-wrap--headline {
+      margin-bottom: 28px;
+    }
+
+    .hero-asm-wrap--photo {
+      position: relative;
+      width: min(100%, 420px);
+      margin: 0 auto;
+    }
+
+    .asm-dim-line {
+      position: absolute;
+      pointer-events: none;
+      background: rgba(52, 211, 153, 0.6);
+    }
+
+    .asm-dim-line--h {
+      height: 1px;
+      transform-origin: 50% 50%;
+    }
+
+    .asm-dim-line--v {
+      width: 1px;
+      transform-origin: 50% 50%;
+    }
+
+    .asm-dim-line--ext-top {
+      top: -34px;
+      left: 18%;
+      width: 64%;
+    }
+
+    .asm-dim-line--ext-right {
+      right: -42px;
+      top: 22%;
+      height: 56%;
+    }
+
+    .asm-dim-line--ext-bottom {
+      bottom: -30px;
+      left: 10%;
+      width: 45%;
+    }
+
+    [data-asm-photo] .asm-token-pill--tr {
+      top: -26px;
+      right: 0;
+    }
+
+    [data-asm-photo] .asm-token-pill--tl {
+      top: -28px;
+      left: -6px;
+      right: auto;
+    }
+
+    [data-asm-photo] .asm-measure--bottom {
+      bottom: -22px;
+      right: 8px;
+      left: auto;
+    }
+
+    .hero-asm-chrome {
+      position: absolute;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    [data-hero-content] {
+      position: relative;
+      z-index: 1;
+    }
+
+    .asm-bounds {
+      position: absolute;
+      inset: 0;
+      border: 1px dashed rgba(52, 211, 153, 0.55);
+      border-radius: 4px;
+      box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.06) inset;
+    }
+
+    .asm-bounds::before,
+    .asm-bounds::after {
+      content: '';
+      position: absolute;
+      background: rgba(52, 211, 153, 0.7);
+    }
+
+    .asm-bounds::before {
+      top: -1px;
+      left: 12px;
+      right: 12px;
+      height: 1px;
+    }
+
+    .asm-bounds::after {
+      left: -1px;
+      top: 10px;
+      bottom: 10px;
+      width: 1px;
+    }
+
+    .asm-corner {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-color: rgba(96, 165, 250, 0.85);
+      border-style: solid;
+      border-width: 0;
+    }
+
+    .asm-corner--tl { top: -1px; left: -1px; border-top-width: 2px; border-left-width: 2px; }
+    .asm-corner--tr { top: -1px; right: -1px; border-top-width: 2px; border-right-width: 2px; }
+    .asm-corner--bl { bottom: -1px; left: -1px; border-bottom-width: 2px; border-left-width: 2px; }
+    .asm-corner--br { bottom: -1px; right: -1px; border-bottom-width: 2px; border-right-width: 2px; }
+
+    .asm-measure {
+      position: absolute;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 10px;
+      letter-spacing: 0.04em;
+      color: rgba(52, 211, 153, 0.9);
+      line-height: 1;
+      white-space: nowrap;
+      background: rgba(6, 6, 8, 0.85);
+      padding: 2px 5px;
+      border-radius: 2px;
+    }
+
+    .asm-measure--top { top: -20px; left: 50%; }
+    .asm-measure--right { right: -8px; top: 50%; }
+    .asm-measure--bottom { bottom: -18px; left: 8px; }
+
+    .asm-token-pill {
+      position: absolute;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 10px;
+      letter-spacing: 0.02em;
+      color: rgba(255, 255, 255, 0.82);
+      background: rgba(6, 6, 8, 0.92);
+      border: 1px solid rgba(96, 165, 250, 0.35);
+      border-radius: 999px;
+      white-space: nowrap;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    }
+
+    .asm-token-pill::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: rgba(52, 211, 153, 0.9);
+      box-shadow: 0 0 6px rgba(52, 211, 153, 0.6);
+    }
+
+    .asm-token-pill--tl { top: -28px; right: -8px; }
+    .asm-token-pill--tr { top: 6px; right: -108px; }
+    .asm-token-pill--bl { bottom: -26px; left: -6px; }
+    .asm-token-pill--br { bottom: 4px; right: -92px; }
+
+    .hero-asm-chrome--tag .asm-bounds {
+      border-radius: 12px;
+    }
+
+    .hero-asm-global-tokens {
+      position: absolute;
+      top: -48px;
+      right: 0;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      max-width: 320px;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .hero-asm-global-tokens .asm-token-pill {
+      position: relative;
+      top: auto;
+      right: auto;
+      bottom: auto;
+      left: auto;
+    }
+
+    .hero-asm-content-hidden {
+      visibility: hidden;
     }
 
     .hero-greeting {
@@ -289,9 +421,6 @@
       color: rgba(255, 255, 255, 0.55);
       margin-bottom: 20px;
       letter-spacing: 0.04em;
-      opacity: 0;
-      transform: translateY(16px);
-      animation: heroFadeUp 0.8s ease forwards;
     }
 
     .hero-headline {
@@ -299,7 +428,7 @@
       font-weight: 500;
       line-height: 1.08;
       color: rgba(255, 255, 255, 0.7);
-      margin-bottom: 28px;
+      margin-bottom: 0;
       max-width: 640px;
     }
 
@@ -310,14 +439,7 @@
 
     .hero-headline .line-inner {
       display: block;
-      opacity: 0;
-      transform: translateY(110%);
-      animation: lineReveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
-
-    .hero-headline .line:nth-child(1) .line-inner { animation-delay: 0.15s; }
-    .hero-headline .line:nth-child(2) .line-inner { animation-delay: 0.28s; }
-    .hero-headline .line:nth-child(3) .line-inner { animation-delay: 0.41s; }
 
     .hero-headline .highlight {
       color: rgba(255, 255, 255, 1);
@@ -326,40 +448,12 @@
       background-clip: text;
     }
 
-    @keyframes lineReveal {
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes heroFadeUp {
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    #hero-subtitles {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .hero-subtitle {
-      font-size: clamp(14px, 1.6vw, 17px);
-      color: rgba(255, 255, 255, 0.82);
-      margin-bottom: 0;
-      opacity: 0;
-      transform: translateY(12px);
-      animation: heroFadeUp 0.7s ease forwards;
-    }
-
-    .hero-subtitle:nth-child(1) { animation-delay: 0.55s; }
-    .hero-subtitle:nth-child(2) { animation-delay: 0.68s; color: rgba(255, 255, 255, 0.45); font-size: clamp(13px, 1.4vw, 15px); }
-
     .hero-cta-row {
       display: flex;
       align-items: center;
       gap: 20px;
       margin-top: 36px;
       flex-wrap: wrap;
-      opacity: 0;
-      animation: heroFadeUp 0.7s ease 0.82s forwards;
     }
 
     .hero-cta {
@@ -408,31 +502,12 @@
     .hero-photo-frame {
       position: relative;
       z-index: 1;
-      width: min(100%, 420px);
+      width: 100%;
       aspect-ratio: 3 / 4;
       border-radius: 28px;
       transform-style: preserve-3d;
-      opacity: 0;
-      transform: translateY(40px) rotateY(-8deg);
-      animation: photoEnter 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+      transform: rotateY(-4deg);
       will-change: transform;
-    }
-
-    @keyframes photoEnter {
-      to {
-        opacity: 1;
-        transform: translateY(0) rotateY(-4deg);
-      }
-    }
-
-    .hero-photo-glow {
-      position: absolute;
-      inset: -20% -20% 0;
-      background: radial-gradient(ellipse at 50% 20%, rgba(245, 166, 35, 0.35) 0%, rgba(232, 34, 42, 0.15) 40%, transparent 70%);
-      filter: blur(40px);
-      z-index: 0;
-      animation: glowPulse 4s ease-in-out infinite;
-      pointer-events: none;
     }
 
     .hero-photo-white-light {
@@ -444,11 +519,6 @@
       background:
         radial-gradient(ellipse 85% 50% at 50% 0%, rgba(255, 255, 255, 0.18) 0%, transparent 58%),
         linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, transparent 38%);
-    }
-
-    @keyframes glowPulse {
-      0%, 100% { opacity: 0.7; transform: scale(1); }
-      50% { opacity: 1; transform: scale(1.05); }
     }
 
     .hero-photo-ring {
@@ -471,7 +541,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: center top;
+      object-position: var(--hero-photo-position, center center);
       border-radius: 28px;
       display: block;
       box-shadow:
@@ -486,8 +556,8 @@
       border-radius: 28px;
       background: linear-gradient(
         180deg,
-        rgba(6, 6, 8, 0) 55%,
-        rgba(6, 6, 8, 0.55) 100%
+        rgba(6, 6, 8, 0) 62%,
+        rgba(6, 6, 8, 0.42) 100%
       );
       pointer-events: none;
     }
@@ -507,8 +577,6 @@
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 999px;
       backdrop-filter: blur(12px);
-      opacity: 0;
-      animation: heroFadeUp 0.6s ease 1s forwards;
     }
 
     .hero-badge-dot {
@@ -537,20 +605,16 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 12px;
       backdrop-filter: blur(16px);
-      opacity: 0;
-      animation: heroFadeUp 0.6s ease 1.1s forwards;
     }
 
     .hero-float-tag-1 {
       top: -12px;
       right: -16px;
-      animation-delay: 1.15s;
     }
 
     .hero-float-tag-2 {
       bottom: 72px;
       right: -24px;
-      animation-delay: 1.25s;
     }
 
     /* ── About Cards ── */
@@ -585,7 +649,8 @@
       transition-delay: calc(var(--i, 0) * 0.08s);
     }
 
-    #home.visible .about-card {
+    #home.visible .about-card,
+    #home.hero-content-ready .about-card {
       opacity: 1;
       transform: translateY(0);
     }
@@ -625,6 +690,265 @@
       margin-top: 24px;
     }
 
+    .intro-hero-block {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 400px var(--page-padding) 0;
+      scroll-margin-top: 100px;
+      opacity: 0;
+      transform: translateY(16px);
+      transition:
+        opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    #home.hero-content-ready .intro-hero-block {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .intro-hero-block .life-writings {
+      padding: 0;
+      margin: 0;
+    }
+
+    /* ── Education ── */
+    .education-block {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: clamp(32px, 5vw, 48px) var(--page-padding) clamp(48px, 8vw, 64px);
+      scroll-margin-top: 100px;
+      opacity: 0;
+      transform: translateY(16px);
+      transition:
+        opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    #home.hero-content-ready .education-block {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .education-heading {
+      margin-bottom: clamp(24px, 4vw, 36px);
+    }
+
+    .education-icon {
+      display: block;
+      width: 32px;
+      height: 32px;
+      margin-bottom: 12px;
+      object-fit: contain;
+    }
+
+    .education-act {
+      font-size: 32px;
+      font-weight: 400;
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+      color: rgba(255, 255, 255, 0.96);
+      margin-bottom: 0;
+    }
+
+    .education-label {
+      display: block;
+      margin-top: clamp(16px, 2.5vw, 22px);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.38);
+    }
+
+    .education-list {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(18px, 3vw, 28px);
+    }
+
+    .education-item {
+      display: grid;
+      grid-template-columns: minmax(96px, 140px) minmax(0, 1fr) minmax(96px, 180px);
+      gap: 12px clamp(24px, 4vw, 48px);
+      align-items: baseline;
+    }
+
+    .education-period {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.42);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.02em;
+    }
+
+    .education-school {
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.35;
+      letter-spacing: -0.01em;
+      color: rgba(255, 255, 255, 0.95);
+    }
+
+    .education-meta {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.42);
+      text-align: right;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+      .education-item {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+
+      .education-meta {
+        text-align: left;
+      }
+    }
+
+    /* ── Act Two (Introduce) ── */
+    .act-two-block {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: clamp(72px, 11vw, 128px) var(--page-padding) clamp(80px, 12vw, 120px);
+      scroll-margin-top: 100px;
+      opacity: 0;
+      transform: translateY(16px);
+      transition:
+        opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    #home.hero-content-ready .act-two-block {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .act-two-heading {
+      margin-bottom: clamp(28px, 4vw, 40px);
+    }
+
+    .act-two-act {
+      font-size: 32px;
+      font-weight: 400;
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+      color: rgba(255, 255, 255, 0.96);
+      margin-bottom: 0;
+    }
+
+    .act-two-label {
+      display: block;
+      margin-top: clamp(16px, 2.5vw, 22px);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.38);
+    }
+
+    .act-two-list {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(72px, 8vw, 100px);
+    }
+
+    .act-two-grid {
+      display: grid;
+      grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+      gap: clamp(64px, 10vw, 160px);
+      align-items: start;
+    }
+
+    .act-two-aside {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .act-two-logo {
+      width: 60px;
+      height: 60px;
+      border-radius: 13px;
+      object-fit: contain;
+      margin-bottom: 0;
+      display: block;
+      flex-shrink: 0;
+      background: transparent;
+    }
+
+    .act-two-aside-copy {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      min-width: 0;
+      gap: 4px;
+    }
+
+    .act-two-headline {
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 1.4;
+      letter-spacing: 0;
+      color: #f6f6f6;
+      margin-bottom: 0;
+    }
+
+    .act-two-period {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #888888;
+      font-variant-numeric: tabular-nums;
+      margin: 0;
+    }
+
+    .act-two-body {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .act-two-body p {
+      font-size: 13px;
+      line-height: 26px;
+      letter-spacing: 0.26px;
+      color: #bdbdbd;
+      margin: 0;
+    }
+
+    .act-two-body p + p {
+      margin-top: 0;
+    }
+
+    .act-two-highlight {
+      color: #2af598;
+      text-decoration: underline;
+      text-decoration-color: #2af598;
+      text-underline-offset: 2px;
+      text-decoration-thickness: 1px;
+    }
+
+    @media (max-width: 960px) {
+      .act-two-grid {
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+
+      .act-two-aside {
+        width: auto;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .act-two-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+    }
+
     /* ── Section Layout ── */
     .content-section {
       scroll-margin-top: 100px;
@@ -633,7 +957,19 @@
     #life .section-main {
       padding-top: 72px;
       margin-top: 48px;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    #life .section-main:has(.life-writings) {
+      padding-top: clamp(32px, 5vw, 48px);
+    }
+
+    #work .section-main:has(.life-writings) {
+      padding-top: clamp(48px, 6vw, 72px);
+    }
+
+    #work .life-writings {
+      margin-bottom: clamp(16px, 3vw, 24px);
+      padding-bottom: clamp(24px, 4vw, 36px);
     }
 
     .section-intro-title {
@@ -739,9 +1075,12 @@
     }
 
     .work-projects-block {
-      margin-top: 96px;
-      padding-top: 72px;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      margin-top: clamp(48px, 7vw, 72px);
+      padding-top: 0;
+    }
+
+    #work:has(.life-writings) .work-projects-block {
+      margin-top: clamp(32px, 5vw, 48px);
     }
 
     .work-projects-heading {
@@ -816,11 +1155,40 @@
       height: 100%;
       object-fit: cover;
       object-position: center center;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-sizing: border-box;
       transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .work-project-card:hover img {
       transform: scale(1.03);
+    }
+
+    .work-project-card[data-fit="contain"] {
+      aspect-ratio: var(--project-aspect, 16 / 9);
+      background: transparent;
+      overflow: visible;
+      border: none;
+    }
+
+    .work-project-card[data-fit="contain"] img {
+      object-fit: contain;
+      object-position: center center;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-sizing: border-box;
+      image-rendering: auto;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+    }
+
+    .work-project-card[data-fit="contain"]:hover img {
+      transform: none;
+    }
+
+    .work-project-card[data-fit="contain"].visible:hover {
+      transform: translateY(-3px);
     }
 
     .work-project-overlay {
@@ -862,9 +1230,17 @@
         gap: 8px;
       }
 
-      .work-project-card {
+      .work-project-card:not([data-fit="contain"]) {
         border-radius: 20px;
         aspect-ratio: 4 / 3;
+      }
+
+      .work-project-card[data-fit="contain"] {
+        border-radius: 24px;
+      }
+
+      .work-project-card[data-fit="contain"] img {
+        border-radius: 24px;
       }
 
       .work-project-title-wrap {
@@ -954,351 +1330,6 @@
       font-size: 13px;
       color: rgba(255, 255, 255, 0.45);
       line-height: 1.5;
-    }
-
-    /* ── Life Gallery ── */
-    .life-filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 32px;
-    }
-
-    .life-filter {
-      padding: 8px 16px;
-      font-size: 12px;
-      color: rgba(255, 255, 255, 0.5);
-      background: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 999px;
-      cursor: pointer;
-      font-family: inherit;
-      transition: color 0.25s, border-color 0.25s, background 0.25s, transform 0.2s;
-    }
-
-    .life-filter:hover {
-      color: rgba(255, 255, 255, 0.85);
-      border-color: rgba(255, 255, 255, 0.2);
-      transform: translateY(-1px);
-    }
-
-    .life-filter.active {
-      color: #060608;
-      background: #fff;
-      border-color: #fff;
-    }
-
-    .life-sections {
-      display: flex;
-      flex-direction: column;
-      gap: 40px;
-      min-width: 0;
-      max-width: 100%;
-    }
-
-    .life-block {
-      min-width: 0;
-      max-width: 100%;
-    }
-
-    .life-block-head {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-
-    .life-block-label {
-      font-size: 12px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.4);
-      white-space: nowrap;
-    }
-
-    .life-gallery {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      grid-auto-rows: 92px;
-      gap: 10px;
-      grid-auto-flow: dense;
-      width: 100%;
-      min-width: 0;
-      overflow: hidden;
-    }
-
-    @media (max-width: 960px) {
-      .life-gallery:not([data-group]) {
-        grid-template-columns: repeat(2, 1fr);
-        grid-auto-rows: 100px;
-      }
-    }
-
-    @media (min-width: 641px) {
-      .life-gallery[data-group] {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 520px) {
-      .life-gallery {
-        grid-template-columns: 1fr;
-        grid-auto-rows: auto;
-      }
-    }
-
-    .life-photo {
-      position: relative;
-      display: block;
-      width: 100%;
-      min-width: 0;
-      min-height: 0;
-      padding: 0;
-      border: none;
-      border-radius: 14px;
-      overflow: hidden;
-      cursor: pointer;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      opacity: 0;
-      transform: translateY(16px);
-      transition:
-        opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
-        transform 0.55s cubic-bezier(0.16, 1, 0.3, 1),
-        box-shadow 0.35s,
-        border-color 0.35s;
-      transition-delay: calc(var(--i, 0) * 0.06s);
-      isolation: isolate;
-    }
-
-    .content-section.visible .life-photo {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .life-gallery[data-group="sports"] {
-      grid-auto-flow: row;
-      grid-template-rows: repeat(6, 92px);
-      grid-auto-rows: 0;
-    }
-
-    .life-gallery[data-group="food"] {
-      grid-auto-flow: row;
-      grid-template-rows: repeat(3, 92px);
-      grid-auto-rows: 0;
-    }
-
-    .life-gallery[data-group="pets"] {
-      grid-auto-flow: row;
-      grid-template-rows: repeat(2, 92px);
-      grid-auto-rows: 0;
-    }
-
-    @media (max-width: 640px) {
-      .life-gallery[data-group] {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        grid-auto-flow: dense;
-        grid-template-rows: none;
-        grid-auto-rows: 100px;
-      }
-
-      .life-gallery[data-group] .life-photo {
-        grid-column: auto !important;
-        grid-row: auto !important;
-      }
-    }
-
-    @media (max-width: 520px) {
-      .life-gallery[data-group] {
-        grid-template-columns: 1fr;
-        grid-auto-rows: auto;
-      }
-    }
-    .life-photo[data-layout="feature"] { grid-column: span 2; grid-row: span 3; }
-    .life-photo[data-layout="wide"] { grid-column: span 2; grid-row: span 2; }
-    .life-photo[data-layout="tall"] { grid-column: span 1; grid-row: span 3; }
-    .life-photo[data-layout="portrait"] { grid-column: span 1; grid-row: span 2; }
-
-    @media (max-width: 960px) {
-      .life-photo[data-layout="feature"],
-      .life-photo[data-layout="wide"] { grid-column: span 2; grid-row: span 2; }
-      .life-photo[data-layout="tall"],
-      .life-photo[data-layout="portrait"] { grid-column: span 1; grid-row: span 2; }
-    }
-
-    @media (max-width: 520px) {
-      .life-photo[data-layout="feature"],
-      .life-photo[data-layout="wide"],
-      .life-photo[data-layout="tall"],
-      .life-photo[data-layout="portrait"] {
-        grid-column: span 1;
-        grid-row: span 1;
-        min-height: 260px;
-      }
-    }
-
-    .life-photo:hover {
-      border-color: rgba(255, 255, 255, 0.16);
-      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45);
-      transform: translateY(-3px);
-    }
-
-    .content-section.visible .life-photo:hover {
-      transform: translateY(-3px);
-    }
-
-    .life-photo.is-hidden {
-      display: none;
-    }
-
-    .life-photo img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center center;
-      display: block;
-      transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .life-photo[data-focus="top"] img { object-position: center top; }
-    .life-photo[data-focus="center"] img { object-position: center center; }
-
-    .life-photo:hover img {
-      transform: scale(1.04);
-    }
-
-    .life-photo-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(6,6,8,0.05) 30%, rgba(6,6,8,0.82) 100%);
-      opacity: 0.75;
-      transition: opacity 0.35s;
-    }
-
-    .life-photo:hover .life-photo-overlay {
-      opacity: 1;
-    }
-
-    .life-photo-tag {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      padding: 4px 10px;
-      font-size: 10px;
-      letter-spacing: 0.04em;
-      color: rgba(255, 255, 255, 0.92);
-      background: rgba(6, 6, 8, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 999px;
-      backdrop-filter: blur(10px);
-      z-index: 2;
-    }
-
-    .life-photo-info {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 16px;
-      z-index: 2;
-      transform: translateY(4px);
-      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .life-photo:hover .life-photo-info {
-      transform: translateY(0);
-    }
-
-    .life-photo-title {
-      font-size: 14px;
-      font-weight: 500;
-      color: #fff;
-      margin-bottom: 2px;
-    }
-
-    .life-photo-caption {
-      font-size: 11px;
-      color: rgba(255, 255, 255, 0.6);
-      line-height: 1.45;
-    }
-
-    .life-lightbox {
-      position: fixed;
-      inset: 0;
-      z-index: 200;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      background: rgba(6, 6, 8, 0.92);
-      backdrop-filter: blur(16px);
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.35s, visibility 0.35s;
-    }
-
-    .life-lightbox.open {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .life-lightbox-inner {
-      position: relative;
-      max-width: 960px;
-      width: 100%;
-      transform: scale(0.94);
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .life-lightbox.open .life-lightbox-inner {
-      transform: scale(1);
-    }
-
-    .life-lightbox img {
-      width: 100%;
-      max-height: 75vh;
-      object-fit: contain;
-      border-radius: 12px;
-    }
-
-    .life-lightbox-meta {
-      margin-top: 16px;
-      text-align: center;
-    }
-
-    .life-lightbox-meta h3 {
-      font-size: 16px;
-      font-weight: 500;
-      margin-bottom: 6px;
-    }
-
-    .life-lightbox-meta p {
-      font-size: 13px;
-      color: rgba(255, 255, 255, 0.55);
-    }
-
-    .life-lightbox-close {
-      position: absolute;
-      top: -48px;
-      right: 0;
-      width: 36px;
-      height: 36px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.08);
-      color: #fff;
-      font-size: 20px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s;
-    }
-
-    .life-lightbox-close:hover {
-      background: rgba(255, 255, 255, 0.15);
     }
 
     /* ── Card Grid (Playground) ── */
@@ -1439,6 +1470,256 @@
       line-height: 1.7;
     }
 
+    /* ── Life / Future: Writings & Thoughts ── */
+    .life-writings {
+      text-align: center;
+      padding: clamp(32px, 5vw, 48px) 0 clamp(48px, 7vw, 72px);
+      margin-bottom: clamp(32px, 5vw, 48px);
+      scroll-margin-top: 100px;
+    }
+
+    .life-writings-icon {
+      display: block;
+      width: 32px;
+      height: 32px;
+      margin: 0 auto clamp(20px, 3vw, 28px);
+      color: #5ec4ff;
+    }
+
+    .life-writings-title {
+      font-size: clamp(28px, 4.5vw, 42px);
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      color: rgba(255, 255, 255, 0.95);
+      margin-bottom: clamp(16px, 2.5vw, 24px);
+      line-height: 1.2;
+    }
+
+    .life-writings-index {
+      font-size: 0.45em;
+      font-weight: 400;
+      vertical-align: super;
+      color: rgba(255, 255, 255, 0.35);
+      margin-left: 4px;
+    }
+
+    .life-writings-desc {
+      font-size: 14px;
+      line-height: 1.75;
+      color: rgba(255, 255, 255, 0.45);
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .life-writings-articles {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: clamp(32px, 5vw, 56px);
+      margin-bottom: clamp(56px, 8vw, 88px);
+      text-align: left;
+    }
+
+    .life-writings-article {
+      display: block;
+      color: inherit;
+      text-decoration: none;
+      opacity: 0;
+      transform: translateY(12px);
+      transition:
+        opacity 0.55s ease,
+        transform 0.55s ease;
+      transition-delay: calc(var(--i, 0) * 0.08s);
+    }
+
+    .content-section.visible .life-writings-article {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .life-writings-article:hover {
+      opacity: 0.75;
+    }
+
+    .life-writings-article-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 8px 12px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.42);
+    }
+
+    .life-writings-article-meta strong {
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    .life-writings-article-date {
+      color: #2af598;
+      font-size: 12px;
+      letter-spacing: 0.02em;
+    }
+
+    .life-writings-article-subtitle {
+      font-size: clamp(18px, 2.2vw, 22px);
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.92);
+      margin-bottom: 10px;
+      line-height: 1.35;
+    }
+
+    .life-writings-article-excerpt {
+      font-size: 13px;
+      line-height: 1.75;
+      color: rgba(255, 255, 255, 0.45);
+    }
+
+    @media (max-width: 768px) {
+      .life-writings-articles {
+        grid-template-columns: 1fr;
+        gap: 36px;
+      }
+    }
+
+    #life .life-writings-life {
+      margin-top: clamp(48px, 6vw, 72px);
+      padding-top: clamp(32px, 5vw, 48px);
+      text-align: center;
+    }
+
+    .life-writings-life-title {
+      font-size: clamp(24px, 3.5vw, 36px);
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.95);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .life-writings-life-intro {
+      font-size: clamp(20px, 3vw, 28px);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      color: rgba(255, 255, 255, 0.95);
+      margin-bottom: clamp(16px, 2.5vw, 22px);
+      text-align: center;
+    }
+
+    .life-writings-life-body-label {
+      display: block;
+      max-width: 720px;
+      margin: 0 auto clamp(24px, 3vw, 32px);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.38);
+      text-align: center;
+    }
+
+    .life-writings-life-body {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-width: 720px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    .life-writings-life-body p {
+      font-size: 13px;
+      line-height: 26px;
+      letter-spacing: 0.26px;
+      color: #bdbdbd;
+      margin: 0;
+      text-align: left;
+    }
+
+    .life-writings-life-media {
+      max-width: min(840px, 92vw);
+      margin: clamp(32px, 5vw, 48px) auto 0;
+    }
+
+    .life-writings-life-media img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .life-writings-life-media-caption {
+      margin-top: 12px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.35);
+      text-align: center;
+    }
+
+    .life-writings-life:has(.life-writings-life-media) .life-writings-life-body {
+      margin-bottom: 0;
+    }
+
+    .life-writings-life-after {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      max-width: 720px;
+      margin: clamp(32px, 5vw, 48px) auto clamp(40px, 6vw, 56px);
+      text-align: left;
+    }
+
+    .life-writings-life-after p {
+      font-size: 13px;
+      line-height: 26px;
+      letter-spacing: 0.26px;
+      color: #bdbdbd;
+      margin: 0;
+      text-align: left;
+    }
+
+    .life-writings-life-after p:first-child {
+      font-size: 14px;
+      font-weight: 500;
+      color: #ffffff;
+      text-align: center;
+    }
+
+    .life-writings-life-after p:not(:first-child) {
+      text-align: left;
+    }
+
+    .life-writings-life-after p:not(:first-child) {
+      margin-top: 16px;
+    }
+
+    .life-writings-life-after p:nth-child(2) {
+      margin-top: 52px;
+    }
+
+    .life-writings-life-desc {
+      font-size: 14px;
+      line-height: 1.75;
+      color: rgba(255, 255, 255, 0.45);
+      max-width: 640px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    #life .life-writings + .section-title {
+      padding-top: clamp(24px, 4vw, 40px);
+    }
+
+    #life .life-writings + .life-writings {
+      padding-top: clamp(48px, 6vw, 72px);
+      margin-top: clamp(24px, 4vw, 40px);
+    }
+
+    #life .life-writings + .life-writings .life-writings-title {
+      text-transform: none;
+    }
+
     /* ── Footer ── */
     .footer {
       position: relative;
@@ -1541,44 +1822,105 @@
     <section id="home" class="visible">
       <div class="hero-shell">
         <div class="hero-grid">
-          <div class="hero-copy">
-            <p class="hero-greeting" id="hero-greeting"></p>
-            <h1 class="hero-headline" id="hero-headline"></h1>
-            <div id="hero-subtitles"></div>
-            <div class="hero-cta-row">
-              <a class="hero-cta" id="hero-cta" href="#"></a>
-              <div class="hero-scroll-hint"><span></span>Scroll</div>
+          <div class="hero-copy" id="hero-copy">
+            <div class="hero-asm-grid" id="hero-asm-grid" aria-hidden="true"></div>
+            <div class="hero-asm-global-tokens" id="hero-asm-global-tokens" aria-hidden="true">
+              <span class="asm-token-pill">radius-lg</span>
+              <span class="asm-token-pill">padding: 24px</span>
+              <span class="asm-token-pill">grid: 12 col</span>
+            </div>
+
+            <div class="hero-asm-wrap">
+              <div class="hero-asm-chrome" data-asm-chrome aria-hidden="true">
+                <div class="asm-bounds"></div>
+                <span class="asm-corner asm-corner--tl"></span>
+                <span class="asm-corner asm-corner--tr"></span>
+                <span class="asm-corner asm-corner--bl"></span>
+                <span class="asm-corner asm-corner--br"></span>
+                <span class="asm-measure asm-measure--top">h: 20px</span>
+                <span class="asm-token-pill asm-token-pill--tr">type/caption</span>
+              </div>
+              <p class="hero-greeting" id="hero-greeting" data-hero-content></p>
+            </div>
+
+            <div class="hero-asm-wrap hero-asm-wrap--headline">
+              <div class="hero-asm-chrome hero-asm-chrome--wide" data-asm-chrome aria-hidden="true">
+                <div class="asm-bounds"></div>
+                <span class="asm-corner asm-corner--tl"></span>
+                <span class="asm-corner asm-corner--tr"></span>
+                <span class="asm-corner asm-corner--bl"></span>
+                <span class="asm-corner asm-corner--br"></span>
+                <span class="asm-measure asm-measure--top">max-w: 640px</span>
+                <span class="asm-measure asm-measure--right">72px</span>
+                <span class="asm-token-pill asm-token-pill--tl">font-display</span>
+                <span class="asm-token-pill asm-token-pill--bl">line-height: 1.08</span>
+              </div>
+              <h1 class="hero-headline" id="hero-headline" data-hero-content></h1>
+            </div>
+
+            <div class="hero-asm-wrap">
+              <div class="hero-asm-chrome hero-asm-chrome--cta" data-asm-chrome aria-hidden="true">
+                <div class="asm-bounds"></div>
+                <span class="asm-corner asm-corner--tl"></span>
+                <span class="asm-corner asm-corner--br"></span>
+                <span class="asm-token-pill asm-token-pill--br">spacing: 20px</span>
+              </div>
+              <div class="hero-cta-row" data-hero-content>
+                <a class="hero-cta" id="hero-cta" href="#"></a>
+                <div class="hero-scroll-hint"><span></span>Scroll</div>
+              </div>
             </div>
           </div>
           <div class="hero-visual">
-            <div class="hero-photo-frame" id="hero-photo-frame">
-              <div class="hero-photo-fx" aria-hidden="true">
-                <div class="hero-visual-bg">
-                  <div class="hero-orb hero-orb-1"></div>
-                  <div class="hero-orb hero-orb-2"></div>
-                  <div class="hero-orb hero-orb-3"></div>
-                  <div class="hero-light-overlay">
-                    <div class="hero-light-veil"></div>
-                    <div class="hero-light-glow"></div>
-                  </div>
-                </div>
+            <div class="hero-asm-wrap hero-asm-wrap--photo">
+              <div class="hero-asm-chrome" data-asm-chrome data-asm-photo aria-hidden="true">
+                <div class="asm-bounds"></div>
+                <span class="asm-corner asm-corner--tl"></span>
+                <span class="asm-corner asm-corner--tr"></span>
+                <span class="asm-corner asm-corner--bl"></span>
+                <span class="asm-corner asm-corner--br"></span>
+                <span class="asm-dim-line asm-dim-line--h asm-dim-line--ext-top" data-asm-dim-h></span>
+                <span class="asm-dim-line asm-dim-line--v asm-dim-line--ext-right" data-asm-dim-v></span>
+                <span class="asm-dim-line asm-dim-line--h asm-dim-line--ext-bottom" data-asm-dim-h></span>
+                <span class="asm-measure asm-measure--top">420 × 560</span>
+                <span class="asm-measure asm-measure--right">3:4</span>
+                <span class="asm-measure asm-measure--bottom">aspect-ratio</span>
+                <span class="asm-token-pill asm-token-pill--tl">radius: 28px</span>
+                <span class="asm-token-pill asm-token-pill--tr">w: 420px</span>
+                <span class="asm-token-pill asm-token-pill--bl">object-fit: cover</span>
               </div>
-              <div class="hero-photo-glow"></div>
+              <div class="hero-photo-frame" id="hero-photo-frame" data-hero-content>
               <div class="hero-photo-ring"></div>
               <img class="hero-photo" id="hero-photo" src="" alt="" />
               <div class="hero-photo-white-light" aria-hidden="true"></div>
               <div class="hero-photo-overlay"></div>
-              <div class="hero-photo-badge" id="hero-badge">
+              <div class="hero-photo-badge" id="hero-badge" data-hero-content>
                 <span class="hero-badge-dot"></span>
                 <span id="hero-badge-text"></span>
               </div>
-              <div class="hero-float-tag hero-float-tag-1">Experience Design</div>
-              <div class="hero-float-tag hero-float-tag-2">Design System</div>
+              <div class="hero-float-tag hero-float-tag-1" data-asm-tag>
+                <div class="hero-asm-chrome hero-asm-chrome--tag" data-asm-chrome aria-hidden="true">
+                  <div class="asm-bounds"></div>
+                  <span class="asm-token-pill asm-token-pill--tr">badge/sm</span>
+                </div>
+                <span data-hero-content>Experience Design</span>
+              </div>
+              <div class="hero-float-tag hero-float-tag-2" data-asm-tag>
+                <div class="hero-asm-chrome hero-asm-chrome--tag" data-asm-chrome aria-hidden="true">
+                  <div class="asm-bounds"></div>
+                  <span class="asm-token-pill asm-token-pill--tr">radius-md</span>
+                </div>
+                <span data-hero-content>Design System</span>
+              </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
       <div class="about-grid" id="about"></div>
+      <div class="intro-hero-block" id="intro-hero"></div>
+      <div class="education-block" id="education"></div>
+      <div class="act-two-block" id="act-two"></div>
     </section>
 
     <!-- Dynamic Sections -->
@@ -1589,17 +1931,6 @@
   </main>
 
   <div class="keyboard-hint" id="keyboard-hint">按 1–3 快速跳转</div>
-
-  <div class="life-lightbox" id="life-lightbox" aria-hidden="true">
-    <div class="life-lightbox-inner">
-      <button class="life-lightbox-close" id="life-lightbox-close" aria-label="关闭">×</button>
-      <img id="life-lightbox-img" src="" alt="" />
-      <div class="life-lightbox-meta">
-        <h3 id="life-lightbox-title"></h3>
-        <p id="life-lightbox-caption"></p>
-      </div>
-    </div>
-  </div>
 
   <div class="work-modal" id="work-modal" aria-hidden="true" role="dialog" aria-labelledby="work-modal-title">
     <div class="work-modal-inner">
@@ -1686,7 +2017,7 @@
   "navigation": [
     {
       "id": "home",
-      "label": "Home",
+      "label": "Introduce",
       "shortcut": "1",
       "href": "#home",
       "active": true
@@ -1700,27 +2031,25 @@
     },
     {
       "id": "about",
-      "label": "About",
+      "label": "Future",
       "shortcut": "3",
-      "href": "#life",
+      "href": "#future",
       "active": false
     }
   ],
   "hero": {
     "greeting": "Hello! I'm xiajun Liu",
     "headline": {
-      "muted": "A Product Designer and Design Engineer currently working at",
+      "muted": "A Product Designer currently working at",
       "highlight": "TikTok Local Service."
     },
-    "subtitles": [
-      "Experience design，Design System Builder，Design Engineer (ing).",
-      "Previously@ByteDance \\ Meituan \\ Baidu"
-    ],
     "cta": {
       "label": "关于我 · More About Me",
       "href": "#about"
     },
     "image": "./assets/hero-portrait.jpg",
+    "imageAlt": "xiajun Liu at Shanghai Bund",
+    "imageObjectPosition": "46% 38%",
     "badge": "Beijing · Available"
   },
   "aboutCards": [
@@ -1758,63 +2087,110 @@
       }
     }
   ],
+  "introHero": {
+    "title": "Introduce",
+    "index": "01",
+    "description": "关于我的个人背景、设计经历与成长路径。"
+  },
+  "education": {
+    "icon": "./assets/education-icon.png",
+    "actTitle": "第一幕：",
+    "title": "我的教育经历",
+    "label": "EDUCATIONAL BACKGROUND",
+    "items": [
+      {
+        "period": "2024-2027",
+        "school": "湖北工业大学 · 交互设计硕士",
+        "meta": "工业设计学院"
+      },
+      {
+        "period": "2020-2024",
+        "school": "郑州轻工业大学 · 产品设计本科",
+        "meta": "艺术设计学院"
+      }
+    ]
+  },
+  "actTwo": {
+    "actTitle": "第二幕:",
+    "title": "我的工作经历",
+    "label": "INTERNSHIP BACKGROUND",
+    "experiences": [
+      {
+        "headline": "聚焦AI与业务需求的迭代",
+        "period": "2026.2-now",
+        "logo": "./assets/douyin-logo.png",
+        "logoAlt": "Douyin",
+        "paragraphs": [
+          "2026年2月起加入字节<span class=\"act-two-highlight\">TikTok Platform 设计团队</span>，负责设计系统方向的设计工作以及AI赋能。我的职责负责新增组建和制定组建规范，并优化组建变体体验。在AI探索方面从设计系统梳理到 AI 封装，再到典型页面验证让设计系统真正的支持团队日常工作。",
+          "2026.5月加入<span class=\"act-two-highlight\">TikTok Local service团队</span>,主要负责商家端的核心业务需求,同时自探索npm+skill的方式输出符合不同国家的设计demo,并还原到figma当中可编辑的稿子完成D2C和C2D的闭环。"
+        ]
+      },
+      {
+        "headline": "专注于设计系统与业务的建设",
+        "period": "2025.10-2026.2",
+        "logo": "./assets/keeta-logo.png",
+        "logoSrcset": "./assets/keeta-logo.png 1x, ./assets/keeta-logo@2x.png 2x",
+        "logoAlt": "Keeta",
+        "paragraphs": [
+          "2025年加入<span class=\"act-two-highlight\">美团 Keeta 体验设计团队</span>，并负责B端商家国际化日常需求迭代，同时并参与设计系统工作。",
+          "在设计系统建设方面主R38+组建变体以及semantic token的构建。并自探索Cursor接入研发组建库MCP进行业务需求探索。"
+        ]
+      },
+      {
+        "headline": "拥抱 AI，拥抱 PGC",
+        "period": "2025.4-2025.10",
+        "logo": "./assets/baidu-logo.png",
+        "logoSrcset": "./assets/baidu-logo.png 1x, ./assets/baidu-logo@2x.png 2x",
+        "logoAlt": "Baidu",
+        "paragraphs": [
+          "这一年，我加入<span class=\"act-two-highlight\">百度 MEUX 设计团队</span>，跟随同事共同投身于百度内容生态与 AIGC 产品的探索与实践中，主要参与 UGC 与 PGC 相关的产品设计。",
+          "在业务方面负责百家号、故事平台、MCN、短剧等多业务平台，输出20+业务需求，负责度加AI视频编辑器核心交互链路梳理。"
+        ]
+      }
+    ]
+  },
   "sections": [
     {
       "id": "work",
-      "index": "01",
-      "title": "Design Career(INTERN)",
+      "index": "02",
+      "title": "Design Works",
       "description": null,
       "type": "work",
-      "items": [
-        {
-          "company": "Baidu",
-          "period": "2023-Now",
-          "title": "*BYTEDANCE 2026.2-NOW",
-          "description": "2026年2月起加入字节TikTok Platform设计团队，负责设计系统方向的设计工作以及AI赋能。我的职责负责新增组建和制定组建规范，并优化组建变体体验，以及AI Skill的建设与维护。"
-        },
-        {
-          "company": "Kuaishou",
-          "period": "2022-2023",
-          "title": "*MEITUAN 2025.10-2026.2",
-          "description": "2025年加入美团 Keeta 体验设计团队，并负责B端商家国际化日常需求迭代，同时并参与设计系统工作，主R38+组建变体以及semantic token的构建。并自探索Cursor接入研发组建库MCP进行需求交付。"
-        },
-        {
-          "company": "ByteDance",
-          "period": "2019-2021",
-          "title": "*BAIDU 2025.4-2025.10",
-          "description": "2025年初加入百度MEUX体验设计团队，负责内容生态方向的设计工作。业务负责百家号、故事平台、短剧、MCN等"
-        }
-      ],
+      "hero": {
+        "title": "Design Works",
+        "index": "02",
+        "description": "关于我在字节跳动TikTok期间的实习工作内容产出。"
+      },
       "projects": [
         {
-          "title": "TikTok 设计系统 & AI 赋能",
-          "description": "负责 TikTok Platform 设计系统组件新增与规范制定，探索 AI Skill、MCP Server 等设计工程化交付方式。",
+          "title": "商家端发品链路核心优化",
+          "description": "TTLS 商家发品链路核心优化：业务场景拆分、表单轻量化重构与实时预览体验。",
+          "company": "ByteDance · TikTok Local Service",
+          "period": "2026",
+          "image": "./assets/work/project-ttls-product.jpg",
+          "imageSrcset": "./assets/work/project-ttls-product.jpg 1280w, ./assets/work/project-ttls-product@2x.jpg 2560w",
+          "imageWidth": 1280,
+          "imageHeight": 720,
+          "showTitle": false,
+          "imageFit": "contain",
+          "aspectRatio": "16 / 9",
+          "tags": ["B端", "发品链路", "TTLS"],
+          "href": "./ttls-product.html"
+        },
+        {
+          "title": "探索 AI 原生时代的设计与交付新范式",
+          "description": "通过 Skill 封装实现 Vibe Coding 提效，结合 Agent/Skill 探索设计工程师新范式，完成 D2C 与 C2D 双向闭环。",
           "company": "ByteDance · TikTok Platform",
           "period": "2026",
-          "image": "./assets/work/project-tiktok-ds.png",
-          "titleAlign": "center",
-          "tags": ["Design System", "AI Skill", "MCP"],
-          "href": ""
-        },
-        {
-          "title": "商家端 Portal 核心页面升级",
-          "description": "Keeta 商家端 Portal 核心页面升级，覆盖 Academy 课程中心、导航体系与信息架构优化。",
-          "company": "Meituan · Keeta",
-          "period": "2025",
           "image": "./assets/work/project-keeta-portal.png",
+          "imageSrcset": "./assets/work/project-keeta-portal.png 2560w, ./assets/work/project-keeta-portal@2x.png 3840w",
+          "imageWidth": 2560,
+          "imageHeight": 1440,
           "showTitle": false,
-          "tags": ["B端", "Portal", "国际化"],
-          "href": ""
-        },
-        {
-          "title": "AIGC 度加编辑器",
-          "description": "百度 AIGC 度加创作工具编辑器设计，包含数字人、时间轴与多轨道剪辑等核心体验。",
-          "company": "Baidu · MEUX",
-          "period": "2025",
-          "image": "./assets/work/project-dujia-editor.png",
-          "showTitle": false,
-          "tags": ["AIGC", "视频创作", "编辑器"],
-          "href": ""
+          "imageFit": "contain",
+          "aspectRatio": "16 / 9",
+          "tags": ["AI Coding", "Skill", "D2C"],
+          "href": "./ai-coding.html"
         },
         {
           "title": "创中「规则中心」重构",
@@ -1824,229 +2200,40 @@
           "image": "./assets/work/project-rules-center.png",
           "showTitle": false,
           "tags": ["信息架构", "帮助中心", "重构"],
-          "href": ""
+          "href": "./design-system.html"
         }
       ]
     },
     {
       "id": "life",
       "index": "02",
-      "introTitle": "Personal introduction",
+      "introTitle": "设计与工程",
       "title": "My Life",
-      "description": "SBTI：SEXY/DRUNK，平常热爱运动，篮球足球台球游泳和健身等，一旦生活中无聊就会去运动！～",
-      "type": "photo-gallery",
-      "items": [
-        {
-          "src": "./assets/life/basketball-huddle.png",
-          "alt": "篮球围圈",
-          "title": "Basketball",
-          "caption": "和队友围在一起，赛前的那瞬间",
-          "tag": "篮球",
-          "category": "basketball",
-          "group": "sports",
-          "layout": "feature",
-          "placement": {
-            "column": "1 / 3",
-            "row": "1 / 4"
-          }
-        },
-        {
-          "src": "./assets/life/basketball-focus.png",
-          "alt": "篮球场上",
-          "title": "On Court",
-          "caption": "专注每一个回合",
-          "tag": "篮球",
-          "category": "basketball",
-          "group": "sports",
-          "layout": "portrait",
-          "placement": {
-            "column": "3",
-            "row": "1 / 3"
-          }
-        },
-        {
-          "src": "./assets/life/football-practice.png",
-          "alt": "橄榄球训练",
-          "title": "Football",
-          "caption": "球场上的对抗与团队",
-          "tag": "橄榄球",
-          "category": "football",
-          "group": "sports",
-          "layout": "wide",
-          "placement": {
-            "column": "3 / 5",
-            "row": "3 / 4"
-          }
-        },
-        {
-          "src": "./assets/life/gym-training.png",
-          "alt": "健身房",
-          "title": "Training",
-          "caption": "用训练保持状态",
-          "tag": "健身",
-          "category": "fitness",
-          "group": "sports",
-          "layout": "portrait",
-          "placement": {
-            "column": "4",
-            "row": "1 / 3"
-          }
-        },
-        {
-          "src": "./assets/life/swimming-pool.png",
-          "alt": "游泳馆",
-          "title": "Swimming",
-          "caption": "慢速泳道，属于自己的节奏",
-          "tag": "游泳",
-          "category": "swimming",
-          "group": "sports",
-          "layout": "tall",
-          "placement": {
-            "column": "1",
-            "row": "4 / 7"
-          }
-        },
-        {
-          "src": "./assets/life/basketball-night-court.png",
-          "alt": "夜间球场",
-          "title": "Night Court",
-          "caption": "灯光划破夜空，球场上的剪影",
-          "tag": "篮球",
-          "category": "basketball",
-          "group": "sports",
-          "layout": "wide",
-          "placement": {
-            "column": "2 / 4",
-            "row": "4 / 6"
-          }
-        },
-        {
-          "src": "./assets/life/billiards-pool.png",
-          "alt": "台球桌",
-          "title": "Billiards",
-          "caption": "台球也是我的放松方式",
-          "tag": "台球",
-          "category": "billiards",
-          "group": "sports",
-          "layout": "wide",
-          "placement": {
-            "column": "2 / 4",
-            "row": "6 / 7"
-          }
-        },
-        {
-          "src": "./assets/life/basketball-night-game.png",
-          "alt": "夜场篮球赛",
-          "title": "Street Game",
-          "caption": "围观与呐喊，夜球的氛围",
-          "tag": "篮球",
-          "category": "basketball",
-          "group": "sports",
-          "layout": "portrait",
-          "placement": {
-            "column": "4",
-            "row": "4 / 7"
-          }
-        },
-        {
-          "src": "./assets/life/pet-fluffy-dog.png",
-          "alt": "毛茸茸的小狗",
-          "title": "Little Friend",
-          "caption": "抬头看你的那一瞬间",
-          "tag": "小狗",
-          "category": "pets",
-          "group": "pets",
-          "layout": "portrait",
-          "placement": {
-            "column": "1",
-            "row": "1 / 3"
-          }
-        },
-        {
-          "src": "./assets/life/pet-hamster.png",
-          "alt": "仓鼠",
-          "title": "Hamster",
-          "caption": "捧着小爪子，安静又可爱",
-          "tag": "仓鼠",
-          "category": "hamster",
-          "group": "pets",
-          "layout": "portrait",
-          "placement": {
-            "column": "2",
-            "row": "1 / 3"
-          }
-        },
-        {
-          "src": "./assets/life/pet-puppy-sweater.png",
-          "alt": "穿毛衣的小狗",
-          "title": "Cozy Pup",
-          "caption": "蓝色毛衣和大骨头",
-          "tag": "小狗",
-          "category": "pets",
-          "group": "pets",
-          "layout": "portrait",
-          "placement": {
-            "column": "4",
-            "row": "1 / 3"
-          }
-        },
-        {
-          "src": "./assets/life/pet-puppy-duck.png",
-          "alt": "戴帽子的小狗",
-          "title": "Duck Outfit",
-          "caption": "小黄帽和小鸭子背心",
-          "tag": "小狗",
-          "category": "pets",
-          "group": "pets",
-          "layout": "portrait",
-          "placement": {
-            "column": "3",
-            "row": "1 / 3"
-          }
-        },
-        {
-          "src": "./assets/life/food-kpro-burger.png",
-          "alt": "KPRO 多层汉堡",
-          "title": "KPRO Stack",
-          "caption": "肯律轻食，叠到装不下的肉饼",
-          "tag": "汉堡",
-          "category": "kpro",
-          "group": "food",
-          "layout": "feature",
-          "placement": {
-            "column": "1 / 3",
-            "row": "1 / 4"
-          }
-        },
-        {
-          "src": "./assets/life/food-kfc-burger.png",
-          "alt": "KFC 多层汉堡",
-          "title": "KFC Tower",
-          "caption": "四层肉饼，芝士从侧边溢出来",
-          "tag": "汉堡",
-          "category": "kfc",
-          "group": "food",
-          "layout": "portrait",
-          "placement": {
-            "column": "3",
-            "row": "1 / 4"
-          }
-        },
-        {
-          "src": "./assets/life/food-mcd-burger.png",
-          "alt": "麦当劳双层吉士",
-          "title": "Double Cheese",
-          "caption": "经典双层吉士，路边随手一拍",
-          "tag": "汉堡",
-          "category": "mcdonalds",
-          "group": "food",
-          "layout": "portrait",
-          "placement": {
-            "column": "4",
-            "row": "1 / 4"
-          }
+      "description": null,
+      "type": "writings",
+      "writings": {
+        "title": "Future & Thoughts",
+        "index": "03",
+        "description": "一些关于我对自身的思考、未来的发展,以及我自身的定位。",
+        "life": {
+          "introTitle": "设计与工程",
+          "bodyLabel": "DESIGN & ENGINEERING",
+          "bodyLead": "作为B端设计师,我们必须具备极强的业务理解能力,以及具备提高用户体验的能力,在当下AI Coding的冲击下",
+          "paragraphs": [
+            "学习代码是我在业余/休息时间最为感兴趣的事情,如果有机会我会在大学期间拿到计算机学位,为什么会有这样的想法是在我深度参与到设计系统建设时发觉:这是一项高度工程化的工作。",
+            "可惜在国内，「设计工程」或「设计工程师」仍是稀缺物种。而在国外，这是许多一流团队的标配。像 Vercel Design、GitHub Design 等团队中，Design Engineer 是不可或缺的角色，他们架起设计与开发之间的桥梁，推动出色的产品体验与系统演进。",
+            "目前我已经自学HTML / CSS / JavaScript网页三大核心语言,能够独立使用VS Code手搓代码,同时并了解Vercel部署与Git的版本管理能够独立的开发上线。"
+          ],
+          "image": "./assets/future-vercel-design-team.png",
+          "imageAlt": "Vercel Design Engineering Team",
+          "afterImageParagraphs": [
+            "回归本质,设计师学习代码能够给我们带来什么?",
+            "产品开发中最大的内耗来源于设计实现问题,了解工程设计话语权从 \"开发能不能做\" 拿回自己手里,\"画出来好看\" 变成 \"上线后也一致、高效、可维护\"能够找到兼顾用户体验与工程可行性的方案,减少团队陷入不切实际的设计中,从根源上解决了该问题。",
+            "在设计系统建设方面,Design Token并非纸上谈兵,设计工程师负责实现搭建设计到代码的工程化,搭建 Token 自动化同步流水线、制定组件与 Token 双向映射，预判代码实现逻辑，解决规范落地断层，把静态设计标准转化为可自动校验、持续同步的代码资产。",
+            "在AI demo的输出层面,能够评估生成的代码是否重复、多余等问题减少代码量保证性能,以及在开发验收过程中,能够发现“视觉上看不见”的体验交互问题,以及用专业词语解决对应问题,减少沟通障碍。"
+          ]
         }
-      ]
+      }
     }
   ],
   "footer": {
@@ -2066,7 +2253,7 @@
       "mapping": {
         "1": "#home",
         "2": "#work",
-        "3": "#life"
+        "3": "#future"
       }
     },
     "scrollBehavior": "smooth",
@@ -2088,8 +2275,10 @@
 }
 </script>
 
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
   <script>
     let data;
+    let heroIntroPlayed = false;
 
     function applyTokens(tokens, meta) {
       const root = document.documentElement;
@@ -2119,10 +2308,12 @@
       renderNav(data.navigation);
       renderHero(data.hero);
       renderAboutCards(data.aboutCards);
+      renderIntroHero(data.introHero);
+      renderEducation(data.education);
+      renderActTwo(data.actTwo);
       renderSections(data.sections);
       renderFooter(data.footer);
       setupInteractions(data);
-      setupLifeGallery();
       setupWorkProjectModal();
       document.getElementById('home')?.classList.add('visible');
     }
@@ -2147,6 +2338,11 @@
 
       document.querySelectorAll('.work-project-card').forEach(card => {
         card.addEventListener('click', () => {
+          const href = card.dataset.projectHref;
+          if (href) {
+            window.location.href = href;
+            return;
+          }
           openModal(card.dataset.projectTitle || '');
         });
       });
@@ -2157,59 +2353,6 @@
       });
       document.addEventListener('keydown', e => {
         if (e.key === 'Escape' && modal?.classList.contains('open')) closeModal();
-      });
-    }
-
-    function setupLifeGallery() {
-      const lightbox = document.getElementById('life-lightbox');
-      const lbImg = document.getElementById('life-lightbox-img');
-      const lbTitle = document.getElementById('life-lightbox-title');
-      const lbCaption = document.getElementById('life-lightbox-caption');
-      const lbClose = document.getElementById('life-lightbox-close');
-
-      document.querySelectorAll('.life-photo').forEach(btn => {
-        btn.addEventListener('click', () => {
-          lbImg.src = btn.dataset.src;
-          lbImg.alt = btn.dataset.alt;
-          lbTitle.textContent = btn.dataset.title;
-          lbCaption.textContent = btn.dataset.caption;
-          lightbox.classList.add('open');
-          lightbox.setAttribute('aria-hidden', 'false');
-          document.body.style.overflow = 'hidden';
-        });
-      });
-
-      function closeLightbox() {
-        lightbox.classList.remove('open');
-        lightbox.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
-      }
-
-      lbClose?.addEventListener('click', closeLightbox);
-      lightbox?.addEventListener('click', e => {
-        if (e.target === lightbox) closeLightbox();
-      });
-      document.addEventListener('keydown', e => {
-        if (e.key === 'Escape' && lightbox?.classList.contains('open')) closeLightbox();
-      });
-
-      document.querySelectorAll('.life-filters').forEach(group => {
-        group.addEventListener('click', e => {
-          const btn = e.target.closest('.life-filter');
-          if (!btn) return;
-          group.querySelectorAll('.life-filter').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          const filter = btn.dataset.filter;
-          const sections = group.nextElementSibling;
-          sections?.querySelectorAll('.life-photo').forEach(photo => {
-            const show = filter === 'all' || photo.dataset.tag === filter;
-            photo.classList.toggle('is-hidden', !show);
-          });
-          sections?.querySelectorAll('.life-block').forEach(block => {
-            const visible = block.querySelectorAll('.life-photo:not(.is-hidden)').length > 0;
-            block.style.display = visible ? '' : 'none';
-          });
-        });
       });
     }
 
@@ -2257,8 +2400,6 @@
         `<span class="line"><span class="line-inner"><span class="highlight">${highlight}</span></span></span>`
       ].join('');
 
-      document.getElementById('hero-subtitles').innerHTML = hero.subtitles
-        .map(s => `<p class="hero-subtitle">${s}</p>`).join('');
       const cta = document.getElementById('hero-cta');
       cta.textContent = hero.cta.label;
       cta.href = hero.cta.href;
@@ -2266,12 +2407,333 @@
       const photo = document.getElementById('hero-photo');
       if (hero.image && photo) {
         photo.src = hero.image;
-        photo.alt = hero.greeting.replace("Hello! I'm ", '');
+        photo.alt = hero.imageAlt || hero.greeting.replace("Hello! I'm ", '');
+        if (hero.imageObjectPosition) {
+          photo.style.setProperty('--hero-photo-position', hero.imageObjectPosition);
+        }
       }
       const badgeText = document.getElementById('hero-badge-text');
       if (badgeText && hero.badge) badgeText.textContent = hero.badge;
 
-      setupHeroParallax();
+      setupHeroAssemblyAnimation(() => setupHeroParallax());
+    }
+
+    /** 根据真实内容尺寸，像素级对齐规范线框与标注文案 */
+    function alignHeroSpecChrome(scope) {
+      const PAD = { x: 16, y: 14 };
+
+      const fitChrome = (content, chrome, pad = PAD) => {
+        if (!content || !chrome) return;
+        chrome.style.top = `${-pad.y}px`;
+        chrome.style.right = `${-pad.x}px`;
+        chrome.style.bottom = `${-pad.y}px`;
+        chrome.style.left = `${-pad.x}px`;
+      };
+
+      scope.querySelectorAll('.hero-asm-wrap').forEach(wrap => {
+        const content = wrap.querySelector('[data-hero-content]');
+        const chrome = wrap.querySelector('[data-asm-chrome]');
+        if (!content || !chrome) return;
+
+        fitChrome(content, chrome);
+        const rect = content.getBoundingClientRect();
+        const cs = getComputedStyle(content);
+
+        const topM = chrome.querySelector('.asm-measure--top');
+        if (topM) {
+          const isHeadline = wrap.classList.contains('hero-asm-wrap--headline');
+          topM.textContent = isHeadline
+            ? `max-w: ${Math.round(parseFloat(cs.maxWidth) || rect.width)}px`
+            : `h: ${Math.round(rect.height)}px`;
+        }
+
+        const rightM = chrome.querySelector('.asm-measure--right');
+        if (rightM) {
+          const fontSize = Math.round(parseFloat(cs.fontSize) || rect.height);
+          rightM.textContent = `${fontSize}px`;
+        }
+
+        const bottomM = chrome.querySelector('.asm-measure--bottom');
+        if (bottomM) bottomM.textContent = `w: ${Math.round(rect.width)}px`;
+      });
+
+      scope.querySelectorAll('[data-asm-tag]').forEach(tag => {
+        const content = tag.querySelector('[data-hero-content]');
+        const chrome = tag.querySelector('[data-asm-chrome]');
+        fitChrome(content, chrome, { x: 10, y: 8 });
+        const rect = tag.getBoundingClientRect();
+        const bottomM = chrome?.querySelector('.asm-measure--bottom');
+        if (bottomM) bottomM.textContent = `w: ${Math.round(rect.width)}px`;
+      });
+
+      const photoWrap = scope.querySelector('.hero-asm-wrap--photo');
+      const photo = scope.querySelector('#hero-photo-frame');
+      const photoChrome = scope.querySelector('[data-asm-photo]');
+      if (photo && photoChrome) {
+        fitChrome(photo, photoChrome, { x: 24, y: 20 });
+        const w = Math.round(photo.offsetWidth);
+        const h = Math.round(photo.offsetHeight);
+        const topM = photoChrome.querySelector('.asm-measure--top');
+        if (topM) topM.textContent = `${w} × ${h}`;
+        const rightM = photoChrome.querySelector('.asm-measure--right');
+        if (rightM) rightM.textContent = `${h}px`;
+        const bottomM = photoChrome.querySelector('.asm-measure--bottom');
+        if (bottomM) bottomM.textContent = `3:4`;
+        const wToken = photoChrome.querySelector('.asm-token-pill--tr');
+        if (wToken) wToken.textContent = `w: ${w}px`;
+      }
+
+      const copy = scope.querySelector('#hero-copy');
+      const grid = scope.querySelector('#hero-asm-grid');
+      if (copy && grid) {
+        grid.style.top = `${-20}px`;
+        grid.style.left = `${-24}px`;
+        grid.style.right = `${-28}px`;
+        grid.style.bottom = `${-16}px`;
+      }
+
+    }
+
+    function setupHeroAssemblyAnimation(onComplete) {
+      const navWrapper = document.querySelector('.nav-wrapper');
+      const scope = document.getElementById('home');
+
+      const finishIntro = () => {
+        navWrapper?.classList.add('is-visible');
+        scope?.classList.add('hero-content-ready');
+        onComplete?.();
+      };
+
+      if (heroIntroPlayed || typeof gsap === 'undefined') {
+        finishIntro();
+        return;
+      }
+
+      if (!scope) {
+        finishIntro();
+        return;
+      }
+
+      scope._heroIntroCtx?.revert();
+
+      const runTimeline = () => {
+        alignHeroSpecChrome(scope);
+
+        const grid = scope.querySelector('#hero-asm-grid');
+        const globalTokens = scope.querySelector('#hero-asm-global-tokens');
+        const bounds = scope.querySelectorAll('.asm-bounds');
+        const corners = scope.querySelectorAll('.asm-corner');
+        const measuresH = scope.querySelectorAll('.asm-measure--top, .asm-measure--bottom, [data-asm-dim-h]');
+        const measuresV = scope.querySelectorAll('.asm-measure--right, [data-asm-dim-v]');
+        const tokenPills = scope.querySelectorAll('.asm-token-pill');
+        const chromeFadeTargets = [grid, ...corners, ...measuresH, ...measuresV, ...tokenPills];
+        if (globalTokens) chromeFadeTargets.push(globalTokens);
+        const contentBlocks = [...scope.querySelectorAll('[data-hero-content]')];
+        const aboutGrid = document.getElementById('about');
+        const educationBlock = document.getElementById('education');
+        const actTwoBlock = document.getElementById('act-two');
+
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const ease = 'power4.out';
+
+        scope._heroIntroCtx = gsap.context(() => {
+          if (reduceMotion) {
+            gsap.set([...chromeFadeTargets, ...bounds], { opacity: 0, autoAlpha: 0 });
+            gsap.set(contentBlocks, { autoAlpha: 1, scale: 1, y: 0 });
+            navWrapper?.classList.add('is-visible');
+            scope.classList.add('hero-content-ready');
+            heroIntroPlayed = true;
+            onComplete?.();
+            return;
+          }
+
+          gsap.set(contentBlocks, { autoAlpha: 0, scale: 0.98, y: 6 });
+          gsap.set(aboutGrid, { autoAlpha: 0, y: 16 });
+          if (educationBlock) gsap.set(educationBlock, { autoAlpha: 0, y: 20 });
+          if (actTwoBlock) gsap.set(actTwoBlock, { autoAlpha: 0, y: 20 });
+          gsap.set(navWrapper, { autoAlpha: 0, y: -10 });
+          navWrapper?.classList.remove('is-visible');
+          scope.classList.remove('hero-content-ready');
+          gsap.set(grid, { opacity: 0 });
+          gsap.set(bounds, { opacity: 0, scaleX: 0, scaleY: 0, transformOrigin: '50% 50%' });
+          gsap.set(corners, { opacity: 0, scale: 0.7, transformOrigin: '50% 50%' });
+          gsap.set(measuresH, { opacity: 0, scaleX: 0, transformOrigin: '50% 50%' });
+          gsap.set(measuresV, { opacity: 0, scaleY: 0, transformOrigin: '0% 50%' });
+          gsap.set(tokenPills, { opacity: 0, y: 8 });
+          if (globalTokens) gsap.set(globalTokens, { opacity: 0, y: 8 });
+
+          scope.querySelectorAll('.asm-measure--top').forEach(el => {
+            gsap.set(el, { xPercent: -50, transformOrigin: '50% 50%' });
+          });
+          scope.querySelectorAll('.asm-measure--bottom').forEach(el => {
+            gsap.set(el, { transformOrigin: '0% 50%' });
+          });
+          scope.querySelectorAll('.asm-measure--right').forEach(el => {
+            gsap.set(el, { xPercent: 100, yPercent: -50, transformOrigin: '0% 50%' });
+          });
+          scope.querySelectorAll('[data-asm-dim-h]').forEach(el => {
+            gsap.set(el, { opacity: 0, scaleX: 0, transformOrigin: '50% 50%' });
+          });
+          scope.querySelectorAll('[data-asm-dim-v]').forEach(el => {
+            gsap.set(el, { opacity: 0, scaleY: 0, transformOrigin: '50% 50%' });
+          });
+
+          const tl = gsap.timeline({
+            onComplete: () => {
+              heroIntroPlayed = true;
+              gsap.set([...chromeFadeTargets, ...bounds], { visibility: 'hidden' });
+              navWrapper?.classList.add('is-visible');
+              scope.classList.add('hero-content-ready');
+              onComplete?.();
+            },
+          });
+
+          // ── 阶段一：线框精准绘制（1s）──
+          tl.to(grid, { opacity: 0.28, duration: 0.32, ease }, 0)
+            .to(bounds, {
+              scaleX: 1,
+              opacity: 1,
+              duration: 0.42,
+              ease,
+              stagger: 0.04,
+            }, 0.06)
+            .to(scope.querySelectorAll('[data-asm-dim-h]'), {
+              scaleX: 1,
+              opacity: 1,
+              duration: 0.36,
+              ease,
+              stagger: 0.05,
+            }, 0.2)
+            .to(bounds, {
+              scaleY: 1,
+              duration: 0.38,
+              ease,
+              stagger: 0.035,
+            }, 0.24)
+            .to(scope.querySelectorAll('[data-asm-dim-v]'), {
+              scaleY: 1,
+              opacity: 1,
+              duration: 0.34,
+              ease,
+              stagger: 0.05,
+            }, 0.3)
+            .to(corners, {
+              scale: 1,
+              opacity: 1,
+              duration: 0.3,
+              ease,
+              stagger: 0.025,
+            }, 0.38)
+            .to(measuresH, {
+              scaleX: 1,
+              opacity: 1,
+              duration: 0.28,
+              ease,
+              stagger: 0.03,
+            }, 0.48)
+            .to(measuresV, {
+              scaleY: 1,
+              opacity: 1,
+              duration: 0.26,
+              ease,
+              stagger: 0.03,
+            }, 0.54)
+            .to(tokenPills, {
+              opacity: 1,
+              y: 0,
+              duration: 0.3,
+              ease,
+              stagger: 0.04,
+            }, 0.62);
+
+          if (globalTokens) {
+            tl.to(globalTokens, { opacity: 1, y: 0, duration: 0.3, ease }, 0.66);
+          }
+
+          tl.addLabel('wireframe', 1)
+            .to({}, { duration: 0.6 })
+            .addLabel('fadeOut');
+
+          // ── 阶段二：线框完全消失 ──
+          const fadeDur = 0.52;
+
+          tl.to(chromeFadeTargets, {
+            opacity: 0,
+            duration: fadeDur,
+            ease,
+            stagger: 0.012,
+          }, 'fadeOut')
+            .to(bounds, {
+              scaleX: 0.96,
+              scaleY: 0.96,
+              opacity: 0,
+              duration: fadeDur,
+              ease,
+              stagger: 0.01,
+              transformOrigin: '50% 50%',
+            }, 'fadeOut')
+            .addLabel('contentIn', `fadeOut+=${fadeDur + 0.08}`);
+
+          // ── 阶段三：线框消失后再显现真实内容 ──
+          const contentDur = 0.72;
+
+          tl.to(contentBlocks, {
+            autoAlpha: 1,
+            scale: 1,
+            y: 0,
+            duration: contentDur,
+            ease,
+            stagger: 0.035,
+          }, 'contentIn')
+            .to(aboutGrid, {
+              autoAlpha: 1,
+              y: 0,
+              duration: contentDur * 0.85,
+              ease,
+            }, 'contentIn+=0.12');
+          if (educationBlock) {
+            tl.to(educationBlock, {
+              autoAlpha: 1,
+              y: 0,
+              duration: contentDur * 0.85,
+              ease,
+            }, 'contentIn+=0.22');
+          }
+          if (actTwoBlock) {
+            tl.to(actTwoBlock, {
+              autoAlpha: 1,
+              y: 0,
+              duration: contentDur * 0.85,
+              ease,
+            }, 'contentIn+=0.32');
+          }
+          tl.to(navWrapper, {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.55,
+              ease,
+              onComplete: () => navWrapper?.classList.add('is-visible'),
+            }, 'contentIn+=0.28')
+            .add(() => scope.classList.add('hero-content-ready'), 'contentIn+=0.15');
+
+        }, scope);
+      };
+
+      const photo = scope.querySelector('#hero-photo');
+      let started = false;
+      const kickoff = () => {
+        if (started) return;
+        started = true;
+        requestAnimationFrame(() => requestAnimationFrame(runTimeline));
+      };
+
+      alignHeroSpecChrome(scope);
+      if (photo?.src && !photo.complete) {
+        photo.addEventListener('load', kickoff, { once: true });
+        photo.addEventListener('error', kickoff, { once: true });
+      } else {
+        kickoff();
+      }
     }
 
     function setupHeroParallax() {
@@ -2299,6 +2761,80 @@
       }
     }
 
+    function renderActTwo(actTwo) {
+      const el = document.getElementById('act-two');
+      if (!el || !actTwo) {
+        if (el) el.innerHTML = '';
+        return;
+      }
+
+      const experiences = actTwo.experiences?.length
+        ? actTwo.experiences
+        : (actTwo.headline || actTwo.paragraphs ? [actTwo] : []);
+
+      if (!experiences.length) {
+        el.innerHTML = '';
+        return;
+      }
+
+      const experienceHtml = experiences.map(exp => {
+        const paragraphs = (exp.paragraphs || [])
+          .map(text => `<p>${text}</p>`)
+          .join('');
+        return `
+          <div class="act-two-grid">
+            <aside class="act-two-aside">
+              ${exp.logo ? `<img class="act-two-logo" src="${exp.logo}"${exp.logoSrcset ? ` srcset="${exp.logoSrcset}"` : ''} width="60" height="60" alt="${exp.logoAlt || ''}" />` : ''}
+              <div class="act-two-aside-copy">
+                ${exp.headline ? `<h3 class="act-two-headline">${exp.headline}</h3>` : ''}
+                ${exp.period ? `<p class="act-two-period">${exp.period}</p>` : ''}
+              </div>
+            </aside>
+            <div class="act-two-body">${paragraphs}</div>
+          </div>
+        `;
+      }).join('');
+
+      el.innerHTML = `
+        <div class="act-two-heading">
+          ${(actTwo.actTitle || actTwo.title) ? `<h2 class="act-two-act">${actTwo.actTitle || ''}${actTwo.title ? `<br>${actTwo.title}` : ''}</h2>` : ''}
+          ${actTwo.label ? `<span class="act-two-label">${actTwo.label}</span>` : ''}
+        </div>
+        <div class="act-two-list">${experienceHtml}</div>
+      `;
+    }
+
+    function renderIntroHero(introHero) {
+      const el = document.getElementById('intro-hero');
+      if (!el) return;
+      el.innerHTML = introHero ? renderSectionHero(introHero) : '';
+    }
+
+    function renderEducation(education) {
+      const el = document.getElementById('education');
+      if (!el || !education?.items?.length) {
+        if (el) el.innerHTML = '';
+        return;
+      }
+
+      el.innerHTML = `
+        <div class="education-heading">
+          ${education.icon ? `<img class="education-icon" src="${education.icon}" width="32" height="32" alt="" aria-hidden="true" />` : ''}
+          <h2 class="education-act">${education.actTitle || ''}<br>${education.title || ''}</h2>
+          ${education.label ? `<span class="education-label">${education.label}</span>` : ''}
+        </div>
+        <div class="education-list">
+          ${education.items.map(item => `
+            <div class="education-item">
+              <span class="education-period">${item.period || ''}</span>
+              <span class="education-school">${item.school || ''}</span>
+              <span class="education-meta">${item.meta || ''}</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
     function renderAboutCards(cards) {
       document.getElementById('about').innerHTML = cards.map((card, i) => `
         <article class="about-card" id="about-${card.id}" style="--i:${i}">
@@ -2320,14 +2856,24 @@
       if (!projects?.length) return '';
       return `
         <div class="work-projects-block">
-          <h3 class="work-projects-heading">Design Projects</h3>
           <div class="work-projects">
           ${projects.map((item, i) => {
             const align = item.titleAlign === 'center' ? ' data-align="center"' : '';
             const noTitle = item.showTitle === false ? ' data-no-title="true"' : '';
+            const fit = item.imageFit === 'contain' ? ' data-fit="contain"' : '';
+            const aspectStyle = item.aspectRatio
+              ? `--i:${i}; --project-aspect: ${item.aspectRatio}`
+              : `--i:${i}`;
+            const srcset = item.imageSrcset
+              ? ` srcset="${item.imageSrcset}" sizes="(max-width: 840px) 92vw, 840px"`
+              : '';
+            const dims = item.imageWidth && item.imageHeight
+              ? ` width="${item.imageWidth}" height="${item.imageHeight}"`
+              : '';
+            const hrefAttr = item.href ? ` data-project-href="${item.href}"` : '';
             return `
-              <button type="button" class="work-project-card"${align}${noTitle} style="--i:${i}" data-project-title="${item.title}">
-                <img src="${item.image}" alt="${item.title}" loading="lazy" />
+              <button type="button" class="work-project-card"${align}${noTitle}${fit}${hrefAttr} style="${aspectStyle}" data-project-title="${item.title}">
+                <img src="${item.image}"${srcset}${dims} alt="${item.title}" loading="lazy" decoding="async" />
                 <div class="work-project-overlay"></div>
                 ${item.showTitle !== false ? `
                 <div class="work-project-title-wrap">
@@ -2342,12 +2888,74 @@
       `;
     }
 
+    function renderSectionHero(hero, anchorId) {
+      if (!hero) return '';
+      const articles = hero.articles?.map((item, i) => `
+        <a class="life-writings-article" href="${item.href || '#'}"${item.href?.startsWith('http') ? ' target="_blank" rel="noopener"' : ''} style="--i:${i}">
+          <div class="life-writings-article-meta">
+            <strong>${item.title}</strong>
+            ${item.date ? `<span class="life-writings-article-date">${item.date}</span>` : ''}
+          </div>
+          ${item.subtitle ? `<h4 class="life-writings-article-subtitle">${item.subtitle}</h4>` : ''}
+          ${item.excerpt ? `<p class="life-writings-article-excerpt">${item.excerpt}</p>` : ''}
+        </a>
+      `).join('') || '';
+
+      const idAttr = anchorId ? ` id="${anchorId}"` : '';
+      const lifeBodyLead = hero.life?.bodyLead
+        ? `<p>${hero.life.bodyLead}</p>`
+        : '';
+      const lifeParagraphs = hero.life?.paragraphs?.length
+        ? hero.life.paragraphs.map(p => `<p>${p}</p>`).join('')
+        : hero.life?.description
+          ? `<p>${hero.life.description}</p>`
+          : '';
+      const lifeMedia = hero.life?.image ? `
+        <figure class="life-writings-life-media">
+          <img src="${hero.life.image}" alt="${hero.life.imageAlt || ''}" loading="lazy" decoding="async" />
+          ${hero.life.imageCaption ? `<figcaption class="life-writings-life-media-caption">${hero.life.imageCaption}</figcaption>` : ''}
+        </figure>
+      ` : '';
+      const lifeAfterImage = hero.life?.afterImageParagraphs?.length
+        ? `<div class="life-writings-life-after">${hero.life.afterImageParagraphs.map(p => `<p>${p}</p>`).join('')}</div>`
+        : '';
+      const lifeBlock = hero.life ? `
+        <div class="life-writings-life">
+          ${hero.life.title ? `<h3 class="life-writings-life-title">${hero.life.title}</h3>` : ''}
+          ${hero.life.introTitle ? `<p class="life-writings-life-intro">${hero.life.introTitle}</p>` : ''}
+          ${hero.life.bodyLabel ? `<span class="life-writings-life-body-label">${hero.life.bodyLabel}</span>` : ''}
+          ${lifeParagraphs || lifeBodyLead ? `<div class="life-writings-life-body">${lifeBodyLead}${lifeParagraphs}</div>` : ''}
+          ${lifeMedia}
+          ${lifeAfterImage}
+        </div>
+      ` : '';
+
+      return `
+        <div class="life-writings"${idAttr}>
+          <svg class="life-writings-icon" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <path d="M16 2l2.2 6.8H25l-5.6 4.1 2.2 6.8L16 16.4l-5.6 3.5 2.2-6.8L7 8.8h6.8L16 2z" fill="currentColor"/>
+          </svg>
+          <h2 class="life-writings-title">
+            ${hero.title || ''}${hero.index ? `<sup class="life-writings-index">${hero.index}</sup>` : ''}
+          </h2>
+          ${hero.description ? `<p class="life-writings-desc">${hero.description}</p>` : ''}
+          ${lifeBlock}
+          ${articles ? `<div class="life-writings-articles">${articles}</div>` : ''}
+        </div>
+      `;
+    }
+
+    function renderLifeWritings(writings) {
+      return renderSectionHero(writings, 'future');
+    }
+
     function renderSections(sections) {
       const container = document.getElementById('sections-container');
       container.innerHTML = sections.map(section => {
         let body = '';
         if (section.type === 'timeline' || section.type === 'work') {
-          body = `
+          if (section.items?.length) {
+            body = `
             <div class="timeline-list">
               ${section.items.map(item => `
                 <div class="timeline-item">
@@ -2357,66 +2965,10 @@
               `).join('')}
             </div>
           `;
+          }
           if (section.projects?.length) {
             body += renderWorkProjects(section.projects);
           }
-        } else if (section.type === 'photo-gallery') {
-          const tags = [...new Set(section.items.map(i => i.tag))];
-          const filters = tags.map(t =>
-            `<button class="life-filter" data-filter="${t}">${t}</button>`
-          ).join('');
-
-          const groups = [
-            { key: 'sports', label: '运动' },
-            { key: 'food', label: '美食' },
-            { key: 'pets', label: '毛孩子们' }
-          ];
-
-          let photoIndex = 0;
-          const renderPhoto = item => {
-            const layout = item.layout || 'portrait';
-            const focus = layout === 'tall' ? 'top' : 'center';
-            const idx = photoIndex++;
-            const gridStyle = item.placement
-              ? `grid-column:${item.placement.column};grid-row:${item.placement.row};`
-              : '';
-            return `
-              <button class="life-photo" type="button"
-                data-layout="${layout}" data-tag="${item.tag}" data-category="${item.category}"
-                style="--i:${idx};${gridStyle}"${focus !== 'center' ? ` data-focus="${focus}"` : ''}
-                data-src="${item.src}" data-title="${item.title}" data-caption="${item.caption}" data-alt="${item.alt}">
-                <img src="${item.src}" alt="${item.alt}" loading="lazy" />
-                <div class="life-photo-overlay"></div>
-                <span class="life-photo-tag">${item.tag}</span>
-                <div class="life-photo-info">
-                  <p class="life-photo-title">${item.title}</p>
-                  <p class="life-photo-caption">${item.caption}</p>
-                </div>
-              </button>
-            `;
-          };
-
-          const blocks = groups.map(g => {
-            const items = section.items.filter(i => i.group === g.key);
-            if (!items.length) return '';
-            return `
-              <div class="life-block" data-group="${g.key}">
-                <div class="life-block-head">
-                  <span class="life-block-label">${g.label}</span>
-                </div>
-                <div class="life-gallery" data-group="${g.key}">${items.map(renderPhoto).join('')}</div>
-              </div>
-            `;
-          }).join('');
-
-          body = `
-            ${section.description ? `<p class="section-desc">${section.description}</p>` : ''}
-            <div class="life-filters">
-              <button class="life-filter active" data-filter="all">全部</button>
-              ${filters}
-            </div>
-            <div class="life-sections">${blocks}</div>
-          `;
         } else if (section.type === 'card-grid') {
           body = `
             ${section.description ? `<p class="section-desc">${section.description}</p>` : ''}
@@ -2454,13 +3006,23 @@
             </div>
           `;
         }
+        const hero = section.hero || section.writings;
+        const useHeroHeader = !!hero;
+        const hideLifeTitles = section.id === 'life' && !!hero?.life;
+        const heroHtml = hero
+          ? renderSectionHero(hero, section.id === 'life' ? 'future' : '')
+          : '';
+        const showSectionTitle = !(useHeroHeader && section.id === 'work') && !hideLifeTitles;
+        const showIntroTitle = section.introTitle && !hideLifeTitles;
+
         return `
           <section id="${section.id}" class="content-section">
             <div class="section-grid">
-              <span class="section-index">${section.index}</span>
+              ${useHeroHeader ? '' : `<span class="section-index">${section.index}</span>`}
               <div class="section-main">
-                <h2 class="section-title">${section.title}</h2>
-                ${section.introTitle ? `<h3 class="section-intro-title">${section.introTitle}</h3>` : ''}
+                ${heroHtml}
+                ${showSectionTitle ? `<h2 class="section-title">${section.title}</h2>` : ''}
+                ${showIntroTitle ? `<h3 class="section-intro-title">${section.introTitle}</h3>` : ''}
                 ${body}
               </div>
             </div>
@@ -2508,7 +3070,7 @@
         });
       }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
 
-      document.querySelectorAll('.work-projects-heading, .work-project-card, .section-intro-title').forEach(el => {
+      document.querySelectorAll('.work-project-card, .section-intro-title').forEach(el => {
         revealObserver.observe(el);
       });
 
@@ -2524,7 +3086,8 @@
         });
         navItems.forEach(item => {
           const href = item.getAttribute('href').slice(1);
-          item.classList.toggle('active', href === current);
+          const activeId = href === 'future' ? 'life' : href;
+          item.classList.toggle('active', activeId === current);
         });
       }
 

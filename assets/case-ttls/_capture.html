@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>商家端发品链路核心优化 — TTLS</title>
+  <link rel="icon" href="./assets/favicon.jpg" type="image/jpeg" />
+  <style>
+    /* Figma frame 259:165570 — 1920 × 13555, positions from file metadata */
+    :root {
+      --figma-w: 1920;
+      --figma-h: 13555;
+      --cyan: #25f4ee;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #000;
+      color: #fff;
+      overflow-x: hidden;
+      font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .viewport {
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .artboard {
+      position: relative;
+      width: 1920px;
+      height: 13555px;
+      background: #000;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+      background-size: 32px 32px;
+      transform-origin: top left;
+    }
+
+    .abs { position: absolute; }
+
+    img, video {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .back {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 20;
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 14px;
+      text-decoration: none;
+      font-family: "PingFang SC", sans-serif;
+    }
+
+    .back:hover { color: #fff; }
+
+    /* ── Typography mapped from Figma ── */
+    .t-business {
+      font-family: "TikTok Display", "Arial Black", "PingFang SC", sans-serif;
+      font-size: 120px;
+      font-weight: 900;
+      font-style: italic;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+
+    .t-business-sub {
+      font-size: 32px;
+      font-weight: 500;
+      line-height: normal;
+    }
+
+    .t-lead {
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 2.4;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .t-lead-tag {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.55);
+      white-space: nowrap;
+    }
+
+    .t-proj-title {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: normal;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .t-proj-title img {
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
+    }
+
+    .t-proj-list {
+      font-size: 20px;
+      font-weight: 400;
+      line-height: 2.4;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .t-case-title {
+      font-size: 44px;
+      font-weight: 700;
+      line-height: 1.4;
+      white-space: nowrap;
+    }
+
+    .t-case-title .accent { color: var(--cyan); }
+
+    .t-meta-h {
+      font-size: 17.7px;
+      font-weight: 600;
+      line-height: 20.22px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6.3px;
+    }
+
+    .t-meta-h img {
+      width: 17.7px;
+      height: 17.7px;
+      object-fit: contain;
+    }
+
+    .t-meta-item {
+      font-size: 13.9px;
+      font-weight: 500;
+      line-height: 18.96px;
+    }
+
+    .t-meta-sub {
+      font-size: 12.64px;
+      font-weight: 400;
+      line-height: 18.96px;
+      color: rgba(255, 255, 255, 0.8);
+      padding-left: 18.96px;
+      list-style: disc;
+    }
+
+    .t-part-label {
+      font-size: 24px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.7);
+      line-height: normal;
+    }
+
+    .t-part-title {
+      font-size: 44px;
+      font-weight: 500;
+      line-height: normal;
+    }
+
+    .t-body-14 {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .t-bgq {
+      font-size: 36px;
+      font-weight: 700;
+      font-style: italic;
+      line-height: normal;
+      white-space: nowrap;
+    }
+
+    .t-caption {
+      font-size: 14px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.55);
+      white-space: nowrap;
+    }
+
+    .divider-img {
+      width: 940px;
+      height: 8px;
+      object-fit: fill;
+    }
+
+    /* Figma Vector 392352186: white, opacity 0.8, stroke 0.5, dasharray 6 6 */
+    .rail {
+      width: 1px;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.8) 0,
+        rgba(255, 255, 255, 0.8) 6px,
+        transparent 6px,
+        transparent 12px
+      );
+    }
+
+    .sec-bar {
+      width: 93px;
+      height: 3px;
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+  <a class="back" href="./index.html#work">← 返回</a>
+
+  <div class="viewport">
+    <div class="artboard" id="artboard">
+
+      <!-- Buisness header: x=108 y=108 -->
+      <div class="abs" style="left:108px;top:108px;width:780px">
+        <div class="t-business">Buisness</div>
+        <div class="t-business-sub" style="margin-top:24px">驾驭复杂跨国 B 端场景，从需求响应到体验链路的优化</div>
+      </div>
+
+      <!-- Lead: x=108 y=392 -->
+      <p class="abs t-lead" style="left:108px;top:392px;width:1521px;height:80px">
+        早在2025年秋我便在美团Keeta团队负责商家端国际化的业务需求10+,在该业务领域有一定的潜在认知,所以我在TTLS期间能够很好的进行转化,主要负责商家发品、登入注册的链路,在实习期间完成6+的业务需求,以下将讲述2个业务需求来展示我在TT期间所在业务方面的表现.
+      </p>
+      <span class="abs t-lead-tag" style="left:912px;top:404px">（主业务线）</span>
+
+      <!-- Project list frame: x=108 y=656 w=975 h=871 — gap 64 between blocks, internal gap 36 -->
+      <div class="abs" style="left:108px;top:656px;width:975px;display:flex;flex-direction:column;gap:64px">
+        <div style="display:flex;flex-direction:column;gap:36px;width:449px">
+          <div class="t-proj-title">
+            商家发品链路核心优化
+            <img src="./assets/case-ttls/icon-arrow.svg" alt="" width="18" height="18" />
+          </div>
+          <div class="t-proj-list">
+            <p>业务场景的拆分与重构</p>
+            <p>表单视觉轻量化重构</p>
+            <p>我们是否还有更多路径帮助商家提效？</p>
+            <p>深挖验收背后的潜在问题</p>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:80px">
+          <img class="divider-img" src="./assets/case-ttls/divider.svg" alt="" width="940" height="8" />
+          <div style="display:flex;flex-direction:column;gap:36px;width:399px">
+            <div class="t-proj-title">
+              SMB二期登入注册体验优化
+              <img src="./assets/case-ttls/icon-arrow.svg" alt="" width="18" height="18" />
+            </div>
+            <div class="t-proj-list">
+              <p>新增支持SMB通过APP注册</p>
+              <p>将激活入口放置登入流程隐性处理</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:80px">
+          <img class="divider-img" src="./assets/case-ttls/divider.svg" alt="" width="940" height="8" />
+          <div style="display:flex;flex-direction:column;gap:36px">
+            <div class="t-proj-title">
+              Review整个实习期间的业务成长
+              <img src="./assets/case-ttls/icon-arrow.svg" alt="" width="18" height="18" />
+            </div>
+            <p class="t-proj-list" style="width:1194px;max-width:100%">
+              整个实习生涯深根B端业务需求,从单点需求爆破到体验链路的梳理,共支持30+的业务需求
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero product showcase: x=197 y=1745 w=1525 h=858 -->
+      <div class="abs" style="left:197px;top:1745px;width:1525px;height:858px">
+        <img src="./assets/case-ttls/hero-product-2x.png" alt="Improving Product Launch Efficiency" width="1525" height="858" />
+      </div>
+
+      <!-- Case title -->
+      <div class="abs t-case-title" style="left:226px;top:2699px">TTLS生活服务</div>
+      <div class="abs t-case-title" style="left:226px;top:2761px">
+        商家端<span class="accent">发品链路</span>核心优化
+      </div>
+
+      <!-- Meta: x=226 y=2892 w=937 — Figma gap ~158.6 between columns -->
+      <div class="abs" style="left:226px;top:2892px;width:937px;display:flex;gap:158px">
+        <div style="width:374px;display:flex;flex-direction:column;gap:18px">
+          <div class="t-meta-h">
+            <img src="./assets/case-ttls/icon-clock.svg" alt="" />
+            时间线
+          </div>
+          <div>
+            <p class="t-meta-item">01/ Timeline</p>
+            <ul class="t-meta-sub"><li>2026.7 - Now</li></ul>
+          </div>
+          <div>
+            <p class="t-meta-item">02/ Teammate</p>
+            <ul class="t-meta-sub"><li>Designer</li></ul>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:18px">
+          <div class="t-meta-h">
+            <img src="./assets/case-ttls/icon-doc.svg" alt="" />
+            内容概览
+          </div>
+          <div style="display:flex;flex-direction:column;gap:17.7px">
+            <p class="t-meta-item">01/ 项目背景</p>
+            <p class="t-meta-item">02/ 业务场景的拆分</p>
+            <p class="t-meta-item">03/ 表单信息的重构</p>
+            <p class="t-meta-item">04/ 新增菜品库提高商家发品效率</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Divider line + center bar: y=3294 / bar y=3297 -->
+      <div class="abs" style="left:197px;top:3294px;width:1525px;height:1px;background:rgba(255,255,255,0.18)"></div>
+      <div class="abs sec-bar" style="left:913px;top:3297px"></div>
+
+      <!-- Vertical dashed rails @ x=453 / x=1467 (Figma vectors) -->
+      <div class="abs rail" style="left:453px;top:3745px;height:419px"></div>
+      <div class="abs rail" style="left:1467px;top:3745px;height:419px"></div>
+      <div class="abs rail" style="left:453px;top:4748px;height:163px"></div>
+      <div class="abs rail" style="left:1467px;top:4748px;height:163px"></div>
+
+      <!-- PART ONE header: x=517 y=3390 -->
+      <div class="abs" style="left:517px;top:3390px;width:484px">
+        <p class="t-part-label">PART ONE</p>
+        <p class="t-part-title" style="margin-top:20px">项目背景</p>
+      </div>
+
+      <!-- PART ONE body: x=517 y=3557 w=875 -->
+      <div class="abs t-body-14" style="left:517px;top:3557px;width:875px;display:flex;flex-direction:column;gap:24px">
+        <p>当前商家发品链路存在三大核心痛点，多重因素叠加导致发品时长中位数高达 5.5 分钟,当前一套团购券的表单实际在同时服务两种场景：42% 的单品场景和 58% 的套餐场景。75% 的混合商家每次商品发布都要在心里切换两种心智、11.4%的商家只发单品但也需要填复杂的Item Group信息</p>
+        <p>除此之外商家仍面临两个卡点:菜品信息从零手填/已发布菜品无法复用当前没有任何 item 复用机制，每次发 Bundle 都要重新填组内菜品信息</p>
+      </div>
+
+      <!-- tokopedia flow video: frame x=361 y=3777 w=1198 h=705 (asset offset -28) -->
+      <div class="abs" style="left:361px;top:3777px;width:1198px;height:705px;overflow:hidden;border-radius:12px">
+        <video src="./tokopedia-flow-4k.mp4" autoplay muted loop playsinline preload="metadata"
+          poster="./assets/case-ttls/sec-mockup.png"
+          style="width:100%;height:100%;object-fit:cover"></video>
+      </div>
+      <p class="abs t-caption" style="left:843px;top:4514px">商家端线上发品核心页面节选(改版前)</p>
+
+      <!-- Background & Questions -->
+      <p class="abs t-bgq" style="left:499px;top:4617px">Background &amp; Questions</p>
+      <p class="abs t-caption" style="left:499px;top:4683px;width:641px;white-space:normal;line-height:1.5">
+        分析当前商家的反馈情况,针对性给出设计策略,并给出预期核心收益,通过设计手段来达到最后的预期收益
+      </p>
+
+      <!-- Insights card: x=361 y=4780 w=1198 h=538 -->
+      <div class="abs" style="left:361px;top:4780px;width:1198px;height:538px">
+        <img src="./assets/case-ttls/sec-insights.png" alt="数据洞察" width="1198" height="538" style="object-fit:contain" />
+      </div>
+
+      <!-- Metrics: x=361 y=5466 w=1198 h=310 -->
+      <div class="abs" style="left:361px;top:5466px;width:1198px;height:310px">
+        <img src="./assets/case-ttls/sec-metrics.png" alt="预期收益与解决方案" width="1198" height="310" style="object-fit:contain" />
+      </div>
+
+      <!-- PART TWO -->
+      <div class="abs" style="left:0;top:5924px;width:1922px;height:1px;background:rgba(255,255,255,0.18)"></div>
+      <div class="abs rail" style="left:453px;top:6277px;height:302px"></div>
+      <div class="abs rail" style="left:1467px;top:6277px;height:302px"></div>
+
+      <div class="abs" style="left:517px;top:6020px;width:484px">
+        <p class="t-part-label">PART TWO</p>
+        <p class="t-part-title" style="margin-top:20px">业务场景的拆分与重构</p>
+      </div>
+      <p class="abs t-body-14" style="left:517px;top:6187px;width:875px">
+        我们在商品创建页做了哪些内容的改动呢? 将 Discount Voucher 拆分为「Single」和「Bundle」通过视觉卡片+C端PDP场景示例强化对选品页理解.
+      </p>
+
+      <!-- Part2 UI: x=361 y=6309 w=1198 h=715 -->
+      <div class="abs" style="left:361px;top:6309px;width:1198px;height:715px">
+        <img src="./assets/case-ttls/sec-part2.png" alt="Create a product" width="1198" height="715" style="object-fit:contain;background:#000" />
+      </div>
+
+      <!-- PART THREE -->
+      <div class="abs" style="left:0;top:7172px;width:1922px;height:1px;background:rgba(255,255,255,0.18)"></div>
+      <div class="abs rail" style="left:453px;top:7525px;height:302px"></div>
+      <div class="abs rail" style="left:1467px;top:7525px;height:302px"></div>
+
+      <div class="abs" style="left:517px;top:7268px;width:484px">
+        <p class="t-part-label">PART THREE</p>
+        <p class="t-part-title" style="margin-top:20px">表单轻量化重构</p>
+      </div>
+      <p class="abs t-body-14" style="left:517px;top:7435px;width:875px">
+        首先,我们针对表单在交互侧进行信息布局的重构,将20+的核心字段缩减为7+的核心字段,将其余字段收起默认填写.在视觉层,我们通过拉大间距、遵守栅格体系、修改样式来达到强化分组关系，梳理信息结构,进行视觉降噪.
+      </p>
+
+      <!-- Form comparison: x=361 y=7576 w=1198 h=517 -->
+      <div class="abs" style="left:361px;top:7576px;width:1198px;height:517px">
+        <img src="./assets/case-ttls/sec-form.png" alt="表单信息布局重构" width="1198" height="517" style="object-fit:contain" />
+      </div>
+
+      <!-- Visual copy: x=519 y=8192 -->
+      <div class="abs" style="left:519px;top:8192px;width:882px">
+        <p style="font-size:24px;font-weight:500;line-height:normal">表单的视觉侧我们做了哪些改动?</p>
+        <p class="t-body-14" style="margin-top:16px">通过拉大间距、遵守栅格体系、修改样式来达到强化分组关系，梳理信息结构,进行视觉降噪.</p>
+      </div>
+
+      <div class="abs rail" style="left:453px;top:8332px;height:188px"></div>
+      <div class="abs rail" style="left:1467px;top:8332px;height:188px"></div>
+
+      <!-- design-story video: x=361 y=8364 w=1197 h=674 -->
+      <div class="abs" style="left:361px;top:8364px;width:1197px;height:674px;overflow:hidden;border-radius:12px">
+        <video src="./design-story-combined-4k.mp4" autoplay muted loop playsinline preload="metadata"
+          style="width:100%;height:100%;object-fit:cover"></video>
+      </div>
+
+      <!-- realtime-sync: x=216 y=10034 w=1481 h=833 -->
+      <div class="abs" style="left:216px;top:10034px;width:1481px;height:833px;overflow:hidden;border-radius:12px">
+        <video src="./realtime-sync-preview-4k.mp4" autoplay muted loop playsinline preload="metadata"
+          style="width:100%;height:100%;object-fit:cover"></video>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const board = document.getElementById('artboard');
+      const FIGMA_W = 1920;
+
+      function fit() {
+        const scale = Math.min(1, window.innerWidth / FIGMA_W);
+        board.style.transform = 'none';
+        board.parentElement.style.height = '13555px';
+      }
+
+      fit();
+      window.addEventListener('resize', fit);
+
+      document.querySelectorAll('video').forEach((v) => {
+        v.addEventListener('error', () => {
+          const poster = v.getAttribute('poster');
+          if (!poster) return;
+          const img = document.createElement('img');
+          img.src = poster;
+          img.alt = '';
+          img.style.cssText = 'width:100%;height:100%;object-fit:cover';
+          v.replaceWith(img);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

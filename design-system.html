@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>设计系统建设 — Keeta / TikTok Platform</title>
+  <link rel="icon" href="./assets/favicon.jpg" type="image/jpeg" />
+  <style>
+    /* Figma node 241:45159 — 画板 1920 宽，块级元素按稿 x/y 映射 */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #000;
+      color: #fff;
+      font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    .back {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 20;
+      color: rgba(255, 255, 255, 0.55);
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1;
+      text-decoration: none;
+    }
+
+    .back:hover { color: #fff; }
+
+    .page {
+      --art: 1920;
+      width: min(100%, 1920px);
+      margin: 0 auto;
+      /* 稿内首个元素 308:8233 位于 y=127 */
+      padding: 127px 0 160px;
+    }
+
+    /* ===== 封面 308:8233 — x=241 y=127 w=1439 h=809.44 r=24 ===== */
+    .ds-cover-wrap {
+      position: relative;
+      margin-left: calc(241 / var(--art) * 100%);
+      width: calc(1439 / var(--art) * 100%);
+    }
+
+    .ds-cover {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1439 / 809.4375;
+      border-radius: 24px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .ds-cover__img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* 347:144175 — 压在封面下缘的引言，14/2/#000 70% */
+    .ds-cover__lede {
+      position: absolute;
+      left: calc(139 / 1439 * 100%);
+      top: calc(689 / 809.4375 * 100%);
+      width: calc(1123 / 1439 * 100%);
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 2;
+      color: #000;
+      opacity: 0.7;
+    }
+
+    /* ===== 概览 347:100248 — x=241 y=1037 w=937 ===== */
+    .ds-meta {
+      margin-top: 100px;
+      margin-left: calc(241 / var(--art) * 100%);
+      width: calc(937 / var(--art) * 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 40px;
+    }
+
+    .ds-meta__title {
+      font-weight: 700;
+      font-size: 32px;
+      line-height: 48px;
+      color: #fff;
+    }
+
+    .ds-meta__cols {
+      display: flex;
+      align-items: flex-start;
+      gap: calc(158.646 / 937 * 100%);
+      width: 100%;
+    }
+
+    .ds-meta__col {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 32px;
+      min-width: 0;
+    }
+
+    .ds-meta__col--timeline { width: calc(373.951 / 937 * 100%); }
+    .ds-meta__col--toc { width: calc(404.403 / 937 * 100%); }
+
+    .ds-meta__label {
+      display: flex;
+      align-items: center;
+      gap: 6.32px;
+    }
+
+    .ds-meta__label img {
+      display: block;
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .ds-meta__label span {
+      font-weight: 700;
+      font-size: 20px;
+      line-height: 20.22px;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .ds-meta__stack {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 24px;
+      width: 100%;
+    }
+
+    .ds-meta__item {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .ds-meta__item--wide { gap: 20px; }
+
+    .ds-meta__item strong {
+      font-weight: 500;
+      font-size: 18px;
+      line-height: 18.956px;
+      color: #fff;
+    }
+
+    .ds-meta__item ul {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      margin: 0;
+      padding-left: 21px;
+      list-style: disc;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 18.956px;
+      color: #fff;
+      opacity: 0.8;
+    }
+
+    /* ===== 横分割线 308:8519 / 311:8652（画板通宽，短标居中） ===== */
+    .section-rule {
+      position: relative;
+      width: 100%;
+      height: 16px;
+    }
+
+    .section-rule__line {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 100%;
+      height: 1px;
+      object-fit: fill;
+      transform: translateY(-50%);
+    }
+
+    .section-rule__mark {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: calc(93 / var(--art) * 100%);
+      max-width: 93px;
+      height: 3px;
+      display: block;
+      transform: translate(-50%, -50%);
+    }
+
+    /* ===== 文字块：稿内 x=517 w=886 ===== */
+    .part-heading {
+      margin-left: calc(517 / var(--art) * 100%);
+      width: calc(886 / var(--art) * 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 20px;
+      color: #fff;
+    }
+
+    .part-label {
+      font-weight: 500;
+      font-size: 24px;
+      line-height: normal;
+      opacity: 0.7;
+      width: 100%;
+    }
+
+    .part-title {
+      font-weight: 700;
+      font-size: 32px;
+      line-height: normal;
+      width: 100%;
+    }
+
+    /* 24/500 小节标题 */
+    .part-subtitle {
+      margin-left: calc(517 / var(--art) * 100%);
+      width: calc(886 / var(--art) * 100%);
+      font-weight: 500;
+      font-size: 24px;
+      line-height: normal;
+      color: #fff;
+    }
+
+    .part-body {
+      margin-left: calc(517 / var(--art) * 100%);
+      width: calc(886 / var(--art) * 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 1.8;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .part-body p { width: 100%; }
+
+    /* ===== 媒体块 ===== */
+    .stage {
+      position: relative;
+      margin-left: calc(351 / var(--art) * 100%);
+      width: calc(1218 / var(--art) * 100%);
+    }
+
+    .stage__img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    /* x=410 w=1100 — Token 分级图 */
+    .stage--w1100 {
+      margin-left: calc(410 / var(--art) * 100%);
+      width: calc(1100 / var(--art) * 100%);
+    }
+
+    /* x=362 w=1197 — Token 映射 / Props 映射 */
+    .stage--w1197 {
+      margin-left: calc(362 / var(--art) * 100%);
+      width: calc(1197 / var(--art) * 100%);
+    }
+
+    /* x=361 w=1197 — 文档化双图 */
+    .stage--w1197l361 {
+      margin-left: calc(361 / var(--art) * 100%);
+      width: calc(1197 / var(--art) * 100%);
+    }
+
+    /* ===== 竖虚线 x=453 / 1467（画板坐标），随媒体块换算 ===== */
+    .rail {
+      position: absolute;
+      width: 1px;
+      pointer-events: none;
+      z-index: 2;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.3) 0,
+        rgba(255, 255, 255, 0.3) 6px,
+        transparent 6px,
+        transparent 12px
+      );
+    }
+
+    .stage .rail--left { left: calc(102 / 1218 * 100%); }
+    .stage .rail--right { right: calc(102 / 1218 * 100%); }
+    .stage--w1100 .rail--left { left: calc(43 / 1100 * 100%); }
+    .stage--w1100 .rail--right { right: calc(43 / 1100 * 100%); }
+    .stage--w1197 .rail--left { left: calc(91 / 1197 * 100%); }
+    .stage--w1197 .rail--right { right: calc(91 / 1197 * 100%); }
+    .stage--w1197l361 .rail--left { left: calc(92 / 1197 * 100%); }
+    .stage--w1197l361 .rail--right { right: calc(92 / 1197 * 100%); }
+
+    /*
+      各段虚线下端贴媒体上沿，向上越过整段文字。
+      上端止于分割线下方或上一张图片下方，各留 10-40px 净空。
+      以所属媒体自身高度为基准换算，随视口缩放。
+    */
+    .rail--cards { top: calc(-630 / 778.5 * 100%); height: calc(630 / 778.5 * 100%); }
+    .rail--library { top: calc(-290 / 500 * 100%); height: calc(290 / 500 * 100%); }
+    .rail--tokens { top: calc(-330 / 470.04 * 100%); height: calc(330 / 470.04 * 100%); }
+    .rail--mapping { top: calc(-330 / 694.79 * 100%); height: calc(330 / 694.79 * 100%); }
+    /* 底边停在正文下方，不伸进与图片之间的空隙 */
+    .rail--props { top: calc(-680 / 758 * 100%); height: calc(580 / 758 * 100%); }
+    .rail--docs { top: calc(-320 / 302.91 * 100%); height: calc(220 / 302.91 * 100%); }
+
+    /* ===== 垂直节奏（按稿 y 差值） ===== */
+    .mt-113 { margin-top: 113px; }
+    .mt-120 { margin-top: 120px; }
+    .mt-77 { margin-top: 77px; }
+    .mt-69 { margin-top: 69px; }
+    .mt-32 { margin-top: 32px; }
+    .mt-48 { margin-top: 48px; }
+    .mt-63 { margin-top: 63px; }
+    .mt-64 { margin-top: 64px; }
+    .mt-84 { margin-top: 84px; }
+    .mt-85 { margin-top: 85px; }
+    .mt-98 { margin-top: 98px; }
+    .mt-109 { margin-top: 109px; }
+
+    @media (max-width: 1280px) {
+      .ds-meta__title { font-size: 28px; line-height: 1.4; }
+      .part-title { font-size: 28px; }
+      .part-label { font-size: 20px; }
+      .part-subtitle { font-size: 20px; }
+      .part-body { font-size: 15px; }
+    }
+
+    @media (max-width: 860px) {
+      .page { padding: 72px 24px 96px; }
+
+      .ds-cover-wrap,
+      .ds-meta,
+      .part-heading,
+      .part-subtitle,
+      .part-body,
+      .stage,
+      .stage--w1100,
+      .stage--w1197,
+      .stage--w1197l361 {
+        margin-left: 0;
+        width: 100%;
+      }
+
+      .ds-cover { border-radius: 16px; }
+
+      /* 稿面引言压在封面上，窄屏改为封面下方常规段落 */
+      .ds-cover__lede {
+        position: static;
+        width: 100%;
+        margin-top: 24px;
+        color: rgba(255, 255, 255, 0.7);
+        opacity: 1;
+      }
+
+      .ds-meta { margin-top: 48px; }
+      .ds-meta__title { font-size: 24px; }
+      .ds-meta__cols { flex-direction: column; gap: 40px; }
+      .ds-meta__col--timeline,
+      .ds-meta__col--toc { width: 100%; }
+
+      .part-title { font-size: 24px; }
+      .part-label { font-size: 16px; }
+      .part-subtitle { font-size: 18px; }
+      .part-body { font-size: 14px; }
+
+      .rail { display: none; }
+
+      .mt-113, .mt-120 { margin-top: 72px; }
+      .mt-98, .mt-109 { margin-top: 56px; }
+      .mt-84, .mt-85, .mt-77 { margin-top: 48px; }
+      .mt-63, .mt-64, .mt-69 { margin-top: 40px; }
+      .mt-48 { margin-top: 32px; }
+      .mt-32 { margin-top: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <a class="back" href="./index.html#work">← 返回</a>
+
+  <main class="page">
+    <!-- 封面 308:8233 -->
+    <section class="ds-cover-wrap">
+      <div class="ds-cover" data-node-id="308:8233">
+        <img
+          class="ds-cover__img"
+          src="./assets/case-design-system/hero-cover-2x.png"
+          alt="设计系统建设 — Components 组件库 / design token / 设计系统工程化"
+          width="2878"
+          height="1619"
+        />
+      </div>
+      <p class="ds-cover__lede" data-node-id="347:144175">
+        萌芽时间于百度MEUX对当时的成熟组件产生了浓厚的兴趣,我便在2025年秋天加入美团Keeta体验设计团队，成为设计基建中的一员，搭建业务组件、主R 38+ 组件变体和Design Token的工作,直到2026年初进入到TikTok负责制定组件的使用规范/优化组件变体/Dark模式的录入等
+      </p>
+    </section>
+
+    <!-- 概览 347:100248 -->
+    <section class="ds-meta" data-node-id="347:100248">
+      <h1 class="ds-meta__title" data-node-id="347:100249">关于我对设计系统的理解</h1>
+
+      <div class="ds-meta__cols" data-node-id="347:100250">
+        <div class="ds-meta__col ds-meta__col--timeline" data-node-id="347:100251">
+          <div class="ds-meta__label" data-node-id="347:100253">
+            <img src="./assets/case-design-system/icon-clock.svg" alt="" width="20" height="20" />
+            <span>时间线</span>
+          </div>
+          <div class="ds-meta__stack" data-node-id="347:100257">
+            <div class="ds-meta__item" data-node-id="347:100258">
+              <strong>01/ Timeline</strong>
+              <ul><li>2025.5 - Now</li></ul>
+            </div>
+            <div class="ds-meta__item" data-node-id="347:100261">
+              <strong>02/ Teammate</strong>
+              <ul><li>@xiajun Liu&nbsp; @keyu Long @Others</li></ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="ds-meta__col ds-meta__col--toc" data-node-id="347:100264">
+          <div class="ds-meta__label" data-node-id="347:100265">
+            <img src="./assets/case-design-system/icon-toc.svg" alt="" width="20" height="20" />
+            <span>内容概览</span>
+          </div>
+          <div class="ds-meta__stack" data-node-id="347:144185">
+            <div class="ds-meta__item ds-meta__item--wide" data-node-id="347:144176">
+              <strong>01/ 设计系统 设计侧</strong>
+              <ul>
+                <li>独立负责38+的组件变体工作</li>
+                <li>语意化的三级 Token 结构</li>
+                <li>并赋能团队/PM和设计如何使用说明文档和规范</li>
+              </ul>
+            </div>
+            <div class="ds-meta__item ds-meta__item--wide" data-node-id="347:144181">
+              <strong>02/ 设计系统 工程侧</strong>
+              <ul>
+                <li>建立Figma Properties与代码 Props的映射</li>
+                <li>推进设计系统的文档化建设</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 分割线 308:8519 -->
+    <div class="section-rule mt-113" data-node-id="308:8519">
+      <img class="section-rule__line" src="./assets/case-ttls/section-rule-h.svg" alt="" width="1920" height="1" />
+      <img class="section-rule__mark" src="./assets/case-ttls/section-rule-mark.svg" alt="" width="93" height="3" data-node-id="308:8522" />
+    </div>
+
+    <!-- PART ONE 308:8518 -->
+    <div class="part-heading mt-77" data-node-id="308:8595">
+      <p class="part-label" data-node-id="308:8593">PART ONE</p>
+      <h2 class="part-title" data-node-id="308:8516">Components 组件库</h2>
+    </div>
+
+    <div class="part-body mt-32" data-node-id="308:8517">
+      <p>在我加入Keeta-B 商家端之前，仅仅只是部分高优的业务组件得到了搭建，基础组件还并未进行全局更新，刚开始我便定义一些基础组件的规范。在5名设计师的参与，且前中期样式规范仍在迭代的情况下，组件间有较好的样式和输出形式一致性。并输出了有近39+基础组件。并由概述、类型、业务使用场景、状态和应用指南进行解释，帮助设计师、产品、研发在进行调用组件变体时对应给出组件的使用方法和规范</p>
+    </div>
+
+    <!-- 308:8592 -->
+    <h3 class="part-subtitle mt-48" data-node-id="308:8585">“做最熟悉Mg/Fg功能边界的设计师”</h3>
+
+    <div class="part-body mt-32" data-node-id="308:8586">
+      <p>在39个基础组件搭建完毕，开始独立负责组件变体工作，了解MG的组件属性，「组件状态」「显示状态」「文本内容」「实例切换」「插槽」「嵌套实例」，需合理使用来减少Component数量，嵌套实例可以很好的让复合组件的子组件进行第一层级的参数调整，帮助设计师快速切换状态</p>
+    </div>
+
+    <!-- 组件属性六宫格 308:8584 -->
+    <div class="stage mt-109" data-node-id="308:8584">
+      <span class="rail rail--left rail--cards" aria-hidden="true" data-node-id="308:8520"></span>
+      <span class="rail rail--right rail--cards" aria-hidden="true" data-node-id="308:8521"></span>
+      <img
+        class="stage__img"
+        src="./assets/case-design-system/component-props-grid-2x.png"
+        alt="组件属性、显示状态、文本内容、实例切换、插槽、嵌套实例六类组件变体属性说明"
+        width="2436"
+        height="1557"
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+
+    <!-- 308:8611 -->
+    <h3 class="part-subtitle mt-64" data-node-id="308:8612">组件变体 效果显著增加</h3>
+
+    <div class="part-body mt-32" data-node-id="308:8613">
+      <p>我将39个组件变体任务进行拆分逐个进行击破，由易到难。首先仅使用组件属性功能，在划分上分为「类型」「状态」「尺寸」不含盖其他功能的组件，例如：开关、徽标、标签、单选框和复选框等进行组件变体，逐步训练我的归类能力与命名能力，在面对复杂组件时需要将所有组件的状态进行绘制以及归类，并运用好各个组件变体的属性，来保持设计师在能流畅的切换的同时，尽可能减少母组件的数量</p>
+    </div>
+
+    <!-- 组件库总览 308:8608 -->
+    <div class="stage mt-64" data-node-id="308:8608">
+      <span class="rail rail--left rail--library" aria-hidden="true" data-node-id="308:8609"></span>
+      <span class="rail rail--right rail--library" aria-hidden="true" data-node-id="308:8610"></span>
+      <img
+        class="stage__img"
+        src="./assets/case-design-system/component-library-2x.png"
+        alt="Keeta 商家端基础组件库总览"
+        width="2436"
+        height="1000"
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+
+    <!-- 310:8634 -->
+    <h3 class="part-subtitle mt-84" data-node-id="310:8635">Design Token</h3>
+
+    <div class="part-body mt-32" data-node-id="310:8636">
+      <p>在token层级上我们将其分为三个层级，基础Token、语义Token、组件Token，目前美团Keeta在token层级上仅涉及基础Toekn，随着团队业务的推进，关于新五大平台的建设需设计基建先行，目前基础Token难以维护与全局更新、设计的一致性难以保证，以及在验收过程中研发组件库与设计组件库样式大部分存在细节问题，需消耗大部分涉及人力...,设计系统的推进迫在眉睫</p>
+    </div>
+
+    <!-- Token 分级 310:8641 -->
+    <div class="stage stage--w1100 mt-98" data-node-id="310:8641">
+      <span class="rail rail--left rail--tokens" aria-hidden="true" data-node-id="310:8632"></span>
+      <span class="rail rail--right rail--tokens" aria-hidden="true" data-node-id="310:8633"></span>
+      <img
+        class="stage__img"
+        src="./assets/case-design-system/token-levels-2x.png"
+        alt="一级 / 二级 / 三级 Token 与对应代码 --color-brand-primary（研发与设计组件未对齐）"
+        width="2200"
+        height="941"
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+
+    <!-- 309:8618 -->
+    <h3 class="part-subtitle mt-85" data-node-id="309:8621">TTEP设计系统优化与搭建</h3>
+
+    <div class="part-body mt-32" data-node-id="372:44918">
+      <p data-node-id="309:8622">在TikTok Platform Design期间负责TTEP设计组件变体的优化,以及制定新增组件如AI对话流助手面板,赋能到多个业务场景当中,并收集来自多个设计师的组件优化反馈,并分析组件分离率来对应针对性优化组件</p>
+      <p data-node-id="311:8644">制定组件的使用规范,深扒所有业务的使用场景,规定组件如何使用,帮助各个设计师有一套稳定的组件使用规则,同时支持设计系统的Dark mode 的录入等</p>
+    </div>
+
+    <!-- Token 映射 312:9447 -->
+    <div class="stage stage--w1197 mt-85" data-node-id="312:9447">
+      <span class="rail rail--left rail--mapping" aria-hidden="true" data-node-id="309:8624"></span>
+      <span class="rail rail--right rail--mapping" aria-hidden="true" data-node-id="309:8625"></span>
+      <img
+        class="stage__img"
+        src="./assets/case-design-system/token-mapping-2x.png"
+        alt="Base Tokens / Semantic Tokens / Component Tokens 三层映射关系"
+        width="2410"
+        height="1405"
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+
+    <!-- 分割线 311:8652 -->
+    <div class="section-rule mt-120" data-node-id="311:8652">
+      <img class="section-rule__line" src="./assets/case-ttls/section-rule-h.svg" alt="" width="1920" height="1" />
+      <img class="section-rule__mark" src="./assets/case-ttls/section-rule-mark.svg" alt="" width="93" height="3" data-node-id="311:8655" />
+    </div>
+
+    <!-- PART TWO 311:8646 -->
+    <div class="part-heading mt-69" data-node-id="311:8647">
+      <p class="part-label" data-node-id="311:8648">PART TWO</p>
+      <h2 class="part-title" data-node-id="311:8649">设计系统工程侧</h2>
+    </div>
+
+    <div class="part-body mt-32" data-node-id="382:44940">
+      <p>Figma组件化是设计系统的核心产出,其基础的搭建方法与实践已经非常成熟,以上便简单带过,这里我想深入探讨的是关于设计系统工程侧的部分.</p>
+    </div>
+
+    <h3 class="part-subtitle mt-32" data-node-id="311:8650">建立Figma Properties与代码 Props的映射</h3>
+
+    <div class="part-body mt-32" data-node-id="375:44919">
+      <p data-node-id="311:8651">这里的核心就在于设计师与开发者之间建立一套统一的语言,Figma的Properties本就是视觉与交互的配置合集,而React当中的Props是逻辑与交互的接口,是父组件传递给子组件的配置参数，用来控制组件的外观和行为</p>
+      <p data-node-id="382:44943">为解决此问题需要严格定制一套组件属性命名和结构规范,确保设计与开发两端对组件的配置方式尽可能达到共识,这样无论设计师还是开发者都可以准确理解.</p>
+    </div>
+
+    <!-- Properties ↔ Props 映射 382:44946 -->
+    <div class="stage stage--w1197 mt-77" data-node-id="382:44946">
+      <span class="rail rail--left rail--props" aria-hidden="true" data-node-id="311:8653"></span>
+      <span class="rail rail--right rail--props" aria-hidden="true" data-node-id="311:8654"></span>
+      <img
+        class="stage__img"
+        src="./assets/case-design-system/props-mapping-2x.png"
+        alt="Figma Properties 与代码 Props 的命名与结构映射"
+        width="2394"
+        height="1516"
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+
+    <!-- 382:44948 -->
+    <h3 class="part-subtitle mt-85" data-node-id="382:44950">推进设计系统的文档化建设</h3>
+
+    <div class="part-body mt-32" data-node-id="382:44959">
+      <p data-node-id="382:44952">过去对设计系统的文档化建设一直有一个错误的认知,以为只是一个静态的文档,当设计师想要了解如何使用组件就前往固定的区域去看设计规范,推进设计系统文档化建设的目的是为了让设计师和开发者能够在最熟悉的环境中,无缝衔接到所有信息.</p>
+      <p data-node-id="382:44957">以Arco Design为例,设计师复制组件可以直接点击右侧的Description,并跳转到详细的设计指南网站. 开发者可以通过Figma Dev mode的Code Connect直接获取代码或者点击组件链接查询API</p>
+    </div>
+
+    <!-- 文档化双图 383:44979 -->
+    <div class="stage stage--w1197l361 mt-63" data-node-id="383:44979">
+      <span class="rail rail--left rail--docs" aria-hidden="true" data-node-id="382:44954"></span>
+      <span class="rail rail--right rail--docs" aria-hidden="true" data-node-id="382:44955"></span>
+      <img
+        class="stage__img"
+        src="./assets/case-design-system/docs-pair-2x.png"
+        alt="Arco Design 组件 Description 跳转设计指南与 Figma Dev mode Code Connect 取码"
+        width="2394"
+        height="606"
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Coding — TikTok 生服/平台</title>
+  <link rel="icon" href="./assets/favicon.jpg" type="image/jpeg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #fff;
+      color: #111;
+      font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    .back {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 20;
+      color: rgba(0, 0, 0, 0.55);
+      font-size: 16px;
+      line-height: 1;
+      text-decoration: none;
+    }
+
+    .back:hover { color: #000; }
+
+    .page {
+      --art: 1920;
+      width: min(100%, 1920px);
+      margin: 0 auto;
+      padding: 108px 108px 160px;
+    }
+
+    @media (max-width: 860px) {
+      .page { padding: 72px 24px 96px; }
+    }
+
+    /* Tag cloud hero — Figma 341:100102 */
+    .aic-banner {
+      --art: 1920;
+      margin-left: -108px;
+      margin-right: -108px;
+      width: calc(100% + 216px);
+      box-sizing: border-box;
+    }
+
+    .aic-banner__panel {
+      position: relative;
+      /* 与 .skill-panel__inner 同宽同左缘：x=361 w=1198 */
+      margin-left: calc(361 / var(--art) * 100%);
+      width: calc(1198 / var(--art) * 100%);
+      max-width: 1198px;
+      aspect-ratio: 1198 / 700;
+      border-radius: 24px;
+      overflow: hidden;
+      background: #000;
+      box-sizing: border-box;
+    }
+
+    .aic-banner__glow {
+      position: absolute;
+      pointer-events: none;
+      width: 28%;
+      height: 30%;
+      background: radial-gradient(ellipse at center, rgba(120, 70, 180, 0.55) 0%, rgba(40, 10, 70, 0.2) 45%, transparent 70%);
+      filter: blur(8px);
+    }
+
+    .aic-banner__glow--tr {
+      right: -2%;
+      top: -8%;
+      width: 42%;
+      height: 55%;
+    }
+
+    .aic-banner__glow--bl {
+      left: -6%;
+      bottom: -10%;
+      width: 42%;
+      height: 55%;
+    }
+
+    .aic-banner__tags {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: min(764px, 88%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .aic-tag-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 13px;
+      flex-wrap: wrap;
+    }
+
+    .aic-tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 59px;
+      padding: 8px 19px 10px;
+      border-radius: 999px;
+      border: 1px solid #fff;
+      font-family: "Poppins", "PingFang SC", sans-serif;
+      font-weight: 500;
+      font-size: clamp(18px, 2.3vw, 33px);
+      line-height: 1.2;
+      letter-spacing: -0.05em;
+      white-space: nowrap;
+      box-sizing: border-box;
+    }
+
+    .aic-tag--outline {
+      background: #121212;
+      color: #fff;
+    }
+
+    .aic-tag--yellow { background: #fdc728; color: #121212; }
+    .aic-tag--teal { background: #01b085; color: #fff; }
+    .aic-tag--orange { background: #fc6636; color: #121212; }
+    .aic-tag--mint { background: #b4dcdd; color: #121212; }
+    .aic-tag--pink { background: #ec91f9; color: #121212; }
+
+    /* Meta intro — Figma 341:100215 */
+    .aic-meta {
+      --art: 1920;
+      margin-top: 100px;
+      margin-left: -108px;
+      margin-right: -108px;
+      width: calc(100% + 216px);
+      box-sizing: border-box;
+    }
+
+    .aic-meta__inner {
+      /* 与 banner / skill-panel 左缘对齐 */
+      margin-left: calc(361 / var(--art) * 100%);
+      width: calc(1198 / var(--art) * 100%);
+      max-width: 1198px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 40px;
+    }
+
+    /* 排版参考 xyf.design/baidu-ds：标题 40/500；分组标题 14/#171717；正文 13/#808080 */
+    .aic-meta__title {
+      font-weight: 500;
+      font-size: 40px;
+      line-height: 1.3;
+      letter-spacing: 0.2px;
+      color: #000;
+    }
+
+    .aic-meta__cols {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: clamp(48px, 8.3vw, 159px);
+      width: 100%;
+      flex-wrap: nowrap;
+    }
+
+    .aic-meta__col {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 20px;
+      min-width: 0;
+    }
+
+    .aic-meta__col--timeline {
+      flex: 0 0 auto;
+      width: min(374px, 32%);
+    }
+
+    .aic-meta__col--toc {
+      flex: 1 1 auto;
+      width: auto;
+    }
+
+    .aic-meta__label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .aic-meta__label img {
+      width: 16px;
+      height: 16px;
+      display: block;
+      opacity: 0.85;
+    }
+
+    .aic-meta__label span {
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 1.8;
+      color: #171717;
+      white-space: nowrap;
+    }
+
+    .aic-meta__stack {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .aic-meta__item {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+    }
+
+    .aic-meta__item strong {
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 1.8;
+      color: #171717;
+    }
+
+    .aic-meta__item ul {
+      margin: 0;
+      padding-left: 0;
+      list-style: none;
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 1.8;
+      color: #808080;
+    }
+
+    .aic-meta__toc {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .aic-meta__toc p {
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 1.8;
+      color: #808080;
+    }
+
+    /* Skill build panel — Figma 317:31861 */
+    /* Skill 卡：与媒体同宽 x=361 w=1198 */
+    .skill-panel {
+      --art: 1920;
+      margin-top: 148px;
+      margin-bottom: 128px;
+      margin-left: -108px;
+      margin-right: -108px;
+      width: calc(100% + 216px);
+      max-width: none;
+      padding: 0;
+      border: none;
+      background: transparent;
+      display: block;
+      box-sizing: border-box;
+    }
+
+    .skill-panel__inner {
+      margin-left: calc(361 / var(--art) * 100%);
+      width: calc(1198 / var(--art) * 100%);
+      max-width: 1198px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 24px;
+      padding: 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      background: #fff;
+      box-sizing: border-box;
+    }
+
+    .skill-hero {
+      background: #fafafa;
+      color: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: -48px -48px 0;
+      padding: 279px 48px;
+      min-height: 666px;
+      border-radius: 23px 23px 0 0;
+      box-sizing: border-box;
+    }
+
+    .skill-hero__inner {
+      position: relative;
+      width: 715px;
+      max-width: 100%;
+      height: 108px;
+    }
+
+    .skill-hero__title-row {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+    }
+
+    .skill-hero__logo {
+      width: 62px;
+      height: 62px;
+      flex-shrink: 0;
+      display: block;
+    }
+
+    .skill-hero-title {
+      font-weight: 600;
+      font-size: 44.5px;
+      line-height: 57px;
+      letter-spacing: 1.33px;
+      color: #111;
+      margin: 0;
+      white-space: nowrap;
+    }
+
+    .skill-hero-sub {
+      position: absolute;
+      left: 316px;
+      top: 80px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      opacity: 0.7;
+      font-size: 22px;
+      font-weight: 400;
+      line-height: 27px;
+      letter-spacing: 0.67px;
+      color: #000;
+      white-space: nowrap;
+    }
+
+    .skill-hero-sub .bar {
+      width: 62px;
+      height: 1px;
+      background: #000;
+      opacity: 0.5;
+      flex-shrink: 0;
+    }
+
+    .skill-compare {
+      background: #fff;
+      color: #111;
+      padding: 36px;
+      overflow: hidden;
+    }
+
+    .skill-compare h3 {
+      font-weight: 600;
+      font-size: 20px;
+      margin-bottom: 28px;
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .compare-card {
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 12px;
+      padding: 16px 18px;
+      background: rgba(0, 0, 0, 0.01);
+    }
+
+    .compare-card header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 14px;
+    }
+
+    .compare-card header strong {
+      font-family: Poppins, "PingFang SC", sans-serif;
+      font-weight: 500;
+      font-size: 16px;
+    }
+
+    .compare-card header span {
+      font-family: Poppins, "PingFang SC", sans-serif;
+      font-size: 12px;
+      opacity: 0.35;
+    }
+
+    .compare-card--today header span {
+      opacity: 1;
+      color: #2f6bff;
+    }
+
+    .compare-card ul {
+      list-style: disc;
+      padding-left: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .compare-card--notion ul { opacity: 0.5; }
+    .compare-card--today ul { opacity: 0.9; }
+
+    .folder-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 200px;
+      gap: 12px;
+    }
+
+    .folder-card,
+    .one-liner {
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.01);
+      padding: 18px;
+      min-height: 220px;
+    }
+
+    .folder-meta {
+      display: flex;
+      justify-content: space-between;
+      opacity: 0.5;
+      font-family: Poppins, "PingFang SC", sans-serif;
+      font-size: 14px;
+      margin-bottom: 14px;
+    }
+
+    .folder-meta .hint { font-size: 11px; opacity: 0.6; }
+
+    .folder-tree {
+      font-family: Poppins, "SF Mono", Menlo, monospace;
+      font-size: 14px;
+      line-height: 2;
+    }
+
+    .folder-tree .root { font-weight: 500; margin-bottom: 4px; }
+
+    .folder-tree .row {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 16px;
+      opacity: 0.8;
+    }
+
+    .folder-tree .row .note {
+      font-size: 12px;
+      opacity: 0.5;
+      font-family: Poppins, "PingFang SC", sans-serif;
+    }
+
+    .one-liner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 28px;
+    }
+
+    .one-liner .label {
+      opacity: 0.5;
+      font-family: Poppins, "PingFang SC", sans-serif;
+      font-size: 14px;
+    }
+
+    .one-liner .value {
+      font-family: Poppins, "PingFang SC", sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .path-cards {
+      display: grid;
+      grid-template-columns: 1fr;
+      color: #111;
+    }
+
+    .path-card {
+      padding: 36px 28px 48px;
+      text-align: center;
+      background: #fff;
+    }
+
+    .path-card:nth-child(2) {
+      background: #fafafa;
+      color: #131313;
+    }
+
+    .path-card .num {
+      font-weight: 600;
+      font-size: 20px;
+      text-align: left;
+      margin-bottom: 36px;
+    }
+
+    .path-card h4 {
+      font-weight: 600;
+      font-size: 32px;
+      margin-bottom: 14px;
+    }
+
+    .path-card p {
+      font-size: 16px;
+      line-height: 1.5;
+      opacity: 0.6;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* Sections — 宽度体系对齐 ttls-product.html
+       媒体 x=361 w=1198；虚线左右 inset 92；标题/正文 x=517 w=875 */
+    .section {
+      --art: 1920;
+      position: relative;
+      margin-left: -108px;
+      margin-right: -108px;
+      width: calc(100% + 216px);
+      max-width: none;
+      padding-bottom: 96px;
+      box-sizing: border-box;
+    }
+
+    .section-rule {
+      position: relative;
+      margin-left: 0;
+      width: 100%;
+      height: 1px;
+      pointer-events: none;
+    }
+
+    .section-rule img {
+      display: block;
+      width: 100%;
+      height: 1px;
+      object-fit: fill;
+    }
+
+    /* Section 文案参考 xyf.design/baidu-ds：label 24/#a1a1a1；title 34/500；body 14/#616161 */
+    .part-heading {
+      margin-top: 96px;
+      margin-left: calc(517 / var(--art) * 100%);
+      width: calc(900 / var(--art) * 100%);
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      color: #000;
+    }
+
+    .part-heading .part-label {
+      font-weight: 400;
+      font-size: 24px;
+      line-height: 1.5;
+      color: #a1a1a1;
+      width: 100%;
+    }
+
+    .part-heading .part-title {
+      font-weight: 500;
+      font-size: 34px;
+      line-height: 1.5;
+      color: #000;
+      width: 100%;
+    }
+
+    .part-heading--wide {
+      width: max-content;
+      max-width: calc(100% - 517 / var(--art) * 100%);
+    }
+
+    .part-heading--wide .part-title {
+      width: auto;
+      white-space: nowrap;
+    }
+
+    .part-body {
+      margin-top: 40px;
+      margin-left: calc(517 / var(--art) * 100%);
+      width: calc(875 / var(--art) * 100%);
+      max-width: 875px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 1.5;
+      letter-spacing: 0.01em;
+      color: #616161;
+    }
+
+    .part-body--single { gap: 14px; }
+
+    .media-rail-stage {
+      position: relative;
+      margin-top: 51px;
+      margin-left: calc(361 / var(--art) * 100%);
+      width: calc(1198 / var(--art) * 100%);
+      max-width: 1198px;
+    }
+
+    /* 连续媒体紧挨：去掉多余空隙与上延竖线 */
+    .media-rail-stage + .media-rail-stage {
+      margin-top: 16px;
+    }
+
+    .media-frame {
+      width: 100%;
+      border-radius: 24px;
+      overflow: hidden;
+      background: #f5f5f5;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .media-frame img,
+    .media-frame video {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .media-frame--light { background: #fafafa; }
+
+    /* 虚线：对齐 ttls-product — 压在媒体上，左右各 inset 92；上延框住文字 */
+    .rail {
+      position: absolute;
+      top: calc(-620 / 700 * 100%);
+      width: 1px;
+      height: calc(520 / 700 * 100%);
+      pointer-events: none;
+      z-index: 2;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.22) 0,
+        rgba(0, 0, 0, 0.22) 6px,
+        transparent 6px,
+        transparent 12px
+      );
+    }
+
+    .rail--left { left: calc(92 / 1198 * 100%); }
+    .rail--right { left: auto; right: calc(92 / 1198 * 100%); }
+
+    .rail--h197 {
+      top: calc(-220 / 700 * 100%);
+      height: calc(200 / 700 * 100%);
+    }
+    .rail--h180 {
+      top: calc(-260 / 700 * 100%);
+      height: calc(180 / 700 * 100%);
+    }
+    .rail--h328 {
+      top: calc(-600 / 700 * 100%);
+      height: calc(528 / 700 * 100%);
+    }
+    .rail--h468 {
+      /* 固定高度：避免超高媒体把百分比虚线拉得过长 */
+      top: -452px;
+      height: 400px;
+    }
+    .rail--h652 {
+      top: calc(-620 / 700 * 100%);
+      height: calc(520 / 700 * 100%);
+    }
+    .rail--h702 {
+      top: calc(-1020 / 700 * 100%);
+      height: calc(920 / 700 * 100%);
+    }
+    .rail--h358 {
+      top: calc(-400 / 700 * 100%);
+      height: calc(300 / 700 * 100%);
+    }
+
+    .stage-label {
+      margin-top: 64px;
+      margin-left: calc(517 / var(--art) * 100%);
+      width: calc(875 / var(--art) * 100%);
+      max-width: 875px;
+      font-weight: 500 !important;
+      font-size: 20px;
+      line-height: 1.5;
+      letter-spacing: 0.01em;
+      color: #000;
+    }
+
+    /* 仅文字上移：不改变文档流，竖线与下方媒体位置不变 */
+    .media-rail-stage + .stage-label,
+    .media-rail-stage + .stage-label + .stage-note {
+      transform: translateY(-24px);
+    }
+
+    .stage-note {
+      margin-top: 14px;
+      margin-left: calc(517 / var(--art) * 100%);
+      width: calc(875 / var(--art) * 100%);
+      max-width: 875px;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 1.5;
+      letter-spacing: 0.01em;
+      color: #616161;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 32px;
+      margin-left: calc(517 / var(--art) * 100%);
+      width: calc(875 / var(--art) * 100%);
+      max-width: 875px;
+    }
+
+    .metric-card {
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      padding: 20px 22px;
+      background: #fafafa;
+      color: #000;
+    }
+
+    .metric-card h4 {
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.5;
+      color: #171717;
+      margin-bottom: 8px;
+    }
+
+    .metric-card p {
+      font-size: 13px;
+      font-weight: 400;
+      line-height: 1.8;
+      color: #808080;
+    }
+
+    .subhead {
+      margin-top: 64px;
+      margin-left: calc(517 / var(--art) * 100%);
+      width: calc(875 / var(--art) * 100%);
+      max-width: 875px;
+      font-weight: 500;
+      font-size: 20px;
+      line-height: 1.5;
+      letter-spacing: 0.01em;
+      color: #000;
+    }
+
+    .subhead + .subhead { margin-top: 16px; }
+
+    .footnote {
+      margin-top: 24px;
+      margin-left: calc(517 / var(--art) * 100%);
+      width: calc(875 / var(--art) * 100%);
+      max-width: 875px;
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 1.8;
+      color: #808080;
+    }
+
+    /* Bridge — Figma 317:51090 / 317:96135 */
+    .bridge {
+      --art: 1920;
+      margin-left: -108px;
+      margin-right: -108px;
+      width: calc(100% + 216px);
+      max-width: none;
+      margin-top: 96px;
+      margin-bottom: 64px;
+      box-sizing: border-box;
+    }
+
+    .bridge-panel {
+      margin-left: calc(361 / var(--art) * 100%);
+      width: calc(1198 / var(--art) * 100%);
+      max-width: 1198px;
+      min-height: 420px;
+      border: 1px solid rgba(221, 221, 221, 0.6);
+      border-radius: 24px;
+      background: #fafafa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 48px;
+      box-sizing: border-box;
+    }
+
+    .bridge-panel__inner {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 20px;
+      max-width: 100%;
+    }
+
+    .bridge-title-row {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .bridge-logo {
+      width: 56px;
+      height: 56px;
+      flex-shrink: 0;
+      display: block;
+    }
+
+    .bridge-title {
+      font-weight: 550;
+      font-size: 40px;
+      line-height: 1.3;
+      letter-spacing: 0.02em;
+      color: #111;
+      margin: 0;
+    }
+
+    .bridge-sub {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-left: calc(56px + 28px + 80px);
+      opacity: 0.7;
+    }
+
+    .bridge-sub__bar {
+      width: 56px;
+      height: 1px;
+      background: #000;
+      opacity: 0.5;
+      flex-shrink: 0;
+    }
+
+    .bridge-sub__text {
+      font-size: 18px;
+      line-height: 1.4;
+      letter-spacing: 0.02em;
+      color: #000;
+      opacity: 0.7;
+      white-space: nowrap;
+    }
+
+    .bridge-note {
+      margin-top: 48px;
+      margin-left: calc(361 / var(--art) * 100%);
+      width: calc(1198 / var(--art) * 100%);
+      max-width: 1198px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .bridge-note__bar {
+      width: 4px;
+      height: 28px;
+      background: rgba(0, 0, 0, 0.1);
+      flex-shrink: 0;
+    }
+
+    .bridge-note__text {
+      font-size: 16px;
+      line-height: 1.5;
+      letter-spacing: 0.02em;
+      color: rgba(0, 0, 0, 0.5);
+    }
+
+    .bridge-note__next {
+      margin-left: 16px;
+      color: rgba(0, 0, 0, 0.55);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .bridge-note__next:hover {
+      color: #000;
+    }
+
+    @media (max-width: 980px) {
+      .aic-banner,
+      .aic-meta {
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+      }
+      .aic-banner__panel,
+      .aic-meta__inner {
+        margin-left: 0;
+        width: 100%;
+        max-width: none;
+      }
+      .aic-banner__panel {
+        aspect-ratio: auto;
+        min-height: 360px;
+        padding: 48px 16px;
+      }
+      .aic-banner__tags {
+        position: relative;
+        left: auto;
+        top: auto;
+        transform: none;
+        width: 100%;
+      }
+      .aic-tag {
+        height: 44px;
+        font-size: 16px;
+        padding: 6px 14px 8px;
+      }
+      .aic-meta__title { font-size: 28px; line-height: 1.3; }
+      .aic-meta__cols {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 32px;
+      }
+      .aic-meta__col--timeline { width: 36%; }
+      .aic-meta__toc p { white-space: normal; }
+      .skill-panel {
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+      }
+      .skill-panel__inner {
+        margin-left: 0;
+        width: 100%;
+        max-width: none;
+        padding: 28px 16px;
+        border-radius: 16px;
+      }
+      .compare-grid,
+      .folder-row,
+      .metric-grid { grid-template-columns: 1fr; }
+      .part-heading .part-title { font-size: 28px; }
+      .part-heading .part-label { font-size: 18px; }
+      .part-heading--wide .part-title { white-space: normal; }
+      .part-body,
+      .stage-note { font-size: 14px; }
+      .stage-label,
+      .subhead { font-size: 18px; }
+      .skill-hero {
+        margin: -28px -16px 0;
+        min-height: 320px;
+        padding: 80px 24px;
+        border-radius: 15px 15px 0 0;
+      }
+      .skill-hero__inner {
+        width: 100%;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+      .skill-hero__title-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+      .skill-hero-title {
+        font-size: 28px;
+        line-height: 1.3;
+        letter-spacing: 0.5px;
+        white-space: normal;
+      }
+      .skill-hero-sub {
+        position: static;
+        left: auto;
+        top: auto;
+        flex-wrap: wrap;
+        font-size: 16px;
+        line-height: 1.4;
+        white-space: normal;
+      }
+      .path-card h4 { font-size: 24px; }
+      .rail { display: none; }
+      .bridge {
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+      }
+      .bridge-panel,
+      .bridge-note {
+        margin-left: 0;
+        width: 100%;
+        max-width: none;
+      }
+      .bridge-panel {
+        min-height: 280px;
+        padding: 48px 24px;
+      }
+      .bridge-title-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+      .bridge-title { font-size: 28px; }
+      .bridge-sub {
+        margin-left: 0;
+        flex-wrap: wrap;
+      }
+      .bridge-sub__text { white-space: normal; }
+      .section {
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+      }
+      .part-heading,
+      .part-body,
+      .stage-label,
+      .stage-note,
+      .subhead,
+      .footnote,
+      .metric-grid,
+      .media-rail-stage {
+        margin-left: 0;
+        width: 100%;
+        max-width: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="back" href="./index.html#work">← Back</a>
+
+  <main class="page" data-node-id="242:45256">
+    <!-- Tag cloud hero — Figma 341:100102 -->
+    <section class="aic-banner" data-node-id="341:100102" aria-label="AI Coding keywords">
+      <div class="aic-banner__panel">
+        <span class="aic-banner__glow aic-banner__glow--tr" aria-hidden="true"></span>
+        <span class="aic-banner__glow aic-banner__glow--bl" aria-hidden="true"></span>
+        <div class="aic-banner__tags" data-node-id="341:100111">
+          <div class="aic-tag-row">
+            <span class="aic-tag aic-tag--outline">Components</span>
+            <span class="aic-tag aic-tag--yellow">Design Tokens</span>
+          </div>
+          <div class="aic-tag-row">
+            <span class="aic-tag aic-tag--teal">Mcp server</span>
+            <span class="aic-tag aic-tag--outline">Vibe coding</span>
+            <span class="aic-tag aic-tag--outline">Npm</span>
+            <span class="aic-tag aic-tag--outline">Page</span>
+          </div>
+          <div class="aic-tag-row">
+            <span class="aic-tag aic-tag--outline">Markdown</span>
+            <span class="aic-tag aic-tag--outline">Foundation</span>
+            <span class="aic-tag aic-tag--orange">Design to code</span>
+          </div>
+          <div class="aic-tag-row">
+            <span class="aic-tag aic-tag--mint">Skill</span>
+            <span class="aic-tag aic-tag--outline">Variables</span>
+          </div>
+          <div class="aic-tag-row">
+            <span class="aic-tag aic-tag--outline">Claude code</span>
+            <span class="aic-tag aic-tag--pink">Cursor IDE</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Meta intro — Figma 341:100215 -->
+    <section class="aic-meta" data-node-id="341:100215">
+      <div class="aic-meta__inner">
+        <h1 class="aic-meta__title">
+          TikTok 生服/平台<br />
+          通过 Skill 封装实现 Vibe Coding 提效
+        </h1>
+        <div class="aic-meta__cols" data-node-id="341:100185">
+          <div class="aic-meta__col aic-meta__col--timeline" data-node-id="341:100186">
+            <div class="aic-meta__label">
+              <img src="./assets/case-ai-coding/icon-clock.svg" alt="" width="20" height="20" />
+              <span>时间线</span>
+            </div>
+            <div class="aic-meta__stack">
+              <div class="aic-meta__item">
+                <strong>01/ Timeline</strong>
+                <ul><li>2026.2 - Now</li></ul>
+              </div>
+              <div class="aic-meta__item">
+                <strong>02/ Teammate</strong>
+                <ul><li>@xiajun Liu  @keyu Long</li></ul>
+              </div>
+            </div>
+          </div>
+          <div class="aic-meta__col aic-meta__col--toc" data-node-id="341:100199">
+            <div class="aic-meta__label">
+              <img src="./assets/case-ai-coding/icon-doc.svg" alt="" width="20" height="20" />
+              <span>内容概览</span>
+            </div>
+            <div class="aic-meta__toc">
+              <p>01/ 如何搭建一个Skill——以TikTok Platform Design为例</p>
+              <p>02/ D2C和C2D双向闭环——以TikTok Local service为例</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 如何搭建一个 Skill -->
+    <section class="skill-panel" data-node-id="317:31861">
+      <div class="skill-panel__inner">
+      <div class="skill-hero" data-node-id="317:12659">
+        <div class="skill-hero__inner">
+          <div class="skill-hero__title-row">
+            <img class="skill-hero__logo" src="./assets/case-ai-coding/tiktok-logo-skill.svg" alt="TikTok" width="62" height="62" />
+            <h2 class="skill-hero-title">如何搭建一个Skill？</h2>
+          </div>
+          <div class="skill-hero-sub">
+            <span class="bar" aria-hidden="true"></span>
+            <span>以TikTok Platform Design为例</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="skill-compare" data-node-id="317:31903">
+        <h3>Skill是“AI能执行并理解的设计系统”</h3>
+        <div class="compare-grid">
+          <article class="compare-card compare-card--notion">
+            <header>
+              <strong>Notion</strong>
+              <span>- Yesterday</span>
+            </header>
+            <ul>
+              <li>给人阅读， AI无法理解</li>
+              <li>无结构约束</li>
+              <li>不便于管理</li>
+            </ul>
+          </article>
+          <article class="compare-card compare-card--today">
+            <header>
+              <strong>Skill</strong>
+              <span>- Today</span>
+            </header>
+            <ul>
+              <li>强结构约束、便于AI理解，并调用设计系统</li>
+              <li>精准被理解，基础设计系统输出符合品牌形象的设计界面，可持续演化</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="folder-row">
+          <div class="folder-card">
+            <div class="folder-meta">
+              <span>Plain Text ▾</span>
+              <span class="hint">- Agent skill 官方说明文档</span>
+            </div>
+            <div class="folder-tree">
+              <p class="root">my-skill/</p>
+              <div class="row"><span>SKILL.md</span><span class="note"># Required: instructions + metadata</span></div>
+              <div class="row"><span>scripts/</span><span class="note"># Optional: executable code</span></div>
+              <div class="row"><span>references/</span><span class="note"># Optional: documentation</span></div>
+              <div class="row"><span>assets/</span><span class="note"># Required: templates, resources</span></div>
+            </div>
+          </div>
+          <div class="one-liner">
+            <p class="label">一句话</p>
+            <p class="value">skill.md<br />是AI可执行的上下文</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="path-cards" data-node-id="317:31955">
+        <div class="path-card">
+          <p class="num">壹</p>
+          <h4>"Npm + Skills"</h4>
+          <p>使用semi/antd等一代设计系统来保持生成的持续、统一、甚至交付</p>
+        </div>
+        <div class="path-card">
+          <p class="num">贰</p>
+          <h4>"Only Skills"</h4>
+          <p>进行美学探索，并for其他/扩展新业务</p>
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <!-- SECTION 01 -->
+    <section class="section" data-node-id="section-01">
+      <div class="section-rule" aria-hidden="true">
+        <img src="./assets/case-ai-coding/section-rule-h.svg" alt="" width="1920" height="1" />
+      </div>
+
+      <div class="part-heading">
+        <p class="part-label">SECTION 01</p>
+        <h2 class="part-title">Variables \ Styles 的重新定义</h2>
+      </div>
+
+      <div class="part-body part-body--single" data-node-id="317:31971">
+        <p>我在TikTok这部分的定义主要是围绕AI能够理解的设计系统，在我们的设计系统当中AI并不能理解我们的命名，所以要对齐进行重构，同时还需把我们这部分内容转化为markdown格式。涉及 Color、Typography、Radius、Space、Shadow、Grid、Iconography等。</p>
+      </div>
+
+      <p class="stage-label" style="font-weight:500">第一阶段：Token规范化</p>
+      <p class="stage-note" data-node-id="317:31973">首先尝试将原先的Token尝试喂给AI，但是由于TTEP前期的token体系并不规范，AI难以理解。所以本次需要规范化token体系，从base token开始搭建。但是不改变16进制编码，仅改变命名（除非想改动视觉样式）</p>
+      <div class="media-rail-stage">
+        <span class="rail rail--left" aria-hidden="true"></span>
+        <span class="rail rail--right" aria-hidden="true"></span>
+        <div class="media-frame media-frame--light">
+          <img src="./assets/case-ai-coding/token-normalize.png" alt="Token 规范化示例" width="2552" height="1488" loading="lazy" />
+        </div>
+      </div>
+
+      <p class="stage-label" style="font-weight:500">第二阶段：资产的标准化建设</p>
+      <p class="stage-note" data-node-id="317:32094">首先：我们对Foundation部分进行整理并重构内容，需要将其用作的目的、对应的token、使用规则和什么能做什么不能做进行定义转化为markdown格式。</p>
+      <div class="media-rail-stage">
+        <span class="rail rail--left rail--h197" aria-hidden="true"></span>
+        <span class="rail rail--right rail--h197" aria-hidden="true"></span>
+        <div class="media-frame media-frame--light">
+          <img src="./assets/case-ai-coding/foundation-assets.png" alt="Foundation 资产标准化" width="2548" height="1588" loading="lazy" />
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 02 -->
+    <section class="section" data-node-id="section-02">
+      <div class="section-rule" aria-hidden="true">
+        <img src="./assets/case-ai-coding/section-rule-h.svg" alt="" width="1920" height="1" />
+      </div>
+
+      <div class="part-heading part-heading--wide">
+        <p class="part-label">SECTION 02</p>
+        <h2 class="part-title">样式还原涉及HTML \ CSS \ JSON \ MD</h2>
+      </div>
+
+      <div class="part-body part-body--single" data-node-id="317:49460">
+        <p>这一部分其实若有NPM包便不用涉及该步骤，若未有NPM包需要进行样式100%还原，在这一步涉及的时长会多一些。样式还原涉及的组件需要有HTML\CSS\JSON\MD,样式能还原在90%以上很大程度在css和json上，所以必须含有这几个文件。</p>
+      </div>
+
+      <p class="stage-label" style="font-weight:500">第一阶段：组件还原</p>
+      <p class="stage-note" data-node-id="317:49462">通过vibe coding工具进行样式还原，让他生成这几个文件，在修复时需要同步这几个文件。模型尽量选择Claude Opus4.7或者GPT5.5，等样式还原完成后cursor自带模型也可以进行还原。</p>
+      <div class="media-rail-stage">
+        <span class="rail rail--left" aria-hidden="true"></span>
+        <span class="rail rail--right" aria-hidden="true"></span>
+        <div class="media-frame media-frame--light">
+          <img src="./assets/case-ai-coding/component-restore.png" alt="组件还原示例" width="2552" height="1488" loading="lazy" />
+        </div>
+      </div>
+
+      <p class="stage-label" style="font-weight:500">第二阶段：Patterns and Templates</p>
+      <p class="stage-note" data-node-id="317:49468">通过原子级组件还原完毕，需要去完成patterns部分，eg:table、side-navigation等。以及需要制作Templates来帮助AI进行理解。</p>
+      <div class="media-rail-stage">
+        <span class="rail rail--left rail--h197" aria-hidden="true"></span>
+        <span class="rail rail--right rail--h197" aria-hidden="true"></span>
+        <div class="media-frame media-frame--light">
+          <img src="./assets/case-ai-coding/patterns-templates.png" alt="Patterns and Templates" width="2548" height="1588" loading="lazy" />
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 03 -->
+    <section class="section" data-node-id="section-03">
+      <div class="section-rule" aria-hidden="true">
+        <img src="./assets/case-ai-coding/section-rule-h.svg" alt="" width="1920" height="1" />
+      </div>
+
+      <div class="part-heading">
+        <p class="part-label">SECTION 03</p>
+        <h2 class="part-title">Assets</h2>
+      </div>
+
+      <div class="part-body part-body--single" data-node-id="317:49497">
+        <p>这一步将我们的设计资产icon\illustration\image\flag进行打包封装，设计师在figma库当中需要以组件的形式创建和管理所有图标，并严格遵循命名规范，导出svg格式便于AI进行调用。同时还需要写usage_skill_md强化使用。</p>
+      </div>
+
+      <div class="media-rail-stage">
+        <span class="rail rail--left rail--h328" aria-hidden="true"></span>
+        <span class="rail rail--right rail--h328" aria-hidden="true"></span>
+        <div class="media-frame media-frame--light">
+          <img src="./assets/case-ai-coding/assets-pack.png" alt="设计资产打包" width="2552" height="680" loading="lazy" />
+        </div>
+      </div>
+
+      <p class="stage-label" style="font-weight:500">Token转化css实现基础工程化</p>
+      <p class="stage-note">需要将variables通过插件转化为css，浏览器只认识 CSS，不认识Token，通过转化实现设计与代码真正同步。</p>
+      <div class="media-rail-stage">
+        <span class="rail rail--left rail--h180" aria-hidden="true"></span>
+        <span class="rail rail--right rail--h180" aria-hidden="true"></span>
+        <div class="media-frame media-frame--light">
+          <img src="./assets/case-ai-coding/token-to-css.png" alt="Token 转化 CSS" width="2552" height="1112" loading="lazy" />
+        </div>
+      </div>
+
+      <p class="stage-label" style="font-weight:500">上传Git代码仓库实现跨团队/跨业务管理</p>
+      <p class="stage-note" data-node-id="317:50996">在制作完成后skill需要被用于不同的设计师、不同的业务甚至是不同的团队来进行使用，所以统一管理和更新非常的重要，在浏览器里就能看、管理、甚至改你远程仓库里的所有代码文件。</p>
+      <div class="media-rail-stage">
+        <span class="rail rail--left rail--h180" aria-hidden="true"></span>
+        <span class="rail rail--right rail--h180" aria-hidden="true"></span>
+        <div class="media-frame media-frame--light">
+          <img src="./assets/case-ai-coding/git-repo.png" alt="Git 仓库管理 Skill" width="2552" height="1112" loading="lazy" />
+        </div>
+      </div>
+      <p class="footnote">TikTok External Platform Design System Skills</p>
+    </section>
+
+    <!-- SECTION 04 -->
+    <section class="section" data-node-id="section-04">
+      <div class="section-rule" aria-hidden="true">
+        <img src="./assets/case-ai-coding/section-rule-h.svg" alt="" width="1920" height="1" />
+      </div>
+
+      <div class="part-heading">
+        <p class="part-label">SECTION 04</p>
+        <h2 class="part-title">量化Skill的价值与健康度</h2>
+      </div>
+
+      <div class="part-body part-body--single" data-node-id="317:51038">
+        <p>在将skill上传git管理后，需要验证skill的使用价值以及后续的健康度，首先坚持组件还原度原则，只有在还原度以及组件的交互逻辑达到98%以上采用验证并使用去推导“美”的页面</p>
+      </div>
+
+      <div class="metric-grid" data-node-id="317:51040">
+        <article class="metric-card">
+          <h4>质量维度：衡量组件的还原度</h4>
+          <p>在制作完skill不可能会达到100%还原，这也是未使用npm包的劣势，需要不断的调整md或者css和json进行优化。需要不断的监控组件的还原效果。</p>
+        </article>
+        <article class="metric-card">
+          <h4>效能维度：对比D2C流程的还原时长以及后续的维护和迭代</h4>
+          <p>在进行d2c流程时，涉及10+的页面的组件和交互逻辑需要花费5天左右的时间去维护，且不能保证同一个组件的完整性。在制作完skill尝试进行还原仅花费0.5天还原10+以上的页面，且部分时间处于等待，仅有小部分组件逻辑和细节待调整，节约90%的时间。</p>
+        </article>
+      </div>
+      <p class="stage-note">当然这仅仅是他最不起眼的效能，后续可以便于多个设计师去迭代操作，甚至扩展新业务......</p>
+      <div class="media-rail-stage">
+        <span class="rail rail--left rail--h702" aria-hidden="true"></span>
+        <span class="rail rail--right rail--h702" aria-hidden="true"></span>
+        <div class="media-frame media-frame--light">
+          <img src="./assets/case-ai-coding/skill-metrics.png" alt="Skill 健康度与还原监控" width="2552" height="1112" loading="lazy" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Bridge: AI Coding 赋能团队 -->
+    <section class="bridge" data-node-id="317:51090">
+      <div class="bridge-panel">
+        <div class="bridge-panel__inner">
+          <div class="bridge-title-row">
+            <img class="bridge-logo" src="./assets/case-ai-coding/tiktok-logo.svg" alt="TikTok" width="62" height="62" />
+            <h2 class="bridge-title">AI Coding如何去赋能到团队</h2>
+          </div>
+          <div class="bridge-sub">
+            <span class="bridge-sub__bar" aria-hidden="true"></span>
+            <span class="bridge-sub__text">以TikTok Local Service为例</span>
+          </div>
+        </div>
+      </div>
+      <div class="bridge-note" data-node-id="317:96135">
+        <span class="bridge-note__bar" aria-hidden="true"></span>
+        <p class="bridge-note__text">
+          以下只展示结果,具体推演过程在飞书文档当中,并使用过往需求进行验证
+          <a
+            class="bridge-note__next"
+            href="https://bytedance.larkoffice.com/wiki/XtXNwbOMIiIbmuk9ludcF5lInbg"
+            target="_blank"
+            rel="noopener noreferrer"
+          >Next</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- NPM + SKILL DEMO -->
+    <section class="section" id="section-demo" data-node-id="section-demo">
+      <div class="section-rule" aria-hidden="true">
+        <img src="./assets/case-ai-coding/section-rule-h.svg" alt="" width="1920" height="1" />
+      </div>
+
+      <div class="part-heading part-heading--wide">
+        <p class="part-label">SECTION 01</p>
+        <h2 class="part-title">NPM包+SKILL快速产出需求DEMO</h2>
+      </div>
+
+      <div class="part-body part-body--single" data-node-id="317:96141">
+        <p>通过npm+skill的方式能够让生成的demo符合我们的设计系统和规范,这时让AI来读取对应业务需求的PRD能够生成大概的方案,通过自己对需求的理解,可以对应的让AI快速调整初版方案,但是这远远未达到交付的地步,但是用AI继续调整这时会产生几个弊端,1是方案的历史无法保留,2是AI对应的不确定性尚可还在所以对应需要还原到figma可编辑的设计稿</p>
+      </div>
+
+      <p class="subhead">先进行一个简单的小测试</p>
+      <p class="stage-note">通过纯文字prompt来进行coding,使用在组件覆盖率高的场景看看,与线上页面效果几乎完全一致</p>
+      <div class="media-rail-stage">
+        <span class="rail rail--left rail--h468" aria-hidden="true"></span>
+        <span class="rail rail--right rail--h468" aria-hidden="true"></span>
+        <div class="media-frame">
+          <img src="./assets/case-ai-coding/demo-payout.png" alt="Payout accounts demo" width="3024" height="1724" loading="lazy" />
+        </div>
+      </div>
+
+      <p class="subhead">小需求迭代</p>
+      <p class="stage-note" data-node-id="319:96167">首先尝试一些简单需求的迭代,这类需求通常加一个组件或者调整一些小布局即可达到交付要求,这里我们尝试对管理门店页新增offline的小需求进行生成</p>
+      <div class="media-rail-stage">
+        <span class="rail rail--left rail--h180" aria-hidden="true"></span>
+        <span class="rail rail--right rail--h180" aria-hidden="true"></span>
+        <div class="media-frame">
+          <img src="./assets/case-ai-coding/demo-outlets.png" alt="Manage outlets offline demo" width="2160" height="1140" loading="lazy" />
+        </div>
+      </div>
+      <p class="subhead">那一个大的链路的改造是否能达到预期呢?——以发品需求为例</p>
+      <p class="stage-note" data-node-id="319:96176">生成的效果可以快速产出交互方案的demo,作为设计师这时需要具备一定的用户体验能力,去评判交互是否合理,虽然生成的效果符合我们的设计系统,但是达到交付还是不太够,所以接下来讲讲述如何进行Code to Design的方式</p>
+
+      <div class="media-rail-stage">
+        <span class="rail rail--left rail--h180" aria-hidden="true"></span>
+        <span class="rail rail--right rail--h180" aria-hidden="true"></span>
+        <div class="media-frame media-frame--light">
+          <video
+            src="./assets/case-ai-coding/product-flow-4k.mp4"
+            autoplay
+            muted
+            loop
+            playsinline
+          ></video>
+        </div>
+      </div>
+    </section>
+
+    <!-- C2D -->
+    <section class="section" data-node-id="section-c2d">
+      <div class="section-rule" aria-hidden="true">
+        <img src="./assets/case-ai-coding/section-rule-h.svg" alt="" width="1920" height="1" />
+      </div>
+
+      <div class="part-heading part-heading--wide">
+        <p class="part-label">SECTION 02</p>
+        <h2 class="part-title">Code to Design(C2D)达到需求交付级别</h2>
+      </div>
+
+      <div class="part-body part-body--single" data-node-id="322:96203">
+        <p>以上通过AI生成的Demo虽然整体不错,但是难以达到交付级别,为了在调整过程中保留历史版本和稳定性的原因,我们在进行C2D的流程,在figma当中转为可编辑的设计稿(且里面的组件和Token必须是设计这边的规范)进行方案推演和交付</p>
+      </div>
+      <p class="stage-note">还是以发品链路优化需求生成的demo转为可编辑的设计稿</p>
+      <p class="stage-note" data-node-id="322:96205">在figma中生成的效果符合设计师对设计稿的要求,页面的组件从组建库调用,AI并非使用Frame进行制作,且Token也是设计侧使用了Design Token</p>
+      <div class="media-rail-stage">
+        <span class="rail rail--left rail--h468" aria-hidden="true"></span>
+        <span class="rail rail--right rail--h468" aria-hidden="true"></span>
+        <div class="media-frame media-frame--light">
+          <img src="./assets/case-ai-coding/c2d-figma-top.png" alt="C2D 可编辑设计稿" width="2402" height="1160" loading="lazy" />
+        </div>
+      </div>
+      <div class="media-rail-stage">
+        <div class="media-frame media-frame--light">
+          <video
+            src="./assets/case-ai-coding/create-product-flow-4k.mp4"
+            autoplay
+            muted
+            loop
+            playsinline
+          ></video>
+        </div>
+      </div>
+    </section>
+
+    <!-- 赋能团队 -->
+    <section class="section" data-node-id="section-team">
+      <div class="section-rule" aria-hidden="true">
+        <img src="./assets/case-ai-coding/section-rule-h.svg" alt="" width="1920" height="1" />
+      </div>
+
+      <div class="part-heading">
+        <p class="part-label">SECTION 03</p>
+        <h2 class="part-title">如何赋能团队?</h2>
+      </div>
+
+      <div class="part-body part-body--single" data-node-id="324:97223">
+        <p>通过上述方案整个demo的产出+还原设计稿的耗时为0.75pd, 对比纯手搓初稿耗时1.75pd,整体提效 +57.14%,那我们怎么运用到日常业务团队当中去呢?</p>
+      </div>
+
+      <p class="subhead">探索开国不同的风格</p>
+      <p class="stage-note" data-node-id="324:97225">针对每次开国,我们都有针对每个国家本地化的设计,对应更新并调整设计风格,但前期的设计风格能否运用AI进行探索呢,我认为是可以的. 方式一:目前npm的组件为最初的印尼绿色版本,使用demo可以快速产出一些页面,在figma当中快速转为可编辑的设计稿,这里调用的是设计侧的组件库,我们在组件库可以更新符合开国最新组件样式在转为可编辑的设计稿,这样可以直接呈现并修改</p>
+      <p class="stage-note">方式二:写多版skill的方案,针对不同国家的设计风格进行更新skill,用AI Coding快速生成</p>
+      <div class="media-rail-stage">
+        <span class="rail rail--left rail--h652" aria-hidden="true"></span>
+        <span class="rail rail--right rail--h652" aria-hidden="true"></span>
+        <div class="media-frame media-frame--light">
+          <img src="./assets/case-ai-coding/products-local.png" alt="开国风格探索 Products" width="2392" height="1495" loading="lazy" />
+        </div>
+      </div>
+      <p class="stage-note">该工作流可以快速完成方案的验证,帮助设计师提效,以及在未来开国等需要探索一些设计风格的页面场景.</p>
+
+      <p class="subhead">将该方式沉淀为分享经验文档同设计师讨论</p>
+      <p class="subhead">如何将生成的DEMO完成代码交付?</p>
+      <p class="stage-note" data-node-id="334:98357">先说思路:首先要跟前端沟通让他给我们远端仓库(类似github)的权限,然后配置环境,然后用trae拉下远端仓库的最新代码,这一步是去完成本地化(本地化代码),然后看取现网的页面,然后coding后是需要去在你的本地文件代码给git到远端代码仓才能看见 也就是创建分支代码,然后跟前端沟通合并分支的事情)之后就和开发沟通跟车上线的事情.</p>
+    </section>
+
+  </main>
+</body>
+</html>
