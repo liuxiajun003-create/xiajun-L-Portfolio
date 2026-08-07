@@ -42,13 +42,15 @@
       .page { padding: 72px 24px 80px; }
     }
 
-    /* ===== 283:8186 — 案例主内容；整块随页宽自适应 ===== */
+    /* Hero：稿 415:116370 x=197 w=1525，对齐 1920 画板 */
     .block-283-8186 {
+      --art: 1920;
       margin-top: 0;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
+      margin-left: -108px;
+      margin-right: -108px;
+      width: calc(100% + 216px);
+      max-width: none;
+      box-sizing: border-box;
     }
 
     /* PART TWO 中插图 389:106866 — x=606 w=709，居中偏上 */
@@ -150,11 +152,10 @@
     /* 图/视频：等比缩放 */
     .case-showcase {
       display: block;
-      width: 100%;
-      max-width: min(100%, 1198px);
+      margin-left: calc(197 / var(--art) * 100%);
+      width: calc(1525 / var(--art) * 100%);
+      max-width: none;
       height: auto;
-      margin-left: auto;
-      margin-right: auto;
       object-fit: contain;
       object-position: center;
     }
@@ -300,7 +301,8 @@
     .block-part-one {
       /* 撑满 .page 内容宽（抵消左右 108 padding，对齐 1920 画板） */
       --art: 1920;
-      margin-top: 206px;
+      /* 稿：Hero 底 y=964 → 分割线 y=1092，间距 128 */
+      margin-top: 128px;
       margin-left: -108px;
       margin-right: -108px;
       width: calc(100% + 216px);
@@ -419,25 +421,50 @@
       background: rgba(255, 255, 255, 0.1);
     }
 
-    /* 稿 259:167827 — design-story 视频描边 */
     .media-frame--stroke {
-      border: 1px solid rgba(255, 255, 255, 0.2);
       background: transparent;
     }
 
-    /* 虚线：再上移，底边远离下方图片；左右仍 inset 92 */
+    /*
+      虚线轨永远夹在文字左右（稿 x=453/1467）。
+      结构：.lead-rail 包住文案，轨相对该栏左右 inset 92、垂直居中。
+    */
+    .lead-rail {
+      position: relative;
+      margin-left: calc(361 / var(--art) * 100%);
+      width: calc(1198 / var(--art) * 100%);
+      min-height: 163px;
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+    }
+
+    .lead-rail .part-lead {
+      margin-top: 0;
+      margin-left: calc(156 / 1198 * 100%); /* 517 - 361 */
+      /* 右缘贴右轨内侧：1198 - 92(右轨) - 156(左缩进) */
+      width: calc(950 / 1198 * 100%);
+      max-width: calc(950 / 1198 * 100%);
+      white-space: normal;
+    }
+
+    .lead-rail .part-lead--list {
+      white-space: normal;
+      box-sizing: border-box;
+    }
+
     .rail {
       position: absolute;
-      /* 高 419 + 上留 120 → 整体再抬高 */
-      top: calc(-539 / 705 * 100%);
+      top: 50%;
+      transform: translateY(-50%);
       width: 1px;
-      height: calc(419 / 705 * 100%);
+      height: 163px;
       pointer-events: none;
       z-index: 2;
       background: repeating-linear-gradient(
         to bottom,
-        rgba(255, 255, 255, 0.3) 0,
-        rgba(255, 255, 255, 0.3) 6px,
+        rgba(255, 255, 255, 0.2) 0,
+        rgba(255, 255, 255, 0.2) 6px,
         transparent 6px,
         transparent 12px
       );
@@ -446,27 +473,76 @@
     .rail--left { left: calc(92 / 1198 * 100%); }
     .rail--right { left: auto; right: calc(92 / 1198 * 100%); }
 
-    .rail--short {
-      top: calc(-283 / 538 * 100%);
-      height: calc(163 / 538 * 100%);
+    .lead-rail--tall {
+      min-height: 188px;
     }
 
-    /* PART TWO 媒体高 715；轨顶再上提，底距媒体约 120 */
-    .rail--p2 {
-      top: calc(-846 / 715 * 100%);
-      height: calc(726 / 715 * 100%);
+    .lead-rail--tall .rail {
+      height: 188px;
     }
 
-    /* PART THREE 首图高 517、轨高 302 */
-    .rail--p3a {
-      top: calc(-422 / 517 * 100%);
-      height: calc(302 / 517 * 100%);
+    /* 创建商品标题轨：短轨，高度贴近文案，不压到下方大图 */
+    .lead-rail--short {
+      min-height: 0;
+      padding-top: 28px;
+      padding-bottom: 28px;
     }
 
-    /* PART THREE 次图/全屏对比：轨顶再上提，底距媒体约 80 */
-    .rail--p3b {
-      top: calc(-348 / 674 * 100%);
-      height: calc(268 / 674 * 100%);
+    .lead-rail--short .rail {
+      height: 112px;
+    }
+
+    /* 多段文案共用一条贯穿虚线 */
+    .lead-rail--stack {
+      display: block;
+      min-height: 0;
+      padding-top: 40px;
+      padding-bottom: 40px;
+    }
+
+    .lead-rail--stack > .rail {
+      top: 0;
+      bottom: 0;
+      transform: none;
+      height: auto;
+    }
+
+    .lead-rail__stack {
+      display: flex;
+      flex-direction: column;
+      gap: 130px;
+    }
+
+    .lead-rail__stack .part-lead {
+      margin-top: 0;
+      margin-left: calc(156 / 1198 * 100%);
+      width: auto;
+      max-width: calc(900 / 1198 * 100%);
+    }
+
+    /* 长轨：文案+图片整段两侧贯穿 */
+    .lead-media-rail {
+      position: relative;
+      margin-left: calc(361 / var(--art) * 100%);
+      width: calc(1198 / var(--art) * 100%);
+    }
+
+    .lead-media-rail .part-lead {
+      margin-top: 0;
+      margin-left: calc(156 / 1198 * 100%);
+      width: auto;
+      max-width: calc(900 / 1198 * 100%);
+    }
+
+    .lead-media-rail .media-rail-stage {
+      margin-left: 0;
+      width: 100%;
+    }
+
+    .lead-media-rail > .rail {
+      top: 0;
+      transform: none;
+      height: 100%;
     }
 
     /* caption 居中于画板（稿 x=843） */
@@ -625,16 +701,15 @@
     .rail--p3visual.rail--left { left: calc(174 / 1371 * 100%); }
     .rail--p3visual.rail--right { left: auto; right: calc(183 / 1371 * 100%); }
 
-    /* 轨高 302 / 媒体 673；整组再下移约 60 */
-    .rail--p3c {
-      top: calc(-362 / 673 * 100%);
-      height: calc(302 / 673 * 100%);
+    /* 动态渲染 / 业务价值图 ≈673–674 */
+    .rail--p3d {
+      top: calc(-64 / 673 * 100%);
+      height: calc(163 / 673 * 100%);
     }
 
-    /* 轨高 290 / 媒体 673；整组再下移约 40 */
-    .rail--p3d {
-      top: calc(-370 / 673 * 100%);
-      height: calc(290 / 673 * 100%);
+    .rail--p3value {
+      top: calc(-64 / 674 * 100%);
+      height: calc(188 / 674 * 100%);
     }
 
     /* PART FOUR：窄菜单图落在 1198 媒体栏内（x=589 → inset 228） */
@@ -665,11 +740,13 @@
       height: calc(455 / 547 * 100%);
     }
 
+    .part-subhead--gap91 { margin-top: 91px; }
     .part-subhead--gap98 { margin-top: 98px; }
     .part-subhead--gap64 { margin-top: 64px; }
     .part-subhead--gap103 { margin-top: 103px; }
     .part-subhead--gap130 { margin-top: 130px; }
     .part-subhead--gap136 { margin-top: 136px; }
+    .media-rail-stage--gap88 { margin-top: 88px; }
     .media-rail-stage--gap103 { margin-top: 103px; }
     .media-rail-stage--gap109 { margin-top: 109px; }
     .media-rail-stage--gap128 { margin-top: 128px; }
@@ -677,8 +754,8 @@
 
     /* 稿面 28px Heavy 引导句（含高亮） */
     .part-lead {
-      margin-left: calc(499 / var(--art) * 100%);
-      width: calc(922 / var(--art) * 100%);
+      margin-left: calc(517 / var(--art) * 100%);
+      width: calc(886 / var(--art) * 100%);
       font-family: "PingFang SC", sans-serif;
       font-weight: 900;
       font-size: 28px;
@@ -703,19 +780,34 @@
       white-space: normal;
     }
 
-    /* 进度图 644：轨从文案上方拉起 */
+    .part-lead--nowrap {
+      width: max-content;
+      max-width: 100%;
+      white-space: nowrap;
+    }
+
+    .part-lead--two-line {
+      width: max-content;
+      max-width: 100%;
+    }
+
+    .part-lead--two-line .part-lead__line {
+      display: block;
+      white-space: nowrap;
+    }
+
+    /* 进度图 644：长轨高 999 */
     .rail--p4progress {
-      top: calc(-280 / 644 * 100%);
+      top: calc(-64 / 644 * 100%);
       height: calc(999 / 644 * 100%);
     }
 
-    /* 菜品库图 715：短轨 */
+    /* 菜品库 715 / 创建商品 524：短轨高 188 */
     .rail--p4library {
       top: calc(-64 / 715 * 100%);
       height: calc(188 / 715 * 100%);
     }
 
-    /* 创建商品 Banner 图 524：短轨 */
     .rail--p4create {
       top: calc(-64 / 524 * 100%);
       height: calc(188 / 524 * 100%);
@@ -962,7 +1054,15 @@
       .hero-intro { font-size: 16px; }
       .hero-copy { gap: 40px; }
       .meta-toc-list p { white-space: normal; }
-      .block-283-8186 { margin-top: 0; }
+      .block-283-8186 {
+        margin-left: -24px;
+        margin-right: -24px;
+        width: calc(100% + 48px);
+      }
+      .case-showcase {
+        margin-left: 24px;
+        width: calc(100% - 48px);
+      }
       .part2-mid {
         margin-left: 0;
         width: 100%;
@@ -976,6 +1076,9 @@
         white-space: normal;
       }
       .part-lead--list { white-space: normal; }
+      .part-lead--nowrap { white-space: normal; width: 100%; }
+      .part-lead--two-line { width: 100%; }
+      .part-lead--two-line .part-lead__line { white-space: normal; }
       .block-part-one,
       .block-part {
         margin-top: 80px;
@@ -991,6 +1094,21 @@
       .bgq-desc { width: 100%; white-space: normal; }
       .media-frame { border-radius: 16px; }
       .rail { display: none; }
+      .lead-rail,
+      .lead-media-rail {
+        margin-left: 0;
+        width: 100%;
+        min-height: 0;
+      }
+      .lead-rail .part-lead,
+      .lead-rail__stack .part-lead,
+      .lead-media-rail .part-lead {
+        margin-left: 0;
+        max-width: none;
+      }
+      .lead-rail__stack {
+        gap: 48px;
+      }
       .smb-flow-stage {
         margin-top: 40px;
         margin-left: 24px;
@@ -1015,117 +1133,71 @@
         alt="Improving Product Launch Efficiency"
         width="1525"
         height="858"
-        data-node-id="259:165608"
+        data-node-id="415:116370"
       />
-
-      <div class="case-meta" data-node-id="283:8187">
-        <div class="case-meta-inner" data-node-id="283:8185">
-          <div class="case-title" data-node-id="283:8184">
-            <p data-node-id="259:165607">TTLS生活服务</p>
-            <p data-node-id="261:169299">
-              商家端<span class="accent">发品链路</span>核心优化
-            </p>
-          </div>
-
-          <div class="meta-cols" data-node-id="261:169302">
-            <div class="meta-col meta-col--timeline" data-node-id="261:169303">
-              <div class="meta-label" data-node-id="261:169304">
-                <img src="./assets/case-ttls/icon-clock.svg" alt="" width="20" height="20" />
-                <span data-node-id="261:169307">时间线</span>
-              </div>
-              <div class="meta-stack" data-node-id="280:8088">
-                <div class="meta-item" data-node-id="261:169309">
-                  <strong data-node-id="261:169310">01/ Timeline</strong>
-                  <ul data-node-id="261:169311"><li>2026.7 - Now</li></ul>
-                </div>
-                <div class="meta-item" data-node-id="261:169344">
-                  <strong data-node-id="261:169345">02/ Teammate</strong>
-                  <ul data-node-id="261:169346"><li>Designer</li></ul>
-                </div>
-              </div>
-            </div>
-
-            <div class="meta-col meta-col--toc" data-node-id="261:169322">
-              <div class="meta-label" data-node-id="261:169323">
-                <img src="./assets/case-ttls/icon-doc.svg" alt="" width="20" height="20" />
-                <span data-node-id="261:169327">内容概览</span>
-              </div>
-              <div class="meta-toc-list" data-node-id="261:169328">
-                <p data-node-id="261:169331">01/ 项目背景</p>
-                <p data-node-id="261:169337">02/ 业务场景的拆分</p>
-                <p data-node-id="261:169340">03/ 表单信息的重构</p>
-                <p data-node-id="261:169349">04/ 新增菜品库提高商家发品效率</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </section>
 
-    <!-- PART ONE：按稿面 1920 坐标还原 -->
+    <!-- PART ONE — 项目背景（同步 Figma 415:115706） -->
     <section class="block-part-one" data-node-id="part-one">
-      <div class="section-rule section-rule--full" data-node-id="261:170819">
+      <div class="section-rule" data-node-id="415:117972">
         <img class="section-rule__line" src="./assets/case-ttls/section-rule-h.svg" alt="" width="1525" height="1" />
-        <img class="section-rule__mark" src="./assets/case-ttls/section-rule-mark.svg" alt="" width="93" height="3" data-node-id="261:170822" />
+        <img class="section-rule__mark" src="./assets/case-ttls/section-rule-mark.svg" alt="" width="93" height="3" data-node-id="415:118004" />
       </div>
 
-      <div class="part-heading" data-node-id="262:3130">
-        <p class="part-label" data-node-id="262:3128">PART ONE</p>
-        <h2 class="part-title" data-node-id="262:3129">项目背景</h2>
-      </div>
-
-      <div class="part-body" data-node-id="262:3134">
-        <p data-node-id="262:3133">
-          当前商家发品链路存在三大核心痛点，多重因素叠加导致发品时长中位数高达 5.5 分钟,当前一套团购券的表单实际在同时服务两种场景：42% 的单品场景和 58% 的套餐场景。75% 的混合商家每次商品发布都要在心里切换两种心智、11.4%的商家只发单品但也需要填复杂的Item Group信息
-        </p>
-        <p data-node-id="262:3131">
-          除此之外商家仍面临两个卡点:菜品信息从零手填/已发布菜品无法复用当前没有任何 item 复用机制，每次发 Bundle 都要重新填组内菜品信息
+      <div class="lead-rail part-subhead--gap91" data-node-id="415:133272-wrap">
+        <span class="rail rail--left" aria-hidden="true" data-node-id="415:117977"></span>
+        <span class="rail rail--right" aria-hidden="true" data-node-id="415:117989"></span>
+        <p class="part-lead part-lead--nowrap" data-node-id="415:133272">
+          核心字段冗余，发品耗时较长，表单流失率抬升影响<span class="accent-hot">商品发布转化</span>
         </p>
       </div>
 
-      <!-- 媒体比虚线宽：虚线压在媒体上（左右各 inset 92） -->
-      <div class="media-rail-stage" data-node-id="262:3154">
-        <span class="rail rail--left" aria-hidden="true" data-node-id="262:3125"></span>
-        <span class="rail rail--right" aria-hidden="true" data-node-id="262:3127"></span>
-        <div class="media-frame">
-          <video
-            class="media-fluid js-lazy-video"
-            src="./assets/case-ttls/tokopedia-flow-web.mp4"
-            poster="./assets/case-ttls/tokopedia-flow-poster.webp"
-            width="2400" height="1350"
-            preload="none" muted loop playsinline
-            data-node-id="262:6544"
-          ></video>
+      <div class="media-rail-stage media-rail-stage--gap88" data-node-id="415:118016">
+        <div class="media-frame media-frame--stroke">
+          <img
+            class="media-fluid"
+            src="./assets/case-ttls/part1-pain-dashboard-2x.png"
+            alt="商家端发品核心页面 — Products 改版前"
+            width="2396"
+            height="1410"
+            loading="lazy"
+          />
         </div>
       </div>
-      <p class="media-caption" data-node-id="262:3155">商家端线上发品核心页面节选(改版前)</p>
 
-      <h3 class="bgq-title" data-node-id="262:3169">Background &amp; Questions</h3>
-      <p class="bgq-desc" data-node-id="262:3170">
-        分析当前商家的反馈情况,针对性给出设计策略通过设计手段来达到最后的预期收益
-      </p>
+      <div class="lead-rail part-subhead--gap100" data-node-id="415:118019-wrap">
+        <span class="rail rail--left" aria-hidden="true" data-node-id="415:117988"></span>
+        <span class="rail rail--right" aria-hidden="true" data-node-id="415:118000"></span>
+        <p class="part-lead" data-node-id="415:118019">
+          分析竞品,观察当前主流的做法对应给出<span class="accent">设计解法</span>
+        </p>
+      </div>
 
-      <figure class="part-figure" data-node-id="259:167155">
-        <span class="rail rail--left rail--short" aria-hidden="true" data-node-id="262:3167"></span>
-        <span class="rail rail--right rail--short" aria-hidden="true" data-node-id="262:3168"></span>
-        <img
-          class="media-fluid"
-          src="./assets/case-ttls/part1-insights-2x.png"
-          alt="商家发品核心流失卡点与竞品对比"
-          width="2399"
-          height="1079"
-        />
-      </figure>
+      <div class="media-rail-stage media-rail-stage--gap64" data-node-id="415:118021">
+        <div class="media-frame media-frame--stroke">
+          <img
+            class="media-fluid"
+            src="./assets/case-ttls/part1-insights-2x.png"
+            alt="商家发品核心流失卡点与竞品对比"
+            width="2398"
+            height="1076"
+            loading="lazy"
+          />
+        </div>
+      </div>
 
-      <figure class="part-figure part-figure--metrics" data-node-id="251:371">
-        <img
-          class="media-fluid"
-          src="./assets/case-ttls/part1-metrics-2x.png"
-          alt="预期核心收益与设计解决方案（含交互链路重构）"
-          width="2396"
-          height="620"
-        />
-      </figure>
+      <div class="media-rail-stage media-rail-stage--gap64" data-node-id="415:118105">
+        <div class="media-frame media-frame--stroke">
+          <img
+            class="media-fluid"
+            src="./assets/case-ttls/part1-metrics-2x.png"
+            alt="预期核心收益与设计解决方案"
+            width="2396"
+            height="620"
+            loading="lazy"
+          />
+        </div>
+      </div>
 
       <div class="section-rule section-rule--full section-rule--after" data-node-id="262:3156">
         <img class="section-rule__line" src="./assets/case-ttls/section-rule-h.svg" alt="" width="1525" height="1" />
@@ -1133,64 +1205,17 @@
       </div>
     </section>
 
-    <!-- PART TWO -->
-    <section class="block-part block-part-two" data-node-id="part-two">
-      <div class="part-heading part-heading--wide" data-node-id="262:3161">
-        <p class="part-label" data-node-id="262:3162">PART TWO</p>
-        <h2 class="part-title" data-node-id="262:3163">业务场景的拆分与重构</h2>
-      </div>
-
-      <div class="part-body part-body--single" data-node-id="262:3164">
-        <p data-node-id="262:3165">
-          我们在商品创建页做了哪些内容的改动呢?  将 Discount Voucher 拆分为「Single」和「Bundle」通过视觉卡片+C端PDP场景示例强化对选品页理解.
+    <!-- 表单提效（同步 Figma 415:115706） -->
+    <section class="block-part block-part-three" data-node-id="part-three">
+      <div class="lead-rail part-subhead--gap100" data-node-id="416:136213-wrap">
+        <span class="rail rail--left" aria-hidden="true" data-node-id="416:136211"></span>
+        <span class="rail rail--right" aria-hidden="true" data-node-id="416:136212"></span>
+        <p class="part-lead" data-node-id="416:136213">
+          首先: 先从表单核心信息下手,减少到<span class="accent">7+核心字段</span>的填写
         </p>
       </div>
 
-      <div class="part2-mid" data-node-id="389:106866">
-        <img
-          class="media-fluid"
-          src="./assets/case-ttls/part2-mid-2x.png"
-          alt="Create a product — Single / Bundle 选品页"
-          width="1418"
-          height="808"
-          loading="lazy"
-        />
-      </div>
-
-      <div class="media-rail-stage media-rail-stage--gap64" data-node-id="262:3273">
-        <span class="rail rail--left rail--p2" aria-hidden="true" data-node-id="262:3159"></span>
-        <span class="rail rail--right rail--p2" aria-hidden="true" data-node-id="262:3160"></span>
-        <div class="media-frame">
-          <img
-            class="media-fluid"
-            src="./assets/case-ttls/part2-ui-2x.png"
-            alt="Create a product — Single / Bundle"
-            width="2399"
-            height="1435"
-          />
-        </div>
-      </div>
-
-      <div class="section-rule section-rule--full section-rule--after" data-node-id="262:6548">
-        <img class="section-rule__line" src="./assets/case-ttls/section-rule-h.svg" alt="" width="1525" height="1" />
-        <img class="section-rule__mark" src="./assets/case-ttls/section-rule-mark.svg" alt="" width="93" height="3" />
-      </div>
-    </section>
-
-    <!-- PART THREE — 表单提效（同步 Figma 415:115706） -->
-    <section class="block-part block-part-three" data-node-id="part-three">
-      <div class="part-heading" data-node-id="262:6545">
-        <p class="part-label" data-node-id="262:6546">PART THREE</p>
-        <h2 class="part-title" data-node-id="262:6547">视觉层优化</h2>
-      </div>
-
-      <p class="part-lead part-subhead--gap100" data-node-id="416:136213">
-        首先: 先从表单核心信息下手,减少到<span class="accent">7+核心字段</span>的填写
-      </p>
-
-      <div class="media-rail-stage media-rail-stage--gap103" data-node-id="415:118151">
-        <span class="rail rail--left rail--p3a" aria-hidden="true" data-node-id="416:136211"></span>
-        <span class="rail rail--right rail--p3a" aria-hidden="true" data-node-id="416:136212"></span>
+      <div class="media-rail-stage media-rail-stage--gap64" data-node-id="415:118151">
         <div class="media-frame media-frame--stroke">
           <img
             class="media-fluid"
@@ -1203,13 +1228,15 @@
         </div>
       </div>
 
-      <p class="part-lead part-subhead--gap100" data-node-id="416:136216">
-        其次: 优化首屏信息透传,将抽屉表单修改为页面<span class="accent">全局下钻</span>
-      </p>
+      <div class="lead-rail part-subhead--gap100" data-node-id="416:136216-wrap">
+        <span class="rail rail--left" aria-hidden="true" data-node-id="416:136214"></span>
+        <span class="rail rail--right" aria-hidden="true" data-node-id="416:136215"></span>
+        <p class="part-lead" data-node-id="416:136216">
+          其次: 优化首屏信息透传,将抽屉表单修改为页面<span class="accent">全局下钻</span>
+        </p>
+      </div>
 
-      <div class="media-rail-stage media-rail-stage--gap103" data-node-id="415:120862">
-        <span class="rail rail--left rail--p3b" aria-hidden="true" data-node-id="416:136214"></span>
-        <span class="rail rail--right rail--p3b" aria-hidden="true" data-node-id="416:136215"></span>
+      <div class="media-rail-stage media-rail-stage--gap64" data-node-id="415:120862">
         <div class="media-frame media-frame--stroke">
           <img
             class="media-fluid"
@@ -1226,13 +1253,15 @@
         </div>
       </div>
 
-      <p class="part-lead part-subhead--gap100" data-node-id="416:136219">
-        再次: 组件全局更新,扩大Padding,进行<span class="accent">视觉信息降噪</span>
-      </p>
+      <div class="lead-rail part-subhead--gap100" data-node-id="416:136219-wrap">
+        <span class="rail rail--left" aria-hidden="true" data-node-id="416:136217"></span>
+        <span class="rail rail--right" aria-hidden="true" data-node-id="416:136218"></span>
+        <p class="part-lead" data-node-id="416:136219">
+          再次: 组件全局更新,扩大Padding,进行<span class="accent">视觉信息降噪</span>
+        </p>
+      </div>
 
-      <div class="media-rail-stage media-rail-stage--gap103" data-node-id="415:120680">
-        <span class="rail rail--left rail--p3b" aria-hidden="true" data-node-id="416:136217"></span>
-        <span class="rail rail--right rail--p3b" aria-hidden="true" data-node-id="416:136218"></span>
+      <div class="media-rail-stage media-rail-stage--gap64" data-node-id="415:120680">
         <div class="media-frame media-frame--stroke">
           <img
             class="media-fluid"
@@ -1245,13 +1274,15 @@
         </div>
       </div>
 
-      <p class="part-lead part-subhead--gap100" data-node-id="416:136222">
-        最后: 支持<span class="accent">动态渲染</span>,商家填写表单可以对应实时查看C端PDP页面
-      </p>
+      <div class="lead-rail part-subhead--gap100" data-node-id="416:136222-wrap">
+        <span class="rail rail--left" aria-hidden="true" data-node-id="416:136220"></span>
+        <span class="rail rail--right" aria-hidden="true" data-node-id="416:136221"></span>
+        <p class="part-lead" data-node-id="416:136222">
+          最后: 支持<span class="accent">动态渲染</span>,商家填写表单可以对应实时查看C端PDP页面
+        </p>
+      </div>
 
-      <div class="media-rail-stage media-rail-stage--gap103" data-node-id="418:136226">
-        <span class="rail rail--left rail--p3d" aria-hidden="true" data-node-id="416:136220"></span>
-        <span class="rail rail--right rail--p3d" aria-hidden="true" data-node-id="416:136221"></span>
+      <div class="media-rail-stage media-rail-stage--gap64" data-node-id="418:136226">
         <div class="media-frame media-frame--stroke">
           <video
             class="media-fluid js-lazy-video"
@@ -1267,27 +1298,33 @@
         </div>
       </div>
 
-      <p class="part-lead part-lead--wrap part-subhead--gap100" data-node-id="416:136223">
-        业务价值: 所见即所得，消除脑补降低试错成本,缓解表单流失并减少二次<br />
-        发布后的编辑率,<span class="accent">缩短商家整体发品链路耗时</span>
-      </p>
+      <div class="lead-rail lead-rail--tall part-subhead--gap100" data-node-id="416:136223-wrap">
+        <span class="rail rail--left" aria-hidden="true" data-node-id="415:117982"></span>
+        <span class="rail rail--right" aria-hidden="true" data-node-id="415:117994"></span>
+        <p class="part-lead part-lead--wrap" data-node-id="416:136223">
+          业务价值: 所见即所得，消除脑补降低试错成本,缓解表单流失并减少二次<br />
+          发布后的编辑率,<span class="accent">缩短商家整体发品链路耗时</span>
+        </p>
+      </div>
 
       <div class="media-rail-stage media-rail-stage--gap64" data-node-id="415:118698">
-        <span class="rail rail--left rail--p3d" aria-hidden="true" data-node-id="415:117982"></span>
-        <span class="rail rail--right rail--p3d" aria-hidden="true" data-node-id="415:117994"></span>
         <div class="media-frame media-frame--stroke">
-          <img
-            class="media-fluid"
-            src="./assets/case-ttls/part3-value-map-2x.png"
-            alt="表单填写与 C 端 PDP 信息映射"
-            width="2399"
-            height="1352"
-            loading="lazy"
-          />
+          <video
+            class="media-fluid js-lazy-video"
+            src="./assets/case-ttls/design-story-combined-web.mp4"
+            poster="./assets/case-ttls/design-story-combined-poster.webp"
+            width="3840"
+            height="2160"
+            preload="none"
+            muted
+            loop
+            playsinline
+            aria-label="业务价值：所见即所得信息层级优化"
+          ></video>
         </div>
       </div>
 
-      <div class="section-rule section-rule--full section-rule--after" data-node-id="418:136227">
+      <div class="section-rule section-rule--after" data-node-id="418:136227">
         <img class="section-rule__line" src="./assets/case-ttls/section-rule-h.svg" alt="" width="1525" height="1" />
         <img class="section-rule__mark" src="./assets/case-ttls/section-rule-mark.svg" alt="" width="93" height="3" data-node-id="418:136230" />
       </div>
@@ -1295,17 +1332,20 @@
 
     <!-- PART FOUR — 菜单上传 / 菜品库 / Banner（同步 Figma 415:115706） -->
     <section class="block-part block-part-four" data-node-id="part-four">
-      <p class="part-lead part-subhead--gap103" data-node-id="418:136232">
-        以上我对表单页进行了设计处理,还有哪些方式能够<span class="accent">帮助商家发品提效</span>?
-      </p>
+      <div class="lead-rail lead-rail--stack part-subhead--gap103" data-node-id="418:136232-wrap">
+        <span class="rail rail--left" aria-hidden="true"></span>
+        <span class="rail rail--right" aria-hidden="true"></span>
+        <div class="lead-rail__stack">
+          <p class="part-lead" data-node-id="418:136232">
+            以上我对表单页进行了设计处理,还有哪些方式能够<span class="accent">帮助商家发品提效</span>?
+          </p>
+          <ol class="part-lead part-lead--list" data-node-id="418:136491" start="1">
+            <li>新增上传「线下菜单」功能</li>
+          </ol>
+        </div>
+      </div>
 
-      <ol class="part-lead part-lead--list part-subhead--gap130" data-node-id="418:136491" start="1">
-        <li>新增上传「线下菜单」功能</li>
-      </ol>
-
-      <div class="media-rail-stage media-rail-stage--gap103" data-node-id="418:136233">
-        <span class="rail rail--left rail--p4menu" aria-hidden="true"></span>
-        <span class="rail rail--right rail--p4menu" aria-hidden="true"></span>
+      <div class="media-rail-stage media-rail-stage--gap64" data-node-id="418:136233">
         <div class="media-frame media-frame--menu">
           <img
             class="media-fluid"
@@ -1318,33 +1358,41 @@
         </div>
       </div>
 
-      <p class="part-lead part-lead--wrap part-subhead--gap64" data-node-id="418:136492">
-        研发说: 监测不到识别菜单的进度,<span class="accent-hot">无法做进度条</span>只能做加载<br />
-        但是长达15s左右,真的适合用加载吗?
-      </p>
+      <div class="lead-rail lead-rail--tall part-subhead--gap64" data-node-id="418:136492-wrap">
+        <span class="rail rail--left" aria-hidden="true" data-node-id="418:136228"></span>
+        <span class="rail rail--right" aria-hidden="true" data-node-id="418:136229"></span>
+        <p class="part-lead part-lead--two-line" data-node-id="418:136492">
+          <span class="part-lead__line">研发说: 监测不到识别菜单的进度,<span class="accent-hot">无法做进度条</span>只能做加载</span>
+          <span class="part-lead__line">但是长达15s左右,真的适合用加载吗?</span>
+        </p>
+      </div>
 
-      <div class="media-rail-stage media-rail-stage--gap128" data-node-id="419:136496">
-        <span class="rail rail--left rail--p4progress" aria-hidden="true" data-node-id="418:136228"></span>
-        <span class="rail rail--right rail--p4progress" aria-hidden="true" data-node-id="418:136229"></span>
+      <div class="media-rail-stage media-rail-stage--gap64" data-node-id="419:136496">
         <div class="media-frame media-frame--stroke">
-          <img
-            class="media-fluid"
-            src="./assets/case-ttls/part4-progress-2x.png"
-            alt="Import from menu 识别进度反馈"
-            width="2394"
-            height="1288"
-            loading="lazy"
-          />
+          <video
+            class="media-fluid js-lazy-video"
+            src="./assets/case-ttls/part4-progress-web.mp4"
+            poster="./assets/case-ttls/part4-progress-poster.webp"
+            width="1350"
+            height="726"
+            preload="none"
+            muted
+            loop
+            playsinline
+            aria-label="Import from menu 识别进度反馈"
+          ></video>
         </div>
       </div>
 
-      <ol class="part-lead part-lead--list part-subhead--gap136" data-node-id="419:136499" start="2">
-        <li>新增<span class="accent">「菜品库」</span>支持商家快捷导入菜品信息到表单完成发品</li>
-      </ol>
+      <div class="lead-rail lead-rail--tall part-subhead--gap100" data-node-id="419:136499-wrap">
+        <span class="rail rail--left" aria-hidden="true" data-node-id="419:136497"></span>
+        <span class="rail rail--right" aria-hidden="true" data-node-id="419:136498"></span>
+        <ol class="part-lead part-lead--list part-lead--wrap" data-node-id="419:136499" start="2">
+          <li>新增<span class="accent">「菜品库」</span>支持商家快捷导入菜品信息到表单完成发品</li>
+        </ol>
+      </div>
 
-      <div class="media-rail-stage media-rail-stage--gap180" data-node-id="415:119120">
-        <span class="rail rail--left rail--p4library" aria-hidden="true" data-node-id="419:136497"></span>
-        <span class="rail rail--right rail--p4library" aria-hidden="true" data-node-id="419:136498"></span>
+      <div class="media-rail-stage media-rail-stage--gap64" data-node-id="415:119120">
         <div class="media-frame media-frame--stroke">
           <img
             class="media-fluid"
@@ -1357,7 +1405,7 @@
         </div>
       </div>
 
-      <div class="section-rule section-rule--full section-rule--after" data-node-id="419:136503">
+      <div class="section-rule section-rule--after" data-node-id="419:136503">
         <img class="section-rule__line" src="./assets/case-ttls/section-rule-h.svg" alt="" width="1525" height="1" />
         <img class="section-rule__mark" src="./assets/case-ttls/section-rule-mark.svg" alt="" width="93" height="3" data-node-id="419:136504" />
       </div>
@@ -1366,13 +1414,11 @@
         创建商品: 通过<span class="accent">新增入口</span>表单页Banner引导商家打开菜品库
       </p>
 
-      <div class="media-rail-stage media-rail-stage--gap180" data-node-id="415:120667">
-        <span class="rail rail--left rail--p4create" aria-hidden="true" data-node-id="419:136506"></span>
-        <span class="rail rail--right rail--p4create" aria-hidden="true" data-node-id="419:136507"></span>
+      <div class="media-rail-stage media-rail-stage--gap64" data-node-id="415:120667">
         <div class="media-frame media-frame--stroke">
           <img
             class="media-fluid"
-            src="./assets/case-ttls/part4-create-single-2x.png"
+            src="./assets/case-ttls/part4-create-single-2x.png?v=20260807"
             alt="创建商品 Banner — Single"
             width="2394"
             height="1048"
@@ -1385,7 +1431,7 @@
         <div class="media-frame media-frame--stroke">
           <img
             class="media-fluid"
-            src="./assets/case-ttls/part4-create-bundle-2x.png"
+            src="./assets/case-ttls/part4-create-bundle-2x.png?v=20260807"
             alt="创建商品 Banner — Bundle"
             width="2394"
             height="1048"
