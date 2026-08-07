@@ -819,14 +819,17 @@
     }
 
     .p5-rail-stage {
+      position: relative;
       margin-top: 100px;
       padding-bottom: 80px;
+      overflow: hidden; /* 防止长轨溢出到上方创建商品区 */
     }
 
-    /* 虚线从标题顶附近拉起，盖住标题+正文+后文 */
+    /* 虚线只框 PART FIVE 正文，勿继承 .rail 的 translateY(-50%) 否则会整段上移压到创建商品 */
     .rail--p5 {
-      top: -280px;
-      height: calc(100% + 280px);
+      top: 0;
+      transform: none;
+      height: 100%;
     }
 
     .p5-inner {
