@@ -74,6 +74,71 @@
       color: rgba(255, 255, 255, 0.7);
     }
 
+    /* Raw.Studio 风格：纵向分割 Before/After 擦除（仅本块，非浮动方框） */
+    .ba-split {
+      --ba-pos: 50%;
+      position: relative;
+      width: 100%;
+      aspect-ratio: 5760 / 3440;
+      border-radius: 24px;
+      overflow: hidden;
+      cursor: ew-resize;
+      touch-action: none;
+      user-select: none;
+      background: #f2f2f2;
+    }
+
+    .ba-split__img {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      /* 前后图同尺寸，1:1 铺满，避免 cover/scale 裁切错位 */
+      object-fit: fill;
+      object-position: center;
+      pointer-events: none;
+    }
+
+    .ba-split__img--after {
+      clip-path: inset(0 0 0 var(--ba-pos));
+      will-change: clip-path;
+    }
+
+    .ba-split__handle {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      /* 居中贴分割线；贴边时整条 2px 白线仍留在容器内 */
+      left: clamp(1px, var(--ba-pos), calc(100% - 1px));
+      width: 2px;
+      transform: translateX(-50%);
+      background: #fff;
+      z-index: 2;
+      pointer-events: none;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+    }
+
+    .ba-split__tag {
+      position: absolute;
+      z-index: 3;
+      bottom: 16px;
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 22px;
+      color: rgba(0, 0, 0, 0.45);
+      pointer-events: none;
+    }
+
+    .ba-split__tag--before { left: 20px; }
+    .ba-split__tag--after { right: 20px; }
+
+    @media (max-width: 860px) {
+      .ba-split { border-radius: 16px; }
+      .ba-split__tag { font-size: 12px; line-height: 18px; }
+    }
+
     /* PART FIVE 末尾三角流程图 — 稿 x=277 w=1243 h=765 */
     .flow-tri {
       position: relative;
@@ -425,6 +490,23 @@
       background: transparent;
     }
 
+    /* 仅 design-story 业务价值视频：恢复稿面描边 */
+    .media-frame--story-stroke {
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* realtime 素材顶/左侧自带白描边：微放大裁掉，不改布局 */
+    .media-frame--hide-rim .media-fluid {
+      transform: scale(1.014);
+      transform-origin: center center;
+    }
+
+    /* 素材自带圆角描边时勿再裁切，否则角上描边会被吃掉 */
+    .media-frame--native-stroke {
+      border-radius: 0;
+      overflow: visible;
+    }
+
     /*
       虚线轨永远夹在文字左右（稿 x=453/1467）。
       结构：.lead-rail 包住文案，轨相对该栏左右 inset 92、垂直居中。
@@ -448,6 +530,15 @@
       white-space: normal;
     }
 
+    /* 两行引导句：相对虚线左右各预留 64（156-92），间距一致 */
+    .lead-rail .part-lead--two-line {
+      margin-left: calc(156 / 1198 * 100%);
+      margin-right: calc(156 / 1198 * 100%);
+      width: auto;
+      max-width: none;
+      box-sizing: border-box;
+    }
+
     .lead-rail .part-lead--list {
       white-space: normal;
       box-sizing: border-box;
@@ -463,8 +554,8 @@
       z-index: 2;
       background: repeating-linear-gradient(
         to bottom,
-        rgba(255, 255, 255, 0.2) 0,
-        rgba(255, 255, 255, 0.2) 6px,
+        rgba(255, 255, 255, 0.15) 0,
+        rgba(255, 255, 255, 0.15) 6px,
         transparent 6px,
         transparent 12px
       );
@@ -905,13 +996,13 @@
     .p5-figure {
       width: 100%;
       display: flex;
-      justify-content: center;
+      justify-content: flex-start;
     }
 
     .p5-figure img {
       display: block;
-      width: calc(625 / 884 * 100%);
-      max-width: 625px;
+      width: 100%;
+      max-width: none;
       height: auto;
       border-radius: 12px;
     }
@@ -1050,6 +1141,121 @@
       align-items: flex-end;
     }
 
+    /* 太长不看 — 与正文同栏（需落在带 --art 的块内） */
+    .tldr {
+      margin-top: 0;
+      margin-bottom: 64px;
+      margin-left: calc(517 / var(--art) * 100%);
+      width: calc(875 / var(--art) * 100%);
+      color: #fff;
+      box-sizing: border-box;
+    }
+
+    .tldr__grid {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .tldr__title {
+      margin: 0;
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 500;
+      font-size: 18px;
+      line-height: 27px;
+      color: rgba(255, 255, 255, 0.45);
+    }
+
+    .tldr__body {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .tldr__summary {
+      margin: 0;
+      max-width: 100%;
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 21px;
+      letter-spacing: 0.14px;
+      color: rgba(255, 255, 255, 0.62);
+    }
+
+    .tldr__list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .tldr__row {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 20px;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .tldr__row:last-child { border-bottom: none; }
+
+    .tldr__row dt {
+      margin: 0;
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 21px;
+      letter-spacing: 0.14px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .tldr__row dd {
+      margin: 0;
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 21px;
+      letter-spacing: 0.14px;
+      color: rgba(255, 255, 255, 0.62);
+    }
+
+    .tldr__stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      padding-top: 24px;
+    }
+
+    .tldr__stat {
+      padding: 0;
+      border-right: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .tldr__stat:nth-child(2) { text-align: center; }
+    .tldr__stat:last-child {
+      border-right: none;
+      text-align: right;
+    }
+
+    .tldr__stat-value {
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 500;
+      font-size: clamp(28px, 3vw, 34px);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+
+    .tldr__stat-label {
+      margin-top: 10px;
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 23px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
     @media (max-width: 860px) {
       .page { padding: 72px 24px 80px; }
       .hero-brand { font-size: 40px; }
@@ -1062,6 +1268,29 @@
         margin-right: -24px;
         width: calc(100% + 48px);
       }
+      .tldr {
+        margin-left: 0;
+        width: 100%;
+      }
+
+      .tldr__row {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
+
+      .tldr__stats {
+        grid-template-columns: 1fr;
+      }
+
+      .tldr__stat {
+        padding: 16px 0;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+        text-align: left;
+      }
+
+      .tldr__stat:last-child { border-bottom: none; }
+
       .case-showcase {
         margin-left: 24px;
         width: calc(100% - 48px);
@@ -1142,6 +1371,46 @@
 
     <!-- PART ONE — 项目背景（同步 Figma 415:115706） -->
     <section class="block-part-one" data-node-id="part-one">
+      <section class="tldr" aria-label="直接先看我总结">
+        <div class="tldr__grid">
+          <p class="tldr__title">直接先看我总结</p>
+          <div class="tldr__body">
+            <dl class="tldr__list">
+              <div class="tldr__row">
+                <dt>背景</dt>
+                <dd>TikTok生服商家端商家发布商品链路优化</dd>
+              </div>
+              <div class="tldr__row">
+                <dt>问题</dt>
+                <dd>当前核心字段冗余,发品耗时长,表单流失率高影响商品发布转化</dd>
+              </div>
+              <div class="tldr__row">
+                <dt>方法</dt>
+                <dd>通过对表单字段重构,视觉信息层级优化与降噪与增加实时渲染提高商家感知,新增加上传线下菜单功能来达到降低商家发品时长.</dd>
+              </div>
+              <div class="tldr__row">
+                <dt>结果</dt>
+                <dd>预期核心受益将发品时长达到3.5min以内, 一分钟内发品占比达到30%以上</dd>
+              </div>
+            </dl>
+            <div class="tldr__stats">
+              <div class="tldr__stat">
+                <div class="tldr__stat-value">3.5min内</div>
+                <div class="tldr__stat-label">发品时长</div>
+              </div>
+              <div class="tldr__stat">
+                <div class="tldr__stat-value">&gt;30%</div>
+                <div class="tldr__stat-label">1min内发品成功占比</div>
+              </div>
+              <div class="tldr__stat">
+                <div class="tldr__stat-value">提效</div>
+                <div class="tldr__stat-label">围绕哪个关键词</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <div class="section-rule" data-node-id="415:117972">
         <img class="section-rule__line" src="./assets/case-ttls/section-rule-h.svg" alt="" width="1525" height="1" />
         <img class="section-rule__mark" src="./assets/case-ttls/section-rule-mark.svg" alt="" width="93" height="3" data-node-id="415:118004" />
@@ -1150,21 +1419,26 @@
       <div class="lead-rail part-subhead--gap91" data-node-id="415:133272-wrap">
         <span class="rail rail--left" aria-hidden="true" data-node-id="415:117977"></span>
         <span class="rail rail--right" aria-hidden="true" data-node-id="415:117989"></span>
-        <p class="part-lead part-lead--nowrap" data-node-id="415:133272">
-          核心字段冗余，发品耗时较长，表单流失率抬升影响<span class="accent-hot">商品发布转化</span>
+        <p class="part-lead part-lead--two-line" data-node-id="415:133272">
+          <span class="part-lead__line">核心字段冗余，发品耗时较长，表单流失率抬升影响</span>
+          <span class="part-lead__line"><span class="accent-hot">商品发布转化</span></span>
         </p>
       </div>
 
       <div class="media-rail-stage media-rail-stage--gap88" data-node-id="415:118016">
         <div class="media-frame media-frame--stroke">
-          <img
-            class="media-fluid"
-            src="./assets/case-ttls/part1-pain-dashboard-2x.png"
-            alt="商家端发品核心页面 — Products 改版前"
-            width="2396"
-            height="1410"
-            loading="lazy"
-          />
+          <video
+            class="media-fluid js-lazy-video"
+            src="./assets/case-ttls/tokopedia-flow-web.mp4"
+            poster="./assets/case-ttls/tokopedia-flow-poster.webp"
+            width="2400"
+            height="1350"
+            preload="none"
+            muted
+            loop
+            playsinline
+            aria-label="商家端发品核心页面 — Products 改版前"
+          ></video>
         </div>
       </div>
 
@@ -1219,7 +1493,7 @@
       </div>
 
       <div class="media-rail-stage media-rail-stage--gap64" data-node-id="415:118151">
-        <div class="media-frame media-frame--stroke">
+        <div class="media-frame media-frame--stroke media-frame--native-stroke">
           <img
             class="media-fluid"
             src="./assets/case-ttls/part3-form-2x.png"
@@ -1240,19 +1514,32 @@
       </div>
 
       <div class="media-rail-stage media-rail-stage--gap64" data-node-id="415:120862">
-        <div class="media-frame media-frame--stroke">
+        <div
+          class="ba-split js-ba-split"
+          role="img"
+          aria-label="Before / After：拖动或悬停对比抽屉表单与全屏下钻"
+        >
           <img
-            class="media-fluid"
-            src="./assets/case-ttls/part3-fullscreen-ba-2x.png"
-            alt="抽屉表单 Before / 全屏下钻 After"
-            width="2394"
-            height="705"
+            class="ba-split__img ba-split__img--before"
+            src="./assets/case-ttls/part3-ba-before-2x.png"
+            alt=""
+            width="5760"
+            height="3440"
+            draggable="false"
             loading="lazy"
           />
-        </div>
-        <div class="ba-labels">
-          <span data-node-id="415:118673">Before</span>
-          <span data-node-id="415:118674">After</span>
+          <img
+            class="ba-split__img ba-split__img--after"
+            src="./assets/case-ttls/part3-ba-after-2x.png"
+            alt=""
+            width="5760"
+            height="3440"
+            draggable="false"
+            loading="lazy"
+          />
+          <span class="ba-split__handle" aria-hidden="true"></span>
+          <span class="ba-split__tag ba-split__tag--before" data-node-id="415:118673">Before</span>
+          <span class="ba-split__tag ba-split__tag--after" data-node-id="415:118674">After</span>
         </div>
       </div>
 
@@ -1286,7 +1573,7 @@
       </div>
 
       <div class="media-rail-stage media-rail-stage--gap64" data-node-id="418:136226">
-        <div class="media-frame media-frame--stroke">
+        <div class="media-frame media-frame--stroke media-frame--hide-rim">
           <video
             class="media-fluid js-lazy-video"
             src="./assets/case-ttls/realtime-sync-preview-web.mp4"
@@ -1304,14 +1591,15 @@
       <div class="lead-rail lead-rail--tall part-subhead--gap100" data-node-id="416:136223-wrap">
         <span class="rail rail--left" aria-hidden="true" data-node-id="415:117982"></span>
         <span class="rail rail--right" aria-hidden="true" data-node-id="415:117994"></span>
-        <p class="part-lead part-lead--wrap" data-node-id="416:136223">
-          业务价值: 所见即所得，消除脑补降低试错成本,缓解表单流失并减少二次<br />
-          发布后的编辑率,<span class="accent">缩短商家整体发品链路耗时</span>
+        <p class="part-lead part-lead--two-line" data-node-id="416:136223">
+          <span class="part-lead__line">业务价值: 所见即所得，消除脑补降低试错成本,</span>
+          <span class="part-lead__line">缓解表单流失并减少二次发布后的编辑率,</span>
+          <span class="part-lead__line"><span class="accent">缩短商家整体发品链路耗时</span></span>
         </p>
       </div>
 
       <div class="media-rail-stage media-rail-stage--gap64" data-node-id="415:118698">
-        <div class="media-frame media-frame--stroke">
+        <div class="media-frame media-frame--stroke media-frame--story-stroke">
           <video
             class="media-fluid js-lazy-video"
             src="./assets/case-ttls/design-story-combined-web.mp4"
@@ -1365,8 +1653,8 @@
         <span class="rail rail--left" aria-hidden="true" data-node-id="418:136228"></span>
         <span class="rail rail--right" aria-hidden="true" data-node-id="418:136229"></span>
         <p class="part-lead part-lead--two-line" data-node-id="418:136492">
-          <span class="part-lead__line">研发说: 监测不到识别菜单的进度,<span class="accent-hot">无法做进度条</span>只能做加载</span>
-          <span class="part-lead__line">但是长达15s左右,真的适合用加载吗?</span>
+          <span class="part-lead__line">研发说: 监测不到识别菜单的进度,<span class="accent-hot">无法做进度条</span>只能做</span>
+          <span class="part-lead__line">加载但是长达15s左右,真的适合用加载吗?</span>
         </p>
       </div>
 
@@ -1391,7 +1679,7 @@
         <span class="rail rail--left" aria-hidden="true" data-node-id="419:136497"></span>
         <span class="rail rail--right" aria-hidden="true" data-node-id="419:136498"></span>
         <ol class="part-lead part-lead--list part-lead--wrap" data-node-id="419:136499" start="2">
-          <li>新增<span class="accent">「菜品库」</span>支持商家快捷导入菜品信息到表单完成发品</li>
+          <li>新增<span class="accent">「菜品库」</span>支持商家快捷导入菜品信息到表单完<br>成发品</li>
         </ol>
       </div>
 
@@ -1413,33 +1701,65 @@
         <img class="section-rule__mark" src="./assets/case-ttls/section-rule-mark.svg" alt="" width="93" height="3" data-node-id="419:136504" />
       </div>
 
-      <p class="part-lead part-subhead--gap103" data-node-id="419:136505">
-        创建商品: 通过<span class="accent">新增入口</span>表单页Banner引导商家打开菜品库
-      </p>
+      <div class="lead-rail lead-rail--short part-subhead--gap103" data-node-id="419:136505-wrap">
+        <span class="rail rail--left" aria-hidden="true" data-node-id="419:136506"></span>
+        <span class="rail rail--right" aria-hidden="true" data-node-id="419:136507"></span>
+        <p class="part-lead part-lead--two-line" data-node-id="419:136505">
+          <span class="part-lead__line">创建商品: 通过<span class="accent">新增入口</span>表单页Banner引导商家打开菜</span>
+          <span class="part-lead__line">品库</span>
+        </p>
+      </div>
 
       <div class="media-rail-stage media-rail-stage--gap64" data-node-id="415:120667">
-        <div class="media-frame media-frame--stroke">
-          <img
-            class="media-fluid"
-            src="./assets/case-ttls/part4-create-single-2x.png?v=20260807"
-            alt="创建商品 Banner — Single"
-            width="2394"
-            height="1048"
-            loading="lazy"
-          />
+        <div class="flow-split__row">
+          <ol class="flow-steps flow-steps--left" data-node-id="277:8066">
+            <li class="is-active" data-node-id="277:8056">Create product</li>
+            <li data-node-id="277:8057">Single item</li>
+            <li data-node-id="277:8058">Select item</li>
+            <li data-node-id="277:8060">Confirm</li>
+          </ol>
+          <div class="media-frame media-frame--stroke flow-split__media flow-split__media--right" data-node-id="277:8065">
+            <video
+              class="media-fluid js-flow-video js-lazy-video"
+              src="./assets/case-ttls/create-product-flow-web.mp4"
+              poster="./assets/case-ttls/create-product-flow-poster.webp"
+              width="1760"
+              height="1052"
+              data-steps="277:8066"
+              data-cuts="0,1.86,4.07,6.27"
+              preload="none"
+              muted
+              loop
+              playsinline
+              aria-label="创建商品 Banner — Single"
+            ></video>
+          </div>
         </div>
       </div>
 
       <div class="media-rail-stage media-rail-stage--gap109" data-node-id="415:120674">
-        <div class="media-frame media-frame--stroke">
-          <img
-            class="media-fluid"
-            src="./assets/case-ttls/part4-create-bundle-2x.png?v=20260807"
-            alt="创建商品 Banner — Bundle"
-            width="2394"
-            height="1048"
-            loading="lazy"
-          />
+        <div class="flow-split__row">
+          <div class="media-frame media-frame--stroke flow-split__media" data-node-id="280:8098">
+            <video
+              class="media-fluid js-flow-video js-lazy-video"
+              src="./assets/case-ttls/create-bundle-flow-web.mp4"
+              poster="./assets/case-ttls/create-bundle-flow-poster.webp"
+              width="1760"
+              height="1052"
+              data-steps="277:8076"
+              data-cuts="0,1.90,4.45"
+              preload="none"
+              muted
+              loop
+              playsinline
+              aria-label="创建商品 Banner — Bundle"
+            ></video>
+          </div>
+          <ol class="flow-steps flow-steps--right" data-node-id="277:8076">
+            <li class="is-active" data-node-id="277:8077">Create product</li>
+            <li data-node-id="277:8078">Bundle item</li>
+            <li data-node-id="277:8079">Confirm</li>
+          </ol>
         </div>
       </div>
 
@@ -1463,15 +1783,12 @@
       </div>
 
       <div class="media-rail-stage p5-rail-stage" data-node-id="part-five-body">
-        <span class="rail rail--left rail--p5" aria-hidden="true" data-node-id="349:144199"></span>
-        <span class="rail rail--right rail--p5" aria-hidden="true" data-node-id="349:144200"></span>
-
         <div class="p5-inner">
           <h3 class="p5-section-title" data-node-id="349:144223">以发品需求为例-研发写代码存在哪几大类问题?</h3>
 
           <div class="p5-stack" data-node-id="349:144203">
             <div class="p5-item" data-node-id="349:144206">
-              <h3 data-node-id="349:144208">视觉层偏差</h3>
+              <h3 data-node-id="349:144208">视觉层偏差—工程侧建设的断层</h3>
               <p data-node-id="349:144210">
                 color:研发可能直接采用吸色 假设一个颜色为#041A1D 透明度为55%,研发对应呈现的内容为E5e7eb,  虽然在肉眼上是相似,这样写是错误的, 对应css写法为 bgc-#041A1D8c, 这里的8c为55%的透明度.总的来说研发需要靠“猜”,因为研发不能理解什么时候使用对应的Token,不如直接写代码来的快,这会在我后续设计系统方面去体现如何解决
               </p>
@@ -1494,7 +1811,7 @@
             </div>
 
             <div class="p5-item" data-node-id="349:144217">
-              <h3 data-node-id="349:144219">“这个做不了”</h3>
+              <h3 data-node-id="349:144219">工程侧与设计侧未做映射</h3>
               <p data-node-id="349:144221">
                 研发在收到大量的走查问题清单,会尽可能的去避免一些问题,比如:组件就是这样做的,需要通知组件那边一起改, 这个问题改不了,等等一些结果性的回答. 具体解法需要先去了解组件是否样式达到了对齐,如果优先级比较高,建议对其做覆盖,不能单一的听研发说改不了,需要具体了解其逻辑才能保证我们的设计与开发达到一致对齐.
               </p>
@@ -1543,7 +1860,7 @@
 
           <div class="p5-stack" data-node-id="349:144239">
             <div class="p5-item" data-node-id="349:144245">
-              <h3 data-node-id="349:144247">一些非组件层面的Token使用无规范化文档</h3>
+              <h3 data-node-id="349:144247">推进设计系统文档化建设</h3>
               <p data-node-id="349:144249">
                 在验收过程中发现，组件层由于已有 npm 组件和 Token 约束，规范执行较为稳定。但在 Typography、Color、Spacing 等非组件场景中，由于缺少明确的语义化使用指导，研发在实现过程中更多依赖个人经验，导致设计语言无法稳定传递。因此我进一步思考如何通过 Design System 文档化和 Usage Guideline，将 Token 从“设计资产”转化为“团队共识”。需推进设计系统文档化建设.
               </p>
@@ -1582,9 +1899,6 @@
 
     <!-- SMB 注册登入流程优化 — Figma 239:45098 -->
     <section class="block-part block-part-smb" data-node-id="239:45098">
-      <span class="rail rail--left rail--smb" aria-hidden="true" data-node-id="356:29168"></span>
-      <span class="rail rail--right rail--smb" aria-hidden="true" data-node-id="356:29169"></span>
-
       <div class="section-rule section-rule--full section-rule--after" data-node-id="356:29167">
         <img class="section-rule__line" src="./assets/case-ttls/section-rule-h.svg" alt="" width="1525" height="1" />
         <img class="section-rule__mark" src="./assets/case-ttls/section-rule-mark.svg" alt="" width="93" height="3" data-node-id="356:29173" />
@@ -1651,6 +1965,115 @@
       }
 
       document.querySelectorAll(".js-flow-video").forEach(bindFlowSteps);
+
+      // Raw.Studio 风格纵向擦除：闲置自动扫过，指针拖动/移动时跟随
+      document.querySelectorAll(".js-ba-split").forEach(function (el) {
+        var hovering = false;
+        var raf = 0;
+        var start = performance.now();
+        var tagBefore = el.querySelector(".ba-split__tag--before");
+        var tagAfter = el.querySelector(".ba-split__tag--after");
+
+        function setPos(pct) {
+          var p = Math.max(0, Math.min(100, pct));
+          el.style.setProperty("--ba-pos", p.toFixed(2) + "%");
+          // 扫到极限只露一侧时：左下角标签跟当前画面一致（全 After → After）
+          if (!tagBefore || !tagAfter) return;
+          if (p <= 2) {
+            tagBefore.textContent = "After";
+            tagBefore.hidden = false;
+            tagAfter.hidden = true;
+          } else if (p >= 98) {
+            tagBefore.textContent = "Before";
+            tagBefore.hidden = false;
+            tagAfter.hidden = true;
+          } else {
+            tagBefore.textContent = "Before";
+            tagBefore.hidden = false;
+            tagAfter.hidden = false;
+          }
+        }
+
+        function posFromEvent(e) {
+          var rect = el.getBoundingClientRect();
+          if (!rect.width) return 50;
+          var clientX = e.clientX;
+          if (e.touches && e.touches[0]) clientX = e.touches[0].clientX;
+          return ((clientX - rect.left) / rect.width) * 100;
+        }
+
+        function idleTick(now) {
+          if (hovering) return;
+          // 与参考 GIF 类似：分割线从左扫到右再扫回
+          var t = ((now - start) / 1000) % 7.4;
+          var u;
+          if (t < 0.6) u = 0;
+          else if (t < 2.2) u = (t - 0.6) / 1.6;
+          else if (t < 4.6) u = 1;
+          else if (t < 6.2) u = 1 - (t - 4.6) / 1.6;
+          else u = 0;
+          // ease in-out
+          u = u * u * (3 - 2 * u);
+          // 扫到左右极限：只留白竖线，不露另一侧图像
+          setPos(u * 100);
+          raf = requestAnimationFrame(idleTick);
+        }
+
+        function startIdle() {
+          if (raf) cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(idleTick);
+        }
+
+        el.addEventListener("pointerenter", function () {
+          hovering = true;
+          if (raf) cancelAnimationFrame(raf);
+        });
+        el.addEventListener("pointerleave", function () {
+          hovering = false;
+          start = performance.now();
+          startIdle();
+        });
+        el.addEventListener("pointermove", function (e) {
+          hovering = true;
+          if (raf) cancelAnimationFrame(raf);
+          setPos(posFromEvent(e));
+        });
+        el.addEventListener(
+          "touchmove",
+          function (e) {
+            hovering = true;
+            if (raf) cancelAnimationFrame(raf);
+            setPos(posFromEvent(e));
+            e.preventDefault();
+          },
+          { passive: false }
+        );
+        el.addEventListener("touchend", function () {
+          hovering = false;
+          start = performance.now();
+          startIdle();
+        });
+
+        setPos(50);
+
+        if ("IntersectionObserver" in window) {
+          var io = new IntersectionObserver(
+            function (entries) {
+              entries.forEach(function (entry) {
+                if (entry.isIntersecting && !hovering) startIdle();
+                else if (!entry.isIntersecting && raf) {
+                  cancelAnimationFrame(raf);
+                  raf = 0;
+                }
+              });
+            },
+            { threshold: 0.2 }
+          );
+          io.observe(el);
+        } else {
+          startIdle();
+        }
+      });
 
       var lazy = document.querySelectorAll(".js-lazy-video");
       if (!lazy.length) return;

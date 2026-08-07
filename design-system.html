@@ -33,17 +33,20 @@
 
     .page {
       --art: 1920;
+      /* 全文/图片统一左右边线 */
+      --content-x: calc(460 / var(--art) * 100%);
+      --content-w: calc(1000 / var(--art) * 100%);
       width: min(100%, 1920px);
       margin: 0 auto;
       /* 稿内首个元素 308:8233 位于 y=127 */
       padding: 127px 0 160px;
     }
 
-    /* ===== 封面 308:8233 — x=241 y=127 w=1439 h=809.44 r=24 ===== */
+    /* ===== 封面 ===== */
     .ds-cover-wrap {
       position: relative;
-      margin-left: calc(241 / var(--art) * 100%);
-      width: calc(1439 / var(--art) * 100%);
+      margin-left: var(--content-x);
+      width: var(--content-w);
     }
 
     .ds-cover {
@@ -62,24 +65,11 @@
       object-fit: cover;
     }
 
-    /* 347:144175 — 压在封面下缘的引言，14/2/#000 70% */
-    .ds-cover__lede {
-      position: absolute;
-      left: calc(139 / 1439 * 100%);
-      top: calc(689 / 809.4375 * 100%);
-      width: calc(1123 / 1439 * 100%);
-      font-weight: 400;
-      font-size: 14px;
-      line-height: 2;
-      color: #000;
-      opacity: 0.7;
-    }
-
-    /* ===== 概览 347:100248 — x=241 y=1037 w=937 ===== */
+    /* ===== 概览 ===== */
     .ds-meta {
-      margin-top: 100px;
-      margin-left: calc(241 / var(--art) * 100%);
-      width: calc(937 / var(--art) * 100%);
+      margin-top: 96px;
+      margin-left: var(--content-x);
+      width: var(--content-w);
       display: flex;
       flex-direction: column;
       align-items: flex-start;
@@ -87,9 +77,9 @@
     }
 
     .ds-meta__title {
-      font-weight: 700;
-      font-size: 32px;
-      line-height: 48px;
+      font-weight: 500;
+      font-size: 34px;
+      line-height: 51px;
       color: #fff;
     }
 
@@ -125,9 +115,9 @@
     }
 
     .ds-meta__label span {
-      font-weight: 700;
-      font-size: 20px;
-      line-height: 20.22px;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 25px;
       color: #fff;
       white-space: nowrap;
     }
@@ -150,9 +140,9 @@
     .ds-meta__item--wide { gap: 20px; }
 
     .ds-meta__item strong {
-      font-weight: 500;
-      font-size: 18px;
-      line-height: 18.956px;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 25px;
       color: #fff;
     }
 
@@ -160,15 +150,114 @@
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      gap: 8px;
+      gap: 6px;
       margin: 0;
       padding-left: 21px;
       list-style: disc;
       font-weight: 400;
-      font-size: 14px;
-      line-height: 18.956px;
+      font-size: 13px;
+      line-height: 23px;
+      color: rgba(255, 255, 255, 0.55);
+    }
+
+    /* ===== 太长不看 — 纯文字呈现，对齐正文栏宽 ===== */
+    .tldr {
+      margin-top: 64px;
+      margin-left: var(--content-x);
+      width: var(--content-w);
       color: #fff;
-      opacity: 0.8;
+      box-sizing: border-box;
+    }
+
+    .tldr__grid {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .tldr__title {
+      margin: 0;
+      font-weight: 500;
+      font-size: 18px;
+      line-height: 27px;
+      color: rgba(255, 255, 255, 0.45);
+    }
+
+    .tldr__body {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .tldr__list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .tldr__row {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 20px;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .tldr__row:last-child {
+      border-bottom: none;
+    }
+
+    .tldr__row dt {
+      margin: 0;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 21px;
+      letter-spacing: 0.14px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .tldr__row dd {
+      margin: 0;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 21px;
+      letter-spacing: 0.14px;
+      color: rgba(255, 255, 255, 0.62);
+    }
+
+    .tldr__stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      padding-top: 24px;
+    }
+
+    .tldr__stat {
+      padding: 0;
+      border-right: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .tldr__stat:nth-child(2) { text-align: center; }
+    .tldr__stat:last-child {
+      border-right: none;
+      text-align: right;
+    }
+
+    .tldr__stat-value {
+      font-weight: 500;
+      font-size: clamp(28px, 3vw, 34px);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+
+    .tldr__stat-label {
+      margin-top: 10px;
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 23px;
+      color: rgba(255, 255, 255, 0.4);
     }
 
     /* ===== 横分割线 308:8519 / 311:8652（画板通宽，短标居中） ===== */
@@ -199,111 +288,102 @@
       transform: translate(-50%, -50%);
     }
 
-    /* ===== 文字块：稿内 x=517 w=886 ===== */
+    /* ===== 文字块 ===== */
     .part-heading {
-      margin-left: calc(517 / var(--art) * 100%);
-      width: calc(886 / var(--art) * 100%);
+      margin-left: var(--content-x);
+      width: var(--content-w);
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      gap: 20px;
+      gap: 8px;
       color: #fff;
     }
 
     .part-label {
       font-weight: 500;
       font-size: 24px;
-      line-height: normal;
-      opacity: 0.7;
+      line-height: 36px;
+      color: rgba(255, 255, 255, 0.35);
       width: 100%;
     }
 
     .part-title {
-      font-weight: 700;
-      font-size: 32px;
-      line-height: normal;
+      font-weight: 500;
+      font-size: 34px;
+      line-height: 51px;
       width: 100%;
     }
 
-    /* 24/500 小节标题 */
+    /* 小节标题 — 参考站 18/500/27 */
     .part-subtitle {
-      margin-left: calc(517 / var(--art) * 100%);
-      width: calc(886 / var(--art) * 100%);
+      margin-left: var(--content-x);
+      width: var(--content-w);
       font-weight: 500;
-      font-size: 24px;
-      line-height: normal;
+      font-size: 18px;
+      line-height: 27px;
       color: #fff;
     }
 
     .part-body {
-      margin-left: calc(517 / var(--art) * 100%);
-      width: calc(886 / var(--art) * 100%);
+      margin-left: var(--content-x);
+      width: var(--content-w);
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      gap: 16px;
+      gap: 14px;
       font-weight: 400;
-      font-size: 16px;
-      line-height: 1.8;
-      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+      line-height: 21px;
+      letter-spacing: 0.14px;
+      color: rgba(255, 255, 255, 0.62);
     }
 
     .part-body p { width: 100%; }
 
+    .part-body__muted {
+      color: rgba(255, 255, 255, 0.38);
+    }
+
+    /* 小标题 → 正文：固定 24px */
+    .part-subtitle + .part-body {
+      margin-top: 24px;
+    }
+
     /* ===== 媒体块 ===== */
-    .stage {
+    .stage,
+    .stage--w1100,
+    .stage--w1197,
+    .stage--w1197l361 {
       position: relative;
-      margin-left: calc(351 / var(--art) * 100%);
-      width: calc(1218 / var(--art) * 100%);
+      margin-left: var(--content-x);
+      width: var(--content-w);
     }
 
     .stage__img {
       display: block;
       width: 100%;
       height: auto;
+      /* 素材自带卡片描边与圆角，勿再套 border-radius，否则四角描边会被裁切 */
+      border-radius: 0;
     }
 
-    /* x=410 w=1100 — Token 分级图 */
-    .stage--w1100 {
-      margin-left: calc(410 / var(--art) * 100%);
-      width: calc(1100 / var(--art) * 100%);
-    }
-
-    /* x=362 w=1197 — Token 映射 / Props 映射 */
-    .stage--w1197 {
-      margin-left: calc(362 / var(--art) * 100%);
-      width: calc(1197 / var(--art) * 100%);
-    }
-
-    /* x=361 w=1197 — 文档化双图 */
-    .stage--w1197l361 {
-      margin-left: calc(361 / var(--art) * 100%);
-      width: calc(1197 / var(--art) * 100%);
+    .stage__img--rounded {
+      border-radius: 16px;
     }
 
     /* ===== 竖虚线 x=453 / 1467（画板坐标），随媒体块换算 ===== */
     .rail {
-      position: absolute;
-      width: 1px;
-      pointer-events: none;
-      z-index: 2;
-      background: repeating-linear-gradient(
-        to bottom,
-        rgba(255, 255, 255, 0.3) 0,
-        rgba(255, 255, 255, 0.3) 6px,
-        transparent 6px,
-        transparent 12px
-      );
+      display: none;
     }
 
-    .stage .rail--left { left: calc(102 / 1218 * 100%); }
-    .stage .rail--right { right: calc(102 / 1218 * 100%); }
-    .stage--w1100 .rail--left { left: calc(43 / 1100 * 100%); }
-    .stage--w1100 .rail--right { right: calc(43 / 1100 * 100%); }
-    .stage--w1197 .rail--left { left: calc(91 / 1197 * 100%); }
-    .stage--w1197 .rail--right { right: calc(91 / 1197 * 100%); }
-    .stage--w1197l361 .rail--left { left: calc(92 / 1197 * 100%); }
-    .stage--w1197l361 .rail--right { right: calc(92 / 1197 * 100%); }
+    .stage .rail--left,
+    .stage--w1100 .rail--left,
+    .stage--w1197 .rail--left,
+    .stage--w1197l361 .rail--left { left: 8%; }
+    .stage .rail--right,
+    .stage--w1100 .rail--right,
+    .stage--w1197 .rail--right,
+    .stage--w1197l361 .rail--right { right: 8%; }
 
     /*
       各段虚线下端贴媒体上沿，向上越过整段文字。
@@ -311,8 +391,93 @@
       以所属媒体自身高度为基准换算，随视口缩放。
     */
     .rail--cards { top: calc(-630 / 778.5 * 100%); height: calc(630 / 778.5 * 100%); }
-    .rail--library { top: calc(-290 / 500 * 100%); height: calc(290 / 500 * 100%); }
+    .rail--library { top: calc(-290 / 240 * 100%); height: calc(290 / 240 * 100%); }
     .rail--tokens { top: calc(-330 / 470.04 * 100%); height: calc(330 / 470.04 * 100%); }
+
+    /* Mustache DS 风格：横向无限跑马灯 + 大数字叠字（仅组件库总览块） */
+    .stat-marquee {
+      position: relative;
+      width: 100%;
+      height: 240px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .stat-marquee__track {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      width: max-content;
+      animation: stat-marquee-scroll 42s linear infinite;
+      will-change: transform;
+    }
+
+    .stat-marquee:hover .stat-marquee__track {
+      animation-play-state: paused;
+    }
+
+    .stat-marquee__group {
+      display: flex;
+      align-items: center;
+      gap: 48px;
+      padding-right: 48px;
+      flex-shrink: 0;
+    }
+
+    .stat-marquee__item {
+      display: block;
+      height: 88px;
+      width: auto;
+      max-width: none;
+      border-radius: 16px;
+      object-fit: contain;
+      flex-shrink: 0;
+      opacity: 0.92;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .stat-marquee__item--tall { height: 112px; }
+    .stat-marquee__item--wide { height: 72px; }
+
+    .stat-marquee__fade {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background: linear-gradient(
+        to right,
+        #000 0%,
+        rgba(0, 0, 0, 0.88) 12%,
+        rgba(0, 0, 0, 0) 32%,
+        rgba(0, 0, 0, 0) 68%,
+        rgba(0, 0, 0, 0.88) 88%,
+        #000 100%
+      );
+    }
+
+    .stat-marquee__num {
+      display: block;
+      margin: 40px 0 0 var(--content-x);
+      width: var(--content-w);
+      text-align: center;
+      font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-weight: 500;
+      font-size: clamp(64px, 8vw, 128px);
+      line-height: 1;
+      letter-spacing: -0.04em;
+      color: rgba(255, 255, 255, 0.13);
+      pointer-events: none;
+    }
+
+    @keyframes stat-marquee-scroll {
+      from { transform: translate3d(0, 0, 0); }
+      to { transform: translate3d(-50%, 0, 0); }
+    }
+
     .rail--mapping { top: calc(-330 / 694.79 * 100%); height: calc(330 / 694.79 * 100%); }
     /* 底边停在正文下方，不伸进与图片之间的空隙 */
     .rail--props { top: calc(-680 / 758 * 100%); height: calc(580 / 758 * 100%); }
@@ -323,8 +488,8 @@
     .mt-120 { margin-top: 120px; }
     .mt-77 { margin-top: 77px; }
     .mt-69 { margin-top: 69px; }
-    .mt-32 { margin-top: 32px; }
-    .mt-48 { margin-top: 48px; }
+    .mt-32 { margin-top: 40px; }
+    .mt-48 { margin-top: 56px; }
     .mt-63 { margin-top: 63px; }
     .mt-64 { margin-top: 64px; }
     .mt-84 { margin-top: 84px; }
@@ -333,11 +498,11 @@
     .mt-109 { margin-top: 109px; }
 
     @media (max-width: 1280px) {
-      .ds-meta__title { font-size: 28px; line-height: 1.4; }
-      .part-title { font-size: 28px; }
-      .part-label { font-size: 20px; }
-      .part-subtitle { font-size: 20px; }
-      .part-body { font-size: 15px; }
+      .ds-meta__title { font-size: 28px; line-height: 42px; }
+      .part-title { font-size: 28px; line-height: 42px; }
+      .part-label { font-size: 20px; line-height: 30px; }
+      .part-subtitle { font-size: 16px; line-height: 24px; }
+      .part-body { font-size: 14px; line-height: 21px; }
     }
 
     @media (max-width: 860px) {
@@ -345,9 +510,11 @@
 
       .ds-cover-wrap,
       .ds-meta,
+      .tldr,
       .part-heading,
       .part-subtitle,
       .part-body,
+      .stat-marquee__num,
       .stage,
       .stage--w1100,
       .stage--w1197,
@@ -358,14 +525,34 @@
 
       .ds-cover { border-radius: 16px; }
 
-      /* 稿面引言压在封面上，窄屏改为封面下方常规段落 */
-      .ds-cover__lede {
-        position: static;
-        width: 100%;
-        margin-top: 24px;
-        color: rgba(255, 255, 255, 0.7);
-        opacity: 1;
+      .stat-marquee { height: 200px; }
+      .stat-marquee__item { height: 64px; }
+      .stat-marquee__item--tall { height: 84px; }
+      .stat-marquee__item--wide { height: 56px; }
+      .stat-marquee__group { gap: 28px; padding-right: 28px; }
+
+      .tldr__grid { gap: 20px; }
+
+      .tldr__title { font-size: 16px; line-height: 24px; }
+
+      .tldr__row {
+        grid-template-columns: 1fr;
+        gap: 4px;
       }
+
+      .tldr__stats {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      .tldr__stat {
+        padding: 16px 0;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+        text-align: left;
+      }
+
+      .tldr__stat:last-child { border-bottom: none; }
 
       .ds-meta { margin-top: 48px; }
       .ds-meta__title { font-size: 24px; }
@@ -373,10 +560,10 @@
       .ds-meta__col--timeline,
       .ds-meta__col--toc { width: 100%; }
 
-      .part-title { font-size: 24px; }
-      .part-label { font-size: 16px; }
-      .part-subtitle { font-size: 18px; }
-      .part-body { font-size: 14px; }
+      .part-title { font-size: 26px; line-height: 36px; }
+      .part-label { font-size: 18px; line-height: 28px; }
+      .part-subtitle { font-size: 16px; line-height: 24px; }
+      .part-body { font-size: 14px; line-height: 21px; }
 
       .rail { display: none; }
 
@@ -404,9 +591,6 @@
           height="1619"
         />
       </div>
-      <p class="ds-cover__lede" data-node-id="347:144175">
-        萌芽时间于百度MEUX对当时的成熟组件产生了浓厚的兴趣,我便在2025年秋天加入美团Keeta体验设计团队，成为设计基建中的一员，搭建业务组件、主R 38+ 组件变体和Design Token的工作,直到2026年初进入到TikTok负责制定组件的使用规范/优化组件变体/Dark模式的录入等
-      </p>
     </section>
 
     <!-- 概览 347:100248 -->
@@ -451,6 +635,52 @@
                 <li>建立Figma Properties与代码 Props的映射</li>
                 <li>推进设计系统的文档化建设</li>
               </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-rule mt-64" aria-hidden="true">
+      <img class="section-rule__line" src="./assets/case-ttls/section-rule-h.svg" alt="" width="1920" height="1" />
+      <img class="section-rule__mark" src="./assets/case-ttls/section-rule-mark.svg" alt="" width="93" height="3" />
+    </div>
+
+    <!-- 太长不看 — 纯文字呈现 -->
+    <section class="tldr" aria-label="嫌下面太长?直接总结看我优势">
+      <div class="tldr__grid">
+        <p class="tldr__title">嫌下面太长?直接总结看我优势</p>
+        <div class="tldr__body">
+          <dl class="tldr__list">
+            <div class="tldr__row">
+              <dt>能做什么?</dt>
+              <dd>能制定组件、设计规范、组件变体、Design Token以及涉及资产的沉淀.</dd>
+            </div>
+            <div class="tldr__row">
+              <dt>优势</dt>
+              <dd>能够基于组件使用在不同的业务场景量化设计系统的价值与健康度,对应对应优化设计系统.</dd>
+            </div>
+            <div class="tldr__row">
+              <dt>超出答案部分</dt>
+              <dd>设计工程化,通过构建Figma与代码的Props映射以及设计系统文档化建设,能够帮助设计和研发搭建桥梁.</dd>
+            </div>
+            <div class="tldr__row">
+              <dt>结果</dt>
+              <dd>在Keeta和Platform完成组件、变体、Design Token的制作,同时基于分析设计系统健康度对应调整Platform的变体优化</dd>
+            </div>
+          </dl>
+          <div class="tldr__stats">
+            <div class="tldr__stat">
+              <div class="tldr__stat-value">100+</div>
+              <div class="tldr__stat-label">组件变体</div>
+            </div>
+            <div class="tldr__stat">
+              <div class="tldr__stat-value">3 级</div>
+              <div class="tldr__stat-label">Token 结构</div>
+            </div>
+            <div class="tldr__stat">
+              <div class="tldr__stat-value">Props</div>
+              <div class="tldr__stat-label">设计研发映射</div>
             </div>
           </div>
         </div>
@@ -502,19 +732,37 @@
       <p>我将39个组件变体任务进行拆分逐个进行击破，由易到难。首先仅使用组件属性功能，在划分上分为「类型」「状态」「尺寸」不含盖其他功能的组件，例如：开关、徽标、标签、单选框和复选框等进行组件变体，逐步训练我的归类能力与命名能力，在面对复杂组件时需要将所有组件的状态进行绘制以及归类，并运用好各个组件变体的属性，来保持设计师在能流畅的切换的同时，尽可能减少母组件的数量</p>
     </div>
 
-    <!-- 组件库总览 308:8608 -->
-    <div class="stage mt-64" data-node-id="308:8608">
+    <p class="stat-marquee__num" aria-hidden="true">39+</p>
+
+    <!-- 组件库总览 308:8608 — Mustache DS 风格跑马灯叠字 -->
+    <div class="stage mt-48" data-node-id="308:8608">
       <span class="rail rail--left rail--library" aria-hidden="true" data-node-id="308:8609"></span>
       <span class="rail rail--right rail--library" aria-hidden="true" data-node-id="308:8610"></span>
-      <img
-        class="stage__img"
-        src="./assets/case-design-system/component-library-2x.png"
-        alt="Keeta 商家端基础组件库总览"
-        width="2436"
-        height="1000"
-        loading="lazy"
-        decoding="async"
-      />
+      <div class="stat-marquee" aria-label="39+ 组件变体">
+        <div class="stat-marquee__track" aria-hidden="true">
+          <div class="stat-marquee__group">
+            <img class="stat-marquee__item stat-marquee__item--tall" src="./assets/case-design-system/variant-marquee/tile-00.png" alt="" width="582" height="552" loading="lazy" decoding="async" draggable="false" />
+            <img class="stat-marquee__item" src="./assets/case-design-system/variant-marquee/tile-01.png" alt="" width="440" height="552" loading="lazy" decoding="async" draggable="false" />
+            <img class="stat-marquee__item" src="./assets/case-design-system/variant-marquee/tile-06.png" alt="" width="582" height="362" loading="lazy" decoding="async" draggable="false" />
+            <img class="stat-marquee__item stat-marquee__item--wide" src="./assets/case-design-system/variant-marquee/tile-03.png" alt="" width="882" height="197" loading="lazy" decoding="async" draggable="false" />
+            <img class="stat-marquee__item" src="./assets/case-design-system/variant-marquee/tile-04.png" alt="" width="390" height="197" loading="lazy" decoding="async" draggable="false" />
+            <img class="stat-marquee__item" src="./assets/case-design-system/variant-marquee/tile-02.png" alt="" width="560" height="552" loading="lazy" decoding="async" draggable="false" />
+            <img class="stat-marquee__item" src="./assets/case-design-system/variant-marquee/tile-07.png" alt="" width="582" height="392" loading="lazy" decoding="async" draggable="false" />
+            <img class="stat-marquee__item stat-marquee__item--wide" src="./assets/case-design-system/variant-marquee/tile-05.png" alt="" width="310" height="197" loading="lazy" decoding="async" draggable="false" />
+          </div>
+          <div class="stat-marquee__group">
+            <img class="stat-marquee__item stat-marquee__item--tall" src="./assets/case-design-system/variant-marquee/tile-00.png" alt="" width="582" height="552" loading="lazy" decoding="async" draggable="false" />
+            <img class="stat-marquee__item" src="./assets/case-design-system/variant-marquee/tile-01.png" alt="" width="440" height="552" loading="lazy" decoding="async" draggable="false" />
+            <img class="stat-marquee__item" src="./assets/case-design-system/variant-marquee/tile-06.png" alt="" width="582" height="362" loading="lazy" decoding="async" draggable="false" />
+            <img class="stat-marquee__item stat-marquee__item--wide" src="./assets/case-design-system/variant-marquee/tile-03.png" alt="" width="882" height="197" loading="lazy" decoding="async" draggable="false" />
+            <img class="stat-marquee__item" src="./assets/case-design-system/variant-marquee/tile-04.png" alt="" width="390" height="197" loading="lazy" decoding="async" draggable="false" />
+            <img class="stat-marquee__item" src="./assets/case-design-system/variant-marquee/tile-02.png" alt="" width="560" height="552" loading="lazy" decoding="async" draggable="false" />
+            <img class="stat-marquee__item" src="./assets/case-design-system/variant-marquee/tile-07.png" alt="" width="582" height="392" loading="lazy" decoding="async" draggable="false" />
+            <img class="stat-marquee__item stat-marquee__item--wide" src="./assets/case-design-system/variant-marquee/tile-05.png" alt="" width="310" height="197" loading="lazy" decoding="async" draggable="false" />
+          </div>
+        </div>
+        <div class="stat-marquee__fade" aria-hidden="true"></div>
+      </div>
     </div>
 
     <!-- 310:8634 -->
@@ -557,6 +805,35 @@
         alt="Base Tokens / Semantic Tokens / Component Tokens 三层映射关系"
         width="2410"
         height="1405"
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+
+    <h3 class="part-subtitle mt-84">量化设计系统的价值与健康度</h3>
+    <div class="part-body mt-32">
+      <p>在设计系统建设中，我始终坚持度量先行的原则，因为无法被度量的事物便无法被有效管理和优化。为此，借助 Figma Library Analytics，来分析设计系统在团队的使用情况以及后续的优化</p>
+    </div>
+
+    <h3 class="part-subtitle mt-48">质量维度：衡量系统的健康度与健壮性</h3>
+    <div class="part-body mt-32">
+      <p>组件分离率：核心监控指标，反映了组件在实际应用中是否满足需求。</p>
+      <p class="part-body__muted">通常来说，以 Pinterest 设计系统为例，行业认为4%以下分离率是一个比较健康的组件状态。</p>
+      <p>变体覆盖率：衡量组件对已知场景的覆盖能力。</p>
+    </div>
+
+    <h3 class="part-subtitle mt-48">效能维度：量化业务贡献与组件收益</h3>
+    <div class="part-body mt-32">
+      <p>需求吞吐量增幅：对比使用设计系统前后，同级别需求的平均完成工时，来量化协同效率的提升。</p>
+    </div>
+
+    <div class="stage mt-64">
+      <img
+        class="stage__img stage__img--rounded"
+        src="./assets/case-design-system/analytics-dashboard-2x.png"
+        alt="TTGO B-End Components Analytics：组件插入量、Top teams 与 Component statistics"
+        width="1024"
+        height="853"
         loading="lazy"
         decoding="async"
       />
