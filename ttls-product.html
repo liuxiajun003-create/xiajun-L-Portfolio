@@ -611,6 +611,23 @@
       max-width: calc(900 / 1198 * 100%);
     }
 
+    /* 引导问句 + 设计举措：两侧虚线上下贯通为一条 */
+    .lead-rail__stack--initiatives {
+      gap: 48px;
+    }
+
+    .lead-rail__stack--initiatives .lead-rail__copy {
+      margin-left: calc(156 / 1198 * 100%);
+      width: calc(950 / 1198 * 100%);
+      max-width: calc(950 / 1198 * 100%);
+    }
+
+    .lead-rail__stack--initiatives > .part-lead {
+      margin-left: calc(156 / 1198 * 100%);
+      width: calc(950 / 1198 * 100%);
+      max-width: calc(950 / 1198 * 100%);
+    }
+
     /* 长轨：文案+图片整段两侧贯穿 */
     .lead-media-rail {
       position: relative;
@@ -842,6 +859,34 @@
     .media-rail-stage--gap109 { margin-top: 109px; }
     .media-rail-stage--gap128 { margin-top: 128px; }
     .media-rail-stage--gap180 { margin-top: 180px; }
+
+    /* 设计举措小标题：14 / Medium / 70% 白 */
+    .part-lead-eyebrow {
+      margin: 0;
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: normal;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .lead-rail__copy {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      margin-left: calc(156 / 1198 * 100%);
+      width: calc(950 / 1198 * 100%);
+      max-width: calc(950 / 1198 * 100%);
+      box-sizing: border-box;
+    }
+
+    .lead-rail__copy .part-lead {
+      margin-left: 0;
+      margin-right: 0;
+      width: 100%;
+      max-width: none;
+    }
 
     /* 稿面 28px Heavy 引导句（含高亮） */
     .part-lead {
@@ -1334,12 +1379,20 @@
       }
       .lead-rail .part-lead,
       .lead-rail__stack .part-lead,
-      .lead-media-rail .part-lead {
+      .lead-media-rail .part-lead,
+      .lead-rail__copy {
         margin-left: 0;
         max-width: none;
+        width: 100%;
       }
       .lead-rail__stack {
         gap: 48px;
+      }
+      .lead-rail__stack--initiatives > .part-lead,
+      .lead-rail__stack--initiatives .lead-rail__copy {
+        margin-left: 0;
+        width: 100%;
+        max-width: none;
       }
       .smb-flow-stage {
         margin-top: 40px;
@@ -1420,7 +1473,7 @@
         <span class="rail rail--left" aria-hidden="true" data-node-id="415:117977"></span>
         <span class="rail rail--right" aria-hidden="true" data-node-id="415:117989"></span>
         <p class="part-lead part-lead--two-line" data-node-id="415:133272">
-          <span class="part-lead__line">核心字段冗余，发品耗时较长，表单流失率抬升影响</span>
+          <span class="part-lead__line">必填字段多,导致发品耗时长,提高了表单流失率影响整体的</span>
           <span class="part-lead__line"><span class="accent-hot">商品发布转化</span></span>
         </p>
       </div>
@@ -1429,8 +1482,8 @@
         <div class="media-frame media-frame--stroke">
           <video
             class="media-fluid js-lazy-video"
-            src="./assets/case-ttls/tokopedia-flow-web.mp4"
-            poster="./assets/case-ttls/tokopedia-flow-poster.webp"
+            src="./assets/case-ttls/tokopedia-flow-web.mp4?v=20260808"
+            poster="./assets/case-ttls/tokopedia-flow-poster.webp?v=20260808"
             width="2400"
             height="1350"
             preload="none"
@@ -1451,7 +1504,7 @@
       </div>
 
       <div class="media-rail-stage media-rail-stage--gap64" data-node-id="415:118021">
-        <div class="media-frame media-frame--stroke">
+        <div class="media-frame media-frame--stroke media-frame--native-stroke">
           <img
             class="media-fluid"
             src="./assets/case-ttls/part1-insights-2x.png"
@@ -1484,12 +1537,20 @@
 
     <!-- 表单提效（同步 Figma 415:115706） -->
     <section class="block-part block-part-three" data-node-id="part-three">
-      <div class="lead-rail part-subhead--gap100" data-node-id="416:136213-wrap">
+      <div class="lead-rail lead-rail--stack part-subhead--gap100" data-node-id="416:136213-wrap">
         <span class="rail rail--left" aria-hidden="true" data-node-id="416:136211"></span>
         <span class="rail rail--right" aria-hidden="true" data-node-id="416:136212"></span>
-        <p class="part-lead" data-node-id="416:136213">
-          首先: 先从表单核心信息下手,减少到<span class="accent">7+核心字段</span>的填写
-        </p>
+        <div class="lead-rail__stack lead-rail__stack--initiatives">
+          <p class="part-lead" data-node-id="416:136213-intro">
+            围绕降低发品时长控制在<span class="accent">3.5min内</span>做了哪些设计举措?
+          </p>
+          <div class="lead-rail__copy">
+            <p class="part-lead-eyebrow">设计举措1</p>
+            <p class="part-lead" data-node-id="416:136213">
+              首先: 先从表单核心信息下手,减少到<span class="accent">7+核心字段</span>的填写
+            </p>
+          </div>
+        </div>
       </div>
 
       <div class="media-rail-stage media-rail-stage--gap64" data-node-id="415:118151">
@@ -1498,8 +1559,56 @@
             class="media-fluid"
             src="./assets/case-ttls/part3-form-2x.png"
             alt="线上表单信息 vs 信息布局重构"
-            width="2396"
-            height="1034"
+            width="2399"
+            height="1038"
+            loading="lazy"
+          />
+        </div>
+      </div>
+
+      <div class="lead-rail part-subhead--gap100" data-node-id="416:136213b-wrap">
+        <span class="rail rail--left" aria-hidden="true"></span>
+        <span class="rail rail--right" aria-hidden="true"></span>
+        <div class="lead-rail__copy">
+          <p class="part-lead-eyebrow">设计举措2</p>
+          <p class="part-lead" data-node-id="416:136213b">
+            其余字段我们并不是“简单”收起,通过手风琴设计让商家<span class="accent">快速感知信息</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="media-rail-stage media-rail-stage--gap64" data-node-id="415:118151b">
+        <div class="media-frame media-frame--stroke">
+          <img
+            class="media-fluid"
+            src="./assets/case-ttls/part3-advanced-info-2x.png"
+            alt="Create bundle：Advanced Information 手风琴展开示意"
+            width="2399"
+            height="1433"
+            loading="lazy"
+          />
+        </div>
+      </div>
+
+      <div class="lead-rail part-subhead--gap100" data-node-id="416:136219-wrap">
+        <span class="rail rail--left" aria-hidden="true" data-node-id="416:136217"></span>
+        <span class="rail rail--right" aria-hidden="true" data-node-id="416:136218"></span>
+        <div class="lead-rail__copy">
+          <p class="part-lead-eyebrow">设计举措3</p>
+          <p class="part-lead" data-node-id="416:136219">
+            再次: 组件全局更新,扩大Padding,进行<span class="accent">视觉信息降噪</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="media-rail-stage media-rail-stage--gap64" data-node-id="415:120680">
+        <div class="media-frame media-frame--stroke">
+          <img
+            class="media-fluid"
+            src="./assets/case-ttls/part3-form-visual-2x.png"
+            alt="组件全局更新 — New / Old 对比"
+            width="2394"
+            height="1394"
             loading="lazy"
           />
         </div>
@@ -1508,9 +1617,13 @@
       <div class="lead-rail part-subhead--gap100" data-node-id="416:136216-wrap">
         <span class="rail rail--left" aria-hidden="true" data-node-id="416:136214"></span>
         <span class="rail rail--right" aria-hidden="true" data-node-id="416:136215"></span>
-        <p class="part-lead" data-node-id="416:136216">
-          其次: 优化首屏信息透传,将抽屉表单修改为页面<span class="accent">全局下钻</span>
-        </p>
+        <div class="lead-rail__copy">
+          <p class="part-lead-eyebrow">设计举措4</p>
+          <p class="part-lead part-lead--two-line" data-node-id="416:136216">
+            <span class="part-lead__line">其次: 优化首屏信息透传,将抽屉表单修改为页面<span class="accent">全局下钻</span></span>
+            <span class="part-lead__line">并进行视觉分区，降低认知混淆</span>
+          </p>
+        </div>
       </div>
 
       <div class="media-rail-stage media-rail-stage--gap64" data-node-id="415:120862">
@@ -1543,33 +1656,15 @@
         </div>
       </div>
 
-      <div class="lead-rail part-subhead--gap100" data-node-id="416:136219-wrap">
-        <span class="rail rail--left" aria-hidden="true" data-node-id="416:136217"></span>
-        <span class="rail rail--right" aria-hidden="true" data-node-id="416:136218"></span>
-        <p class="part-lead" data-node-id="416:136219">
-          再次: 组件全局更新,扩大Padding,进行<span class="accent">视觉信息降噪</span>
-        </p>
-      </div>
-
-      <div class="media-rail-stage media-rail-stage--gap64" data-node-id="415:120680">
-        <div class="media-frame media-frame--stroke">
-          <img
-            class="media-fluid"
-            src="./assets/case-ttls/part3-form-visual-2x.png"
-            alt="组件全局更新 — New / Old 对比"
-            width="2394"
-            height="1394"
-            loading="lazy"
-          />
-        </div>
-      </div>
-
       <div class="lead-rail part-subhead--gap100" data-node-id="416:136222-wrap">
         <span class="rail rail--left" aria-hidden="true" data-node-id="416:136220"></span>
         <span class="rail rail--right" aria-hidden="true" data-node-id="416:136221"></span>
-        <p class="part-lead" data-node-id="416:136222">
-          最后: 支持<span class="accent">动态渲染</span>,商家填写表单可以对应实时查看C端PDP页面
-        </p>
+        <div class="lead-rail__copy">
+          <p class="part-lead-eyebrow">设计举措5</p>
+          <p class="part-lead" data-node-id="416:136222">
+            最后: 支持<span class="accent">动态渲染</span>,商家填写表单可以对应实时查看C端PDP页面
+          </p>
+        </div>
       </div>
 
       <div class="media-rail-stage media-rail-stage--gap64" data-node-id="418:136226">
@@ -1628,7 +1723,7 @@
         <span class="rail rail--right" aria-hidden="true"></span>
         <div class="lead-rail__stack">
           <p class="part-lead" data-node-id="418:136232">
-            以上我对表单页进行了设计处理,还有哪些方式能够<span class="accent">帮助商家发品提效</span>?
+            以上是我围绕“达到3.5min内发品”做的设计举措,那怎么去完成<span class="accent">1min内发品占比在30%以上</span>来帮助商家发品提效呢?
           </p>
           <ol class="part-lead part-lead--list" data-node-id="418:136491" start="1">
             <li>新增上传「线下菜单」功能</li>
