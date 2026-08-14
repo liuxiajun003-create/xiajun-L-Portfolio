@@ -718,10 +718,23 @@
 
   function noteAvailableTimeDesc() {
     var label = getSelectedLabel(state.groups.availableHours);
-    if (/Specified/i.test(label)) {
-      return "Voucher can be redeemed during specified hours only";
+    var desc = /Specified/i.test(label)
+      ? "Voucher can be redeemed during specified hours only"
+      : state.preview.thingsToNote.items[2].description;
+    var suffixes = [];
+    (state.groups.unavailableDays || []).forEach(function (item) {
+      if (!item.checked) return;
+      if (/certain days of the week/i.test(item.label)) {
+        suffixes.push("not valid on certain days of the week");
+      }
+      if (/specific date/i.test(item.label)) {
+        suffixes.push("not valid on specific dates");
+      }
+    });
+    if (suffixes.length) {
+      desc += " and is " + suffixes.join(", ");
     }
-    return state.preview.thingsToNote.items[2].description;
+    return desc;
   }
 
   function syncDineNoteFields(animate, sourceField) {
@@ -904,6 +917,21 @@
     var animate = options && options.animate;
     var sourceField = options && options.sourceField;
     var p = state.preview;
+
+    var liveSyncFields = {
+      unavailableDays: true,
+      limitPurchase: true,
+      reservationRules: true,
+      dineInRules: true,
+      validityPeriod: true,
+      availableHours: true,
+      recommendedUsers: true,
+      stockAvailability: true,
+      salePeriod: true,
+    };
+    if (sourceField && liveSyncFields[sourceField]) {
+      return;
+    }
 
     if (sourceField === "regularPrice" || sourceField === "sellingPrice") {
       syncPriceFields(animate, sourceField);

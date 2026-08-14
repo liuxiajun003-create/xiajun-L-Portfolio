@@ -1141,7 +1141,7 @@
     additionalInfoEn: ["note7"],
     salePeriod: ["info0"],
     limitPurchase: ["note5"],
-    unavailableDays: ["note1"],
+    unavailableDays: ["note1", "note2"],
     minimumPurchase: ["price"],
   };
 
