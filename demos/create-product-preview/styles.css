@@ -1524,7 +1524,7 @@ button {
   content: "";
   position: absolute;
   inset: -4px;
-  border: 0.6px solid rgba(17, 185, 46, 0.52);
+  border: 0.6px solid rgba(17, 185, 46, 0.32);
   border-radius: 8px;
   background: rgba(17, 185, 46, 0.1);
   pointer-events: none;

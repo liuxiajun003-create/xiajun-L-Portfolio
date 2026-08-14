@@ -634,7 +634,7 @@
     if (!target) return;
 
     function afterScroll() {
-      ensureFieldBeam(fieldKey, isNewField, { strong: true });
+      ensureFieldBeam(fieldKey, false, { strong: true });
     }
 
     if (isNewField && needsScroll(target)) {
