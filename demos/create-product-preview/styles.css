@@ -1,0 +1,1465 @@
+/* Figma 605:57670 — Product publish (TTGO tokens) */
+:root {
+  --ttgo-text-body: rgba(4, 26, 29, 0.92);
+  --ttgo-text-caption: rgba(4, 26, 29, 0.55);
+  --ttgo-text-placeholder: rgba(4, 26, 29, 0.35);
+  --ttgo-text-breadcrumb: rgba(4, 26, 29, 0.5);
+  --ttgo-text-dark-body: rgba(255, 255, 255, 0.92);
+  --ttgo-border-default: rgba(4, 26, 29, 0.15);
+  --ttgo-bg: #ffffff;
+  --ttgo-bg-greycard: #f7f8f8;
+  --ttgo-btn-primary: #041a1d;
+  --ttgo-btn-primary-hover: #0a2a2e;
+  --ttgo-btn-secondary: rgba(4, 26, 29, 0.05);
+  --ttgo-btn-secondary-hover: rgba(4, 26, 29, 0.08);
+  --ttgo-success-bg: rgba(17, 185, 46, 0.12);
+  --ttgo-focus: #041a1d;
+  --ttgo-focus-mask: rgba(4, 26, 29, 0.47);
+  --ttgo-back-btn-bg: rgba(55, 58, 67, 0.05);
+  --ttgo-back-btn-hover: rgba(55, 58, 67, 0.1);
+  --ttgo-radius-sm: 8px;
+  --ttgo-radius-md: 12px;
+  --ttgo-radius-full: 9999px;
+  --ttgo-space-100: 4px;
+  --ttgo-space-600: 24px;
+  --ttgo-space-800: 32px;
+  --ttgo-space-1200: 48px;
+  --ui-text-1: #000000;
+  --ui-text-2: rgba(0, 0, 0, 0.65);
+  --ui-text-3: rgba(0, 0, 0, 0.48);
+  --ui-text-primary: #e10543;
+  --ui-page-grouped-1: #f5f5f5;
+  --ui-page-grouped-2: #ffffff;
+  --ui-cta-green: #00b14f;
+  --form-width: 592px;
+  --form-padding-x: 64px;
+  --footer-height: 68px;
+  --icon-10: 10px;
+  --icon-14: 14px;
+  --icon-16: 16px;
+  --icon-18: 18px;
+  --icon-20: 20px;
+  --icon-24: 24px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--ttgo-bg);
+  color: var(--ttgo-text-body);
+  font-family: "TikTok Sans", "TikTok Text", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  display: block;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+.page {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--ttgo-bg);
+  overflow: hidden;
+}
+
+.page__body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── Icons ── */
+.icon {
+  display: block;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.icon--10 { width: var(--icon-10); height: var(--icon-10); }
+.icon--11 { width: 11px; height: 11px; }
+.icon--14 { width: var(--icon-14); height: var(--icon-14); }
+.icon--16 { width: var(--icon-16); height: var(--icon-16); }
+.icon--18 { width: var(--icon-18); height: var(--icon-18); }
+.icon--20 { width: var(--icon-20); height: var(--icon-20); }
+.icon--24 { width: var(--icon-24); height: var(--icon-24); }
+
+/* ── Left panel ── */
+.panel-left {
+  flex: 1 1 50%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--ttgo-bg);
+}
+
+.header {
+  flex-shrink: 0;
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--ttgo-space-100);
+}
+
+.breadcrumb__item {
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.1608px;
+  color: var(--ttgo-text-breadcrumb);
+}
+
+.breadcrumb__item--active {
+  color: var(--ttgo-text-body);
+}
+
+.title-area {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+}
+
+.title-area__back {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--ttgo-back-btn-bg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s ease;
+}
+
+.title-area__back:hover {
+  background: var(--ttgo-back-btn-hover);
+}
+
+.title-area__back:active {
+  background: rgba(55, 58, 67, 0.14);
+}
+
+.title-area__title {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 36px;
+  color: var(--ttgo-text-body);
+}
+
+.form-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 var(--form-padding-x) 24px;
+  scrollbar-gutter: stable;
+}
+
+/* ── Inline banner ── */
+.inline-banner {
+  margin-top: 0;
+  background: var(--ttgo-success-bg);
+  border-radius: var(--ttgo-radius-sm);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  max-width: var(--form-width);
+}
+
+.inline-banner__images {
+  position: relative;
+  width: 105px;
+  height: 54px;
+  flex-shrink: 0;
+  margin-right: 16px;
+}
+
+.inline-banner__img-wrap {
+  position: absolute;
+  top: 0;
+  border: 0.5px solid var(--ttgo-border-default);
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.inline-banner__img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.inline-banner__content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-width: 0;
+}
+
+.inline-banner__text {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  letter-spacing: 0.0938px;
+}
+
+.inline-banner__btn {
+  flex-shrink: 0;
+  height: 24px;
+  padding: 0 12px;
+  border-radius: var(--ttgo-radius-full);
+  background: var(--ttgo-btn-primary);
+  color: var(--ttgo-text-dark-body);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  letter-spacing: 0.0938px;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.inline-banner__btn:hover {
+  background: var(--ttgo-btn-primary-hover);
+}
+
+/* ── Section (collapse) ── */
+.section {
+  padding: 32px 0 0;
+  max-width: var(--form-width);
+  width: 100%;
+}
+
+.section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.section__header--with-sub {
+  align-items: flex-start;
+}
+
+.section__header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.section__title {
+  font-family: "TikTok Text", "TikTok Sans", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 25px;
+  letter-spacing: 0.3px;
+}
+
+.section__subtitle {
+  font-size: 14px;
+  line-height: 18px;
+  letter-spacing: 0.0938px;
+  color: var(--ttgo-text-caption);
+}
+
+.section__chevron {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.section.is-collapsed .section__chevron {
+  transform: rotate(180deg);
+}
+
+.section__body {
+  margin-top: 28px;
+}
+
+.section.is-collapsed .section__body {
+  display: none;
+}
+
+.section.is-collapsed .section__subtitle {
+  display: none;
+}
+
+.section__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* ── Field ── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field--gap-12 {
+  gap: 12px;
+}
+
+.field__label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.field__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: 0.0304px;
+}
+
+.field__required {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 8px;
+  height: 6px;
+  flex-shrink: 0;
+}
+
+.field__required-icon {
+  display: block;
+  width: 5.4px;
+  height: 6px;
+}
+
+.field__ai-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: var(--ttgo-radius-full);
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.field__ai-btn:hover {
+  background: rgba(4, 26, 29, 0.04);
+}
+
+.field__ai-text {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: 0.1608px;
+  background: linear-gradient(22.89deg, rgba(0, 106, 180, 0.92) 15.53%, rgba(185, 0, 99, 0.92) 75.54%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ── TTGO Input ── */
+.ttgo-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--ttgo-border-default);
+  border-radius: var(--ttgo-radius-sm);
+  background: var(--ttgo-bg);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ttgo-input:focus-within {
+  border-color: var(--ttgo-focus);
+  box-shadow: 0 0 0 1px var(--ttgo-focus);
+}
+
+.ttgo-input__prefix {
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--ttgo-text-caption);
+  flex-shrink: 0;
+}
+
+.ttgo-input__field {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: 0.0304px;
+  color: var(--ttgo-text-body);
+}
+
+.ttgo-input__field::placeholder {
+  color: var(--ttgo-text-placeholder);
+}
+
+.ttgo-input__suffix {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-left: 8px;
+  flex-shrink: 0;
+}
+
+.ttgo-input__suffix-fade {
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 80px;
+  height: 44px;
+  background: linear-gradient(to left, #fff 80%, rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
+
+.ttgo-input--select {
+  cursor: default;
+  overflow: hidden;
+  padding-right: 0;
+}
+
+.ttgo-input--select .ttgo-input__field {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: default;
+  color: var(--ttgo-text-body);
+  padding-right: 4px;
+}
+
+.ttgo-input--select .ttgo-input__suffix {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  height: auto;
+  padding: 0 12px 0 8px;
+  background: var(--ttgo-bg);
+  position: relative;
+}
+
+.ttgo-input--select:focus-within {
+  border-color: var(--ttgo-border-default);
+  box-shadow: none;
+}
+
+.ttgo-input--select .ttgo-input__suffix-fade {
+  top: 0;
+  bottom: 0;
+  left: -80px;
+  width: 80px;
+  height: auto;
+  transform: none;
+  background: linear-gradient(to left, var(--ttgo-bg) 80%, rgba(255, 255, 255, 0));
+}
+
+.input-row {
+  display: flex;
+  gap: 12px;
+}
+
+.input-row .field {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Textarea ── */
+.ttgo-textarea {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 120px;
+  height: 120px;
+  padding: 12px;
+  border: 1px solid var(--ttgo-border-default);
+  border-radius: var(--ttgo-radius-sm);
+  background: var(--ttgo-bg);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ttgo-textarea:focus-within {
+  border-color: var(--ttgo-focus);
+  box-shadow: 0 0 0 1px var(--ttgo-focus);
+}
+
+.ttgo-textarea__field {
+  flex: 1;
+  width: 100%;
+  border: 0;
+  outline: none;
+  resize: none;
+  background: transparent;
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: 0.0304px;
+  color: var(--ttgo-text-body);
+}
+
+.ttgo-textarea__counter {
+  align-self: flex-end;
+  font-size: 13px;
+  line-height: 1.3;
+  color: var(--ttgo-text-caption);
+}
+
+/* ── Photo upload ── */
+.photo-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.photo-cover {
+  position: relative;
+  width: 96px;
+  height: 72px;
+  border-radius: var(--ttgo-radius-sm);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.photo-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-cover__label {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  padding: 1px 0;
+  background: var(--ttgo-focus-mask);
+  text-align: center;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--ttgo-text-dark-body);
+}
+
+.photo-add {
+  width: 96px;
+  height: 72px;
+  border: 1px dashed var(--ttgo-border-default);
+  border-radius: var(--ttgo-radius-sm);
+  background: var(--ttgo-bg-greycard);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.photo-add:hover {
+  background: rgba(4, 26, 29, 0.04);
+  border-color: rgba(4, 26, 29, 0.25);
+}
+
+/* ── TTGO Radio (pureCard) ── */
+.radio-group {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.radio-group--dine {
+  flex-wrap: nowrap;
+}
+
+.radio-item {
+  flex: 1;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--ttgo-border-default);
+  border-radius: var(--ttgo-radius-sm);
+  background: var(--ttgo-bg);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.radio-item--fixed {
+  flex: 0 0 220px;
+}
+
+.radio-item:hover:not(.radio-item--selected) {
+  background: rgba(4, 26, 29, 0.02);
+}
+
+.radio-item--selected {
+  background: var(--ttgo-bg-greycard);
+  border-color: var(--ttgo-focus);
+}
+
+.radio-item__dot--empty {
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--ttgo-text-placeholder);
+  border-radius: 50%;
+  background: var(--ttgo-bg);
+  flex-shrink: 0;
+}
+
+.radio-item__label {
+  font-size: 14px;
+  line-height: 18px;
+  letter-spacing: 0.0938px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── TTGO Checkbox ── */
+.checkbox-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--ttgo-border-default);
+  border-radius: var(--ttgo-radius-sm);
+  background: var(--ttgo-bg);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.checkbox-item--plain {
+  border: none;
+  background: transparent;
+  min-height: 0;
+  padding: 0;
+  height: 44px;
+}
+
+.checkbox-item:hover:not(.checkbox-item--plain) {
+  background: rgba(4, 26, 29, 0.02);
+}
+
+.checkbox-item__box {
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--ttgo-text-placeholder);
+  border-radius: 3px;
+  background: var(--ttgo-bg);
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.checkbox-item.is-checked .checkbox-item__box {
+  background: var(--ttgo-btn-primary);
+  border-color: var(--ttgo-btn-primary);
+}
+
+.checkbox-item.is-checked .checkbox-item__box::after {
+  content: "";
+  width: 4px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) translate(-1px, -1px);
+}
+
+.checkbox-item__label {
+  font-size: 14px;
+  line-height: 18px;
+  letter-spacing: 0.0938px;
+}
+
+/* ── Add stores ── */
+.add-stores {
+  height: 96px;
+  border: 1px dashed var(--ttgo-border-default);
+  border-radius: var(--ttgo-radius-sm);
+  background: var(--ttgo-bg-greycard);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.add-stores:hover {
+  background: rgba(4, 26, 29, 0.04);
+  border-color: rgba(4, 26, 29, 0.25);
+}
+
+.add-stores__inner {
+  display: inline-flex;
+  align-items: center;
+}
+
+.add-stores__icon-wrap {
+  display: inline-flex;
+  padding: 8px;
+  border-radius: 3px;
+}
+
+.add-stores__label {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 18px;
+  letter-spacing: 0.35px;
+  color: var(--ttgo-btn-primary);
+}
+
+/* ── Right preview ── */
+.panel-right {
+  flex: 1 1 50%;
+  min-width: 0;
+  background: var(--ttgo-bg-greycard);
+  padding: var(--ttgo-space-1200);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.phone-frame {
+  width: 280px;
+  height: 648px;
+  border: 8.4px solid var(--ttgo-focus);
+  border-radius: 40px;
+  background: var(--ui-page-grouped-1);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.phone-hero {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  flex-shrink: 0;
+  background: #f7f8f8;
+}
+
+.phone-hero__cover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.phone-hero__cover.is-hidden,
+.phone-hero__empty.is-hidden {
+  display: none;
+}
+
+.phone-hero__empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: 100%;
+  color: var(--ttgo-text-placeholder);
+}
+
+.phone-hero__empty-icon {
+  width: 29px;
+  height: 29px;
+  opacity: 1;
+}
+
+.phone-hero__empty .phone-hero__empty-icon {
+  opacity: 1;
+}
+
+.phone-hero__empty-label {
+  font-size: 10.05px;
+  line-height: 1.3;
+  color: var(--ttgo-text-placeholder);
+}
+
+.phone-hero__empty .icon {
+  opacity: 1;
+}
+
+.phone-hero__counter {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  padding: 2px 5px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.5);
+  font-size: 6.19px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #fff;
+}
+
+.phone-content {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--ui-page-grouped-1);
+  padding-bottom: 62px;
+}
+
+.phone-card {
+  background: var(--ui-page-grouped-2);
+  padding: 7px 0;
+}
+
+.phone-card + .phone-card {
+  margin-top: 5px;
+}
+
+.phone-card--highlights {
+  padding: 0;
+}
+
+.phone-price-block { padding: 0 10px; }
+
+.phone-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+
+.phone-price-current {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  font-weight: 600;
+  color: var(--ui-text-1);
+}
+
+.phone-price-current .currency { font-size: 10.05px; }
+.phone-price-current .amount { font-size: 20.1px; line-height: 1; }
+
+.phone-price-old {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  color: var(--ui-text-3);
+  text-decoration: line-through;
+  font-size: 10.05px;
+}
+
+.phone-discount {
+  font-size: 10.05px;
+  font-weight: 600;
+  color: var(--ui-text-primary);
+}
+
+.phone-title {
+  padding: 0 10px;
+  margin-top: 5px;
+  font-size: 12.205px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--ui-text-1);
+}
+
+.phone-title--placeholder {
+  color: var(--ui-text-1);
+  font-weight: 700;
+}
+
+.phone-title__content {
+  display: inline;
+}
+
+.phone-title__text {
+  display: inline;
+  word-break: break-word;
+}
+
+.preview-sync-cursor {
+  display: none;
+  flex-shrink: 0;
+  width: 2px;
+  height: 0.95em;
+  margin-left: 1px;
+  vertical-align: baseline;
+  background: url("assets/preview-cursor-title.png") no-repeat center / 100% 100%;
+  animation: preview-sync-cursor-blink 1.05s step-end infinite;
+}
+
+.preview-sync-cursor.is-visible {
+  display: inline-block;
+  vertical-align: baseline;
+}
+
+.phone-price-current .preview-sync-cursor {
+  width: 2px;
+  height: 14px;
+  margin-left: 1px;
+  align-self: center;
+  background-image: url("assets/preview-cursor-price.png");
+}
+
+@keyframes preview-sync-cursor-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.phone-price-old[hidden],
+.phone-discount[hidden] {
+  display: none;
+}
+
+.phone-info-card {
+  padding: 2px 0;
+}
+
+.phone-info-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  min-height: 23px;
+}
+
+.phone-info-row__text {
+  flex: 1;
+  font-size: 10.051px;
+  line-height: 1.3;
+  min-width: 0;
+  color: var(--ui-text-1);
+}
+
+.phone-section-title--row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11.487px 11.487px 5.744px;
+  font-size: 12.205px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--ui-text-1);
+}
+
+.phone-info-row .icon--10 {
+  width: 6px;
+  height: 10px;
+  flex-shrink: 0;
+  opacity: 0.45;
+  object-fit: contain;
+}
+
+.phone-section-title--row .icon--10 {
+  width: 7.179px;
+  height: 12.923px;
+  flex-shrink: 0;
+  opacity: 0.45;
+  object-fit: contain;
+}
+
+.phone-section-title {
+  padding: 11.487px 11.487px 5.744px;
+  font-size: 12.205px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.phone-highlights-wrap {
+  padding: 5.744px 11.487px 11.487px;
+}
+
+.phone-highlights {
+  display: flex;
+  align-items: flex-start;
+  min-height: 41.641px;
+}
+
+.phone-highlight-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 8.615px;
+}
+
+.phone-highlight-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5.744px;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+
+.phone-highlight-item--refund {
+  width: 93.333px;
+}
+
+.phone-highlight-item--days {
+  width: 52.41px;
+}
+
+.phone-highlight-item--save {
+  width: 71.795px;
+}
+
+.phone-highlight-item__icon {
+  position: relative;
+  width: 12.923px;
+  height: 12.923px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.phone-highlight-item__icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.phone-highlight-item__icon--refund .phone-highlight-item__refund-bg {
+  position: absolute;
+  inset: 4.17% 3.13% 4.17% 0.62%;
+}
+
+.phone-highlight-item__icon--refund .phone-highlight-item__shield {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  aspect-ratio: 1;
+  overflow: hidden;
+}
+
+.phone-highlight-item__icon--refund .phone-highlight-item__shield img {
+  position: absolute;
+  inset: 1.52% 10.42% 2.42% 10.42%;
+  width: auto;
+  height: auto;
+  max-width: none;
+}
+
+.phone-highlight-item__icon--calendar img,
+.phone-highlight-item__icon--percent img {
+  position: absolute;
+  inset: 6.25% 6.25% 10.42% 6.25%;
+  width: auto;
+  height: auto;
+  max-width: none;
+}
+
+.phone-highlight-item__icon--percent img {
+  inset: 4.18% 4.17% 4.15% 4.17%;
+}
+
+.phone-highlight-item span {
+  font-size: 9.333px;
+  line-height: 1.3;
+  font-weight: 400;
+  color: var(--ui-text-2);
+  width: 100%;
+  word-break: break-word;
+}
+
+.phone-highlight-sep {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.359px;
+  height: 41.641px;
+  flex-shrink: 0;
+}
+
+.phone-highlight-sep img {
+  display: block;
+  width: 41.641px;
+  height: 0.359px;
+  transform: rotate(-90deg);
+}
+
+.phone-notes { padding: 10px 0 12px; }
+
+.phone-note-item {
+  display: flex;
+  gap: 5px;
+  padding: 0 11px;
+  margin-bottom: 15px;
+}
+
+.phone-note-item .icon {
+  flex-shrink: 0;
+}
+
+.phone-note-item__title {
+  font-size: 10.051px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 2px;
+}
+
+.phone-note-item__desc {
+  font-size: 10.051px;
+  line-height: 1.3;
+  color: var(--ui-text-2);
+}
+
+.phone-cta-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: var(--ui-page-grouped-2);
+  padding: 10px 12px 0;
+}
+
+.phone-cta-btn {
+  width: 100%;
+  height: 28px;
+  border-radius: var(--ttgo-radius-full);
+  background: var(--ui-cta-green);
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.phone-home-indicator {
+  height: 21px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 5px;
+}
+
+.phone-home-indicator__bar {
+  width: 86px;
+  height: 3px;
+  border-radius: var(--ttgo-radius-full);
+  background: #000;
+}
+
+/* ── Footer ── */
+.footer {
+  flex-shrink: 0;
+  border-top: 1px solid var(--ttgo-border-default);
+  background: var(--ttgo-bg);
+  height: var(--footer-height);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 16px 24px;
+}
+
+.footer__actions {
+  display: flex;
+  gap: 16px;
+}
+
+.btn {
+  height: 36px;
+  min-width: 80px;
+  max-width: 280px;
+  padding: 8px 12px;
+  border-radius: var(--ttgo-radius-full);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  letter-spacing: 0.0938px;
+  transition: background 0.15s ease;
+}
+
+.btn--secondary {
+  background: var(--ttgo-btn-secondary);
+  color: var(--ttgo-text-body);
+}
+
+.btn--secondary:hover {
+  background: var(--ttgo-btn-secondary-hover);
+}
+
+.btn--primary {
+  background: var(--ttgo-btn-primary);
+  color: var(--ttgo-text-dark-body);
+}
+
+.btn--primary:hover {
+  background: var(--ttgo-btn-primary-hover);
+}
+
+@media (max-width: 1100px) {
+  :root {
+    --form-padding-x: 32px;
+  }
+
+  .radio-group {
+    flex-wrap: wrap;
+  }
+
+  .radio-item--fixed {
+    flex: 1 1 calc(50% - 6px);
+  }
+}
+
+/* ── Preview motion (interaction only, no layout change) ── */
+.preview-highlight {
+  position: relative;
+  z-index: 0;
+}
+
+.preview-highlight::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 6px;
+  background: rgba(4, 26, 29, 0.06);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 180ms ease-out;
+  z-index: -1;
+}
+
+.preview-highlight--pulse::after {
+  background: rgba(4, 26, 29, 0.05);
+  transition: opacity 150ms ease-out;
+}
+
+.preview-highlight.is-highlight-active::after {
+  opacity: 1;
+}
+
+.preview-highlight.is-highlight-fade::after {
+  opacity: 0;
+  transition: opacity 250ms ease-out;
+}
+
+.preview-text-anim {
+  display: inline-block;
+  opacity: 1;
+  transition: opacity 100ms ease-out;
+}
+
+.preview-text-anim.is-fading-out {
+  opacity: 0;
+}
+
+.preview-text-anim.is-fading-in {
+  opacity: 0;
+  transition: opacity 160ms ease-out;
+}
+
+.preview-text-anim.is-visible {
+  opacity: 1;
+  transition: opacity 160ms ease-out;
+}
+
+@keyframes preview-typing-scale {
+  0% {
+    transform: scale(1);
+  }
+  38% {
+    transform: scale(1.065);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.preview-typing-tail {
+  display: inline-block;
+  transform-origin: left center;
+}
+
+.preview-typing-tail.preview-typing-pop {
+  animation: preview-typing-scale 320ms cubic-bezier(0.34, 1.28, 0.64, 1);
+  will-change: transform;
+}
+
+.phone-title.preview-text-anim,
+.phone-info-row__text.preview-text-anim,
+.phone-note-item__title.preview-text-anim,
+.phone-note-item__desc.preview-text-anim,
+.phone-cta-btn.preview-text-anim {
+  display: block;
+}
+
+.phone-title__text.preview-text-anim {
+  display: inline-block;
+}
+
+.phone-price-current .amount.preview-text-anim {
+  display: inline-block;
+}
+
+.phone-hero__cover,
+.phone-hero__empty {
+  transition: opacity 220ms ease-out;
+}
+
+.phone-hero__cover.is-crossfade-out,
+.phone-hero__empty.is-crossfade-out {
+  opacity: 0;
+}
+
+.phone-hero__cover.is-crossfade-in,
+.phone-hero__empty.is-crossfade-in {
+  opacity: 0;
+}
+
+.phone-hero__cover:not(.is-hidden):not(.is-crossfade-out),
+.phone-hero__empty:not(.is-hidden):not(.is-crossfade-out) {
+  opacity: 1;
+}
+
+/* ── Preview beam (field → phone connector) ── */
+.preview-beam-layer {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0;
+  transition: opacity 200ms ease-out;
+}
+
+.preview-beam-layer.is-active {
+  opacity: 1;
+}
+
+.preview-beam-layer.is-fading {
+  opacity: 0;
+  transition: opacity 200ms ease-out;
+}
+
+.preview-beam-path {
+  fill: none;
+  stroke: url(#preview-beam-gradient);
+  stroke-width: 0.7;
+  stroke-linecap: round;
+}
+
+.preview-beam-dot {
+  fill: #11b92e;
+  fill-opacity: 0.85;
+  opacity: 0;
+}
+
+.preview-beam-impact {
+  fill: rgba(17, 185, 46, 0.14);
+  stroke: rgba(17, 185, 46, 0.24);
+  stroke-width: 0.5;
+  opacity: 0;
+  transition: r 220ms ease-out, opacity 200ms ease-out;
+}
+
+/* ── Preview landing (below matched PDP content) ── */
+.preview-landing {
+  position: relative;
+  z-index: 1;
+}
+
+.preview-landing::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 2px;
+  border-radius: 1px;
+  pointer-events: none;
+  background: rgba(17, 185, 46, 0.32);
+  transform: none;
+  z-index: 2;
+}
+
+.phone-hero.preview-landing::before {
+  left: 10px;
+  right: 10px;
+  bottom: 8px;
+}
+
+.phone-info-row.preview-landing::before,
+.phone-note-item.preview-landing::before {
+  left: 10px;
+  right: 10px;
+}
+
+.phone-title__content.preview-landing::before {
+  left: 0;
+  right: 0;
+  bottom: -2px;
+}
+
+.phone-price-current.preview-landing::before {
+  left: 0;
+  right: auto;
+  width: 100%;
+  max-width: 100%;
+}
+
+.phone-cta-btn.preview-landing::after {
+  left: 12px;
+  right: 12px;
+  bottom: -2px;
+}
