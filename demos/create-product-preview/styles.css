@@ -1425,10 +1425,10 @@ button {
   left: 0;
   right: 0;
   bottom: -2px;
-  height: 2px;
+  height: 2.5px;
   border-radius: 1px;
   pointer-events: none;
-  background: rgba(17, 185, 46, 0.32);
+  background: rgba(17, 185, 46, 0.44);
   transform: none;
   z-index: 2;
 }

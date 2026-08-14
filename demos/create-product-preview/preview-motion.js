@@ -154,6 +154,7 @@
       '<defs>' +
       '<linearGradient id="preview-beam-gradient" gradientUnits="userSpaceOnUse">' +
       '<stop offset="0%" stop-color="#11B92E" stop-opacity="0.26"/>' +
+      '<stop offset="50%" stop-color="#11B92E" stop-opacity="0.68"/>' +
       '<stop offset="100%" stop-color="#11B92E" stop-opacity="0.42"/>' +
       "</linearGradient>" +
       "</defs>" +
