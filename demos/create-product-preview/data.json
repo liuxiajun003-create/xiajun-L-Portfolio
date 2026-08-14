@@ -175,7 +175,7 @@
     "titlePlaceholder": "Product name (To be filled in)",
     "heroEmptyLabel": "Images to be uploaded",
     "heroEmptyIcon": "assets/icon-fork-knife.svg",
-    "heroEmptyIconSize": 29,
+    "heroEmptyIconSize": 33,
     "chevronRight": "assets/chevron-right-slim.svg",
     "price": {
       "current": "0",
@@ -210,7 +210,7 @@
       "title": "Things to note",
       "items": [
         {
-          "icon": "assets/icon-fork-knife.svg",
+          "icon": "assets/icon-fork-knife-note.svg",
           "title": "Dine-in only",
           "description": "This voucher is for dine-in use only"
         },
@@ -233,10 +233,25 @@
           "icon": "assets/icon-calendar-2.svg",
           "title": "Reservation Rules",
           "description": "You must make a reservation 30 days in advance to redeem this voucher"
+        },
+        {
+          "icon": "assets/icon-x-mark-doc.svg",
+          "title": "Purchase restrictions",
+          "description": "Limit purchase 2"
+        },
+        {
+          "icon": "assets/icon-balance-refund-2.svg",
+          "title": "Refund policy",
+          "description": "100% refundable before redemption; voucher will be auto-refunded if unused by expiry date"
+        },
+        {
+          "icon": "assets/icon-clipboard.svg",
+          "title": "Other information",
+          "description": "Optional field, only displayed when filled in by the merchant"
         }
       ]
     },
-    "ctaLabel": "Buy for Rp33.500",
+    "ctaLabel": "Buy for Rp0",
     "ctaPrefix": "Buy for Rp"
   },
   "footer": {

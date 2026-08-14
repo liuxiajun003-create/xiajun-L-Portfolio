@@ -263,6 +263,21 @@
     return block;
   }
 
+  function updatePhotoRowThumb(photoRow, src) {
+    var thumb = photoRow.querySelector(".photo-cover--uploaded");
+    if (!src) {
+      if (thumb) thumb.remove();
+      return;
+    }
+    if (!thumb) {
+      thumb = el("div", "photo-cover photo-cover--uploaded");
+      thumb.appendChild(Object.assign(document.createElement("img"), { alt: "uploaded cover" }));
+      thumb.appendChild(el("div", "photo-cover__label", "Cover"));
+      photoRow.insertBefore(thumb, photoRow.firstChild);
+    }
+    thumb.querySelector("img").src = src;
+  }
+
   function renderCoreSettings(section) {
     return renderSection(section.title, null, "core", function () {
       var fields = el("div", "section__fields");
@@ -281,18 +296,28 @@
       add.type = "button";
       add.dataset.previewField = "productPhotos";
       add.appendChild(icon(f.productPhotos.uploadIcon, 24, "add"));
+      var fileInput = document.createElement("input");
+      fileInput.type = "file";
+      fileInput.accept = "image/*";
+      fileInput.className = "photo-file-input";
+      fileInput.setAttribute("aria-hidden", "true");
+      fileInput.tabIndex = -1;
       add.addEventListener("click", function () {
-        if (window.PreviewMotion) PreviewMotion.onFieldFocus("productPhotos");
-        if (!state.hasCoverImage) {
-          state.hasCoverImage = true;
-          state.coverImageSrc = "assets/banner-food-2.png";
-        } else {
-          state.hasCoverImage = false;
-          state.coverImageSrc = "";
-        }
+        fileInput.click();
+      });
+      fileInput.addEventListener("change", function () {
+        var file = fileInput.files && fileInput.files[0];
+        fileInput.value = "";
+        if (!file || !/^image\//.test(file.type)) return;
+        if (state.coverObjectUrl) URL.revokeObjectURL(state.coverObjectUrl);
+        state.coverObjectUrl = URL.createObjectURL(file);
+        state.coverImageSrc = state.coverObjectUrl;
+        state.hasCoverImage = true;
+        updatePhotoRowThumb(photoRow, state.coverImageSrc);
         syncPreview({ animate: true, sourceField: "productPhotos" });
       });
       photoRow.appendChild(add);
+      photoField.appendChild(fileInput);
       photoField.appendChild(photoRow);
       fields.appendChild(photoField);
 
@@ -434,7 +459,7 @@
     hero.appendChild(heroImg);
     var heroEmpty = el("div", "phone-hero__empty");
     heroEmpty.dataset.preview = "hero-empty";
-    var heroIcon = icon(preview.heroEmptyIcon, preview.heroEmptyIconSize || 29, "");
+    var heroIcon = icon(preview.heroEmptyIcon, preview.heroEmptyIconSize || 33, "");
     heroIcon.className = "phone-hero__empty-icon";
     heroEmpty.appendChild(heroIcon);
     heroEmpty.appendChild(el("span", "phone-hero__empty-label", preview.heroEmptyLabel));
@@ -443,9 +468,9 @@
     heroCounter.dataset.preview = "hero-counter";
     heroCounter.hidden = true;
     hero.appendChild(heroCounter);
-    phone.appendChild(hero);
 
     var content = el("div", "phone-content");
+    content.appendChild(hero);
 
     var priceCard = el("div", "phone-card");
     var priceBlock = el("div", "phone-price-block");
@@ -455,7 +480,7 @@
       preview.price.current +
       '</span><span class="preview-sync-cursor" data-preview-cursor="price"></span></div><div class="phone-price-old" data-preview="price-old"><span>Rp</span><span data-preview="price-original">' +
       preview.price.original +
-      '</span></div><span class="phone-discount" data-preview="price-discount">' +
+      '<span class="preview-sync-cursor" data-preview-cursor="regular-price"></span></span></div><span class="phone-discount" data-preview="price-discount">' +
       preview.price.discount +
       "</span>";
     priceBlock.appendChild(priceRow);
@@ -468,7 +493,7 @@
     titleContent.appendChild(titleText);
     var titleCursor = el("span", "preview-sync-cursor");
     titleCursor.dataset.previewCursor = "title";
-    titleContent.appendChild(titleCursor);
+    titleText.appendChild(titleCursor);
     titleEl.appendChild(titleContent);
     priceCard.appendChild(titleEl);
     content.appendChild(priceCard);
@@ -534,16 +559,18 @@
 
     var notesCard = el("div", "phone-card phone-notes");
     notesCard.appendChild(el("div", "phone-section-title", preview.thingsToNote.title));
+    var notesList = el("div", "phone-notes-list");
     preview.thingsToNote.items.forEach(function (item, i) {
       var note = el("div", "phone-note-item");
       note.dataset.preview = "note-" + i;
-      note.appendChild(icon(item.icon, 11, ""));
+      note.appendChild(icon(item.icon + "?v=536140702", 11, ""));
       var body = el("div", "phone-note-item__body");
       body.appendChild(el("div", "phone-note-item__title", item.title));
       body.appendChild(el("div", "phone-note-item__desc", item.description));
       note.appendChild(body);
-      notesCard.appendChild(note);
+      notesList.appendChild(note);
     });
+    notesCard.appendChild(notesList);
     content.appendChild(notesCard);
 
     phone.appendChild(content);
@@ -552,7 +579,7 @@
     var ctaBtn = el("button", "phone-cta-btn");
     ctaBtn.type = "button";
     ctaBtn.dataset.preview = "cta";
-    ctaBtn.textContent = preview.ctaLabel;
+    ctaBtn.textContent = preview.ctaPrefix + preview.price.current;
     ctaBar.appendChild(ctaBtn);
     ctaBar.appendChild(el("div", "phone-home-indicator")).appendChild(el("div", "phone-home-indicator__bar"));
     phone.appendChild(ctaBar);
@@ -591,6 +618,7 @@
       coverImageSrc: data.coreSettings.fields.productPhotos.cover
         ? data.coreSettings.fields.productPhotos.cover.src
         : "",
+      coverObjectUrl: null,
       storeCount: 0,
       preview: data.preview,
     };
@@ -646,6 +674,8 @@
     items[index].checked = !items[index].checked;
     var btn = document.querySelector('.checkbox-item[data-group="' + groupName + '"][data-index="' + index + '"]');
     if (btn) btn.classList.toggle("is-checked", items[index].checked);
+    if (window.PreviewMotion) PreviewMotion.onFieldFocus(groupName);
+    syncPreview({ animate: true, sourceField: groupName });
   }
 
   function toggleSection(sectionKey) {
@@ -674,6 +704,104 @@
     if (label.indexOf("Dine-in only") >= 0) return "Dine in only · Valid daily";
     if (label.indexOf("Take away") >= 0) return "Take away only · Valid daily";
     return "Dine in & take away · Valid daily";
+  }
+
+  function noteRedemptionDesc() {
+    var desc = "Voucher expires within " + state.validityDays + " days of purchase";
+    (state.groups.unavailableDays || []).forEach(function (item) {
+      if (item.checked && /public holidays/i.test(item.label)) {
+        desc += " and can not valid on public holidays";
+      }
+    });
+    return desc;
+  }
+
+  function noteAvailableTimeDesc() {
+    var label = getSelectedLabel(state.groups.availableHours);
+    if (/Specified/i.test(label)) {
+      return "Voucher can be redeemed during specified hours only";
+    }
+    return state.preview.thingsToNote.items[2].description;
+  }
+
+  function syncDineNoteFields(animate, sourceField) {
+    var noteDine = document.querySelector('[data-preview="note-0"] .phone-note-item__title');
+    var noteDineDesc = document.querySelector('[data-preview="note-0"] .phone-note-item__desc');
+    if (!noteDine || !noteDineDesc) return;
+    if (state.dineInRules.indexOf("Dine-in only") >= 0) {
+      motionText(noteDine, "Dine-in only", animate, "note0", sourceField);
+      motionText(noteDineDesc, "This voucher is for dine-in use only", animate, "note0", sourceField);
+    } else if (state.dineInRules.indexOf("Take away") >= 0) {
+      motionText(noteDine, "Take away only", animate, "note0", sourceField);
+      motionText(noteDineDesc, "This voucher is for take away use only", animate, "note0", sourceField);
+    } else {
+      motionText(noteDine, "Dine-in & take away", animate, "note0", sourceField);
+      motionText(noteDineDesc, "Both dine-in and take away are supported", animate, "note0", sourceField);
+    }
+  }
+
+  function syncLivePreviewFields(animate, sourceField) {
+    var p = state.preview;
+    var info0 = document.querySelector('[data-preview="info-0"] .phone-info-row__text');
+    motionText(info0, dineInfoFromRules(state.dineInRules), animate, "info0", sourceField);
+
+    syncDineNoteFields(animate, sourceField);
+
+    var noteRedeem = document.querySelector('[data-preview="note-1"] .phone-note-item__desc');
+    if (noteRedeem) {
+      motionText(noteRedeem, noteRedemptionDesc(), animate, "note1", sourceField);
+    }
+
+    var noteHours = document.querySelector('[data-preview="note-2"] .phone-note-item__desc');
+    if (noteHours) {
+      motionText(noteHours, noteAvailableTimeDesc(), animate, "note2", sourceField);
+    }
+
+    var notePax = document.querySelector('[data-preview="note-3"] .phone-note-item__desc');
+    if (notePax) {
+      motionText(
+        notePax,
+        state.recommendedUsers
+          ? "Ideal for " + paxFromLabel(state.recommendedUsers)
+          : p.thingsToNote.items[3].description,
+        animate,
+        "note3",
+        sourceField
+      );
+    }
+
+    var noteRes = document.querySelector('[data-preview="note-4"] .phone-note-item__desc');
+    if (noteRes) {
+      var resRequired = (state.groups.reservationRules || []).some(function (item) {
+        return item.checked;
+      });
+      motionText(
+        noteRes,
+        resRequired
+          ? p.thingsToNote.items[4].description
+          : "No advance reservation is required to redeem this voucher",
+        animate,
+        "note4",
+        sourceField
+      );
+    }
+
+    var noteLimit = document.querySelector('[data-preview="note-5"] .phone-note-item__desc');
+    if (noteLimit) {
+      var limits = (state.groups.limitPurchase || []).filter(function (item) {
+        return item.checked;
+      });
+      var limitText = p.thingsToNote.items[5].description;
+      if (limits.length) {
+        limitText = "Limit purchase: " + limits.map(function (item) { return item.label; }).join(", ");
+      }
+      motionText(noteLimit, limitText, animate, "note5", sourceField);
+    }
+
+    var hiDays = document.querySelector(".phone-highlight-item--days > span");
+    if (hiDays) {
+      motionText(hiDays, state.validityDays + "+ days to redeem", animate, "hiDays", sourceField);
+    }
   }
 
   function motionText(el, text, animate, fieldKey, sourceField) {
@@ -706,6 +834,10 @@
     var n = parseMoney(value);
     if (!n) return "0";
     return String(value).trim() || "0";
+  }
+
+  function getCtaLabel() {
+    return state.preview.ctaPrefix + formatPriceDisplay(state.sellingPrice);
   }
 
   function isFormFilled() {
@@ -765,9 +897,7 @@
     setPriceExtrasVisible(true);
 
     var ctaEl = document.querySelector('[data-preview="cta"]');
-    if (isFormFilled()) {
-      motionText(ctaEl, p.ctaPrefix + formatPriceDisplay(selling), animate, "price", sourceField);
-    }
+    motionText(ctaEl, getCtaLabel(), animate, "price", sourceField);
   }
 
   function applyDefaultPreview(options) {
@@ -816,7 +946,7 @@
     setPriceExtrasVisible(true);
 
     var ctaEl = document.querySelector('[data-preview="cta"]');
-    motionText(ctaEl, p.ctaLabel, false, "price", sourceField);
+    motionText(ctaEl, getCtaLabel(), false, "price", sourceField);
 
     p.infoRows.forEach(function (row, i) {
       var textEl = document.querySelector('[data-preview="info-' + i + '"] .phone-info-row__text');
@@ -845,6 +975,7 @@
     var sourceField = options && options.sourceField;
     if (!isFormFilled()) {
       applyDefaultPreview(options);
+      syncLivePreviewFields(animate, sourceField);
       return;
     }
 
@@ -858,8 +989,6 @@
 
     syncPriceFields(animate, sourceField);
 
-    var info0 = document.querySelector('[data-preview="info-0"] .phone-info-row__text');
-    motionText(info0, dineInfoFromRules(state.dineInRules), animate, "info0", sourceField);
     var info1 = document.querySelector('[data-preview="info-1"] .phone-info-row__text');
     if (info1) {
       motionText(
@@ -871,36 +1000,19 @@
       );
     }
 
-    var notePax = document.querySelector('[data-preview="note-3"] .phone-note-item__desc');
-    if (notePax) {
-      motionText(
-        notePax,
-        state.recommendedUsers ? "Ideal for " + paxFromLabel(state.recommendedUsers) : "To be selected",
-        animate,
-        "note3",
-        sourceField
-      );
-    }
-    var noteDine = document.querySelector('[data-preview="note-0"] .phone-note-item__title');
-    var noteDineDesc = document.querySelector('[data-preview="note-0"] .phone-note-item__desc');
-    if (state.dineInRules.indexOf("Dine-in only") >= 0) {
-      motionText(noteDine, "Dine-in only", animate, "note0", sourceField);
-      motionText(noteDineDesc, "This voucher is for dine-in use only", animate, "note0", sourceField);
-    } else if (state.dineInRules.indexOf("Take away") >= 0) {
-      motionText(noteDine, "Take away only", animate, "note0", sourceField);
-      motionText(noteDineDesc, "This voucher is for take away use only", animate, "note0", sourceField);
-    } else {
-      motionText(noteDine, "Dine-in & take away", animate, "note0", sourceField);
-      motionText(noteDineDesc, "Both dine-in and take away are supported", animate, "note0", sourceField);
-    }
+    syncLivePreviewFields(animate, sourceField);
 
-    var noteRedeem = document.querySelector('[data-preview="note-1"] .phone-note-item__desc');
-    if (noteRedeem) {
-      motionText(noteRedeem, "Voucher expires within " + state.validityDays + " days of purchase", animate, "note1", sourceField);
+    var noteOther = document.querySelector('[data-preview="note-7"]');
+    var addInfoInput = document.querySelector('[name="additionalInfo"]');
+    var addInfoText = addInfoInput ? addInfoInput.value.trim() : "";
+    if (noteOther) {
+      var showOther = !!addInfoText;
+      noteOther.hidden = !showOther;
+      if (showOther) {
+        var noteOtherDesc = noteOther.querySelector(".phone-note-item__desc");
+        motionText(noteOtherDesc, addInfoText, animate, "note7", sourceField);
+      }
     }
-
-    var hiDays = document.querySelector(".phone-highlight-item--days > span");
-    if (hiDays) motionText(hiDays, state.validityDays + "+ days to redeem", animate, "hiDays", sourceField);
 
     if (sourceField === "productPhotos") {
       updateHeroPreview(animate);

@@ -1,7 +1,7 @@
 (function (global) {
   var SCROLL_MS = 400;
   var BEAM_MS = 420;
-  var BEAM_HOLD_MS = 200;
+  var BEAM_HOLD_MS = 400;
   var BEAM_FADE_MS = 220;
   var HIGHLIGHT_IN_MS = 180;
   var HIGHLIGHT_HOLD_MS = 700;
@@ -18,7 +18,7 @@
     productPhotos: '[data-preview="hero"]',
     productName: '[data-preview="title"]',
     productNameEn: '[data-preview="title"]',
-    regularPrice: '[data-preview="price-current"]',
+    regularPrice: '[data-preview="price-old"]',
     sellingPrice: '[data-preview="price-current"]',
     recommendedUsers: '[data-preview="note-3"]',
     availableStores: '[data-preview="info-1"]',
@@ -26,10 +26,10 @@
     validityPeriod: '[data-preview="note-1"]',
     availableHours: '[data-preview="note-2"]',
     reservationRules: '[data-preview="note-4"]',
-    additionalInfo: '[data-preview="note-4"]',
-    additionalInfoEn: '[data-preview="note-4"]',
+    additionalInfo: '[data-preview="note-7"]',
+    additionalInfoEn: '[data-preview="note-7"]',
     salePeriod: '[data-preview="info-0"]',
-    limitPurchase: '[data-preview="note-4"]',
+    limitPurchase: '[data-preview="note-5"]',
     unavailableDays: '[data-preview="note-1"]',
     minimumPurchase: '[data-preview="cta"]',
   };
@@ -45,8 +45,10 @@
   var beamLayer = null;
   var beamTimers = [];
   var beamAnimRaf = null;
+  var persistentBeam = null;
   var landingEl = null;
   var LANDING_IN_MS = 280;
+  var DOT_TRAVEL_MS = 360;
   var lastInputLengths = {};
 
   function easeOutCubic(t) {
@@ -137,11 +139,11 @@
 
   function getLandingAnchor(el) {
     var r = el.getBoundingClientRect();
-    return { x: r.left + 4, y: r.bottom - 1 };
+    return { x: r.left + 4, y: r.top + r.height * 0.5 };
   }
 
   function ensureBeamLayer() {
-    if (beamLayer && !beamLayer.querySelector(".preview-beam-dot")) {
+    if (beamLayer && !beamLayer.querySelector(".preview-beam-lines")) {
       beamLayer.remove();
       beamLayer = null;
     }
@@ -153,35 +155,58 @@
     svg.innerHTML =
       '<defs>' +
       '<linearGradient id="preview-beam-gradient" gradientUnits="userSpaceOnUse">' +
-      '<stop offset="0%" stop-color="#11B92E" stop-opacity="0.26"/>' +
-      '<stop offset="50%" stop-color="#11B92E" stop-opacity="0.68"/>' +
-      '<stop offset="100%" stop-color="#11B92E" stop-opacity="0.42"/>' +
+      '<stop offset="0%" stop-color="#11B92E" stop-opacity="0.22"/>' +
+      '<stop offset="100%" stop-color="#11B92E" stop-opacity="0.22"/>' +
+      "</linearGradient>" +
+      '<linearGradient id="preview-beam-gradient-focus" gradientUnits="userSpaceOnUse">' +
+      '<stop offset="0%" stop-color="#11B92E" stop-opacity="0"/>' +
+      '<stop offset="18%" stop-color="#11B92E" stop-opacity="0.05"/>' +
+      '<stop offset="50%" stop-color="#11B92E" stop-opacity="0.52"/>' +
+      '<stop offset="82%" stop-color="#11B92E" stop-opacity="0.05"/>' +
+      '<stop offset="100%" stop-color="#11B92E" stop-opacity="0"/>' +
       "</linearGradient>" +
       "</defs>" +
       '<g class="preview-beam-lines"></g>' +
-      '<circle class="preview-beam-dot" r="2" cx="0" cy="0"></circle>' +
+      '<g class="preview-beam-pulses"></g>' +
       '<circle class="preview-beam-impact" r="0" cx="0" cy="0"></circle>';
     document.body.appendChild(svg);
     beamLayer = svg;
     return svg;
   }
 
-  function clearBeam() {
+  function clearBeamTimers() {
     beamTimers.forEach(clearTimeout);
     beamTimers = [];
+  }
+
+  function scheduleBeamDismiss(holdMs) {
+    if (holdMs == null) holdMs = BEAM_HOLD_MS;
+    clearBeamTimers();
+    beamTimers.push(
+      setTimeout(function () {
+        if (!beamLayer || !persistentBeam) return;
+        beamLayer.classList.add("is-fading");
+        beamTimers.push(
+          setTimeout(function () {
+            clearBeam();
+          }, BEAM_FADE_MS)
+        );
+      }, holdMs)
+    );
+  }
+
+  function clearBeam() {
+    clearBeamTimers();
     if (beamAnimRaf) {
       cancelAnimationFrame(beamAnimRaf);
       beamAnimRaf = null;
     }
+    persistentBeam = null;
     if (!beamLayer) return;
     var lines = beamLayer.querySelector(".preview-beam-lines");
     if (lines) lines.innerHTML = "";
-    var dot = beamLayer.querySelector(".preview-beam-dot");
-    if (dot) {
-      dot.setAttribute("cx", "0");
-      dot.setAttribute("cy", "0");
-      dot.style.opacity = "0";
-    }
+    var pulses = beamLayer.querySelector(".preview-beam-pulses");
+    if (pulses) pulses.innerHTML = "";
     var impact = beamLayer.querySelector(".preview-beam-impact");
     if (impact) {
       impact.setAttribute("r", "0");
@@ -190,37 +215,84 @@
     beamLayer.classList.remove("is-active", "is-fading");
   }
 
-  function fireBeam(sourceEl, landingEl, onDone) {
-    if (!sourceEl || !landingEl) {
-      if (onDone) onDone();
-      return;
-    }
+  function updateBeamSvgSize(svg) {
+    svg.setAttribute("width", String(window.innerWidth));
+    svg.setAttribute("height", String(window.innerHeight));
+  }
 
-    clearBeam();
-    var svg = ensureBeamLayer();
-    var linesGroup = svg.querySelector(".preview-beam-lines");
-    var dot = svg.querySelector(".preview-beam-dot");
-    var impact = svg.querySelector(".preview-beam-impact");
+  function computeBeamGeometry(sourceEl, landingEl) {
     var from = getAnchorPoint(sourceEl, "out");
     var to = getLandingAnchor(landingEl);
     var bend = Math.max(18, Math.min(72, Math.abs(to.y - from.y) * 0.45));
+    return {
+      from: from,
+      to: to,
+      bend: bend,
+      d: buildBeamPath(from, to, bend),
+    };
+  }
 
-    svg.setAttribute("width", String(window.innerWidth));
-    svg.setAttribute("height", String(window.innerHeight));
-    svg.classList.add("is-active");
+  function applyBeamGeometry(svg, path, geometry) {
+    path.setAttribute("d", geometry.d);
+    ["preview-beam-gradient", "preview-beam-gradient-focus"].forEach(function (id) {
+      var gradient = svg.querySelector("#" + id);
+      if (!gradient) return;
+      gradient.setAttribute("x1", String(geometry.from.x));
+      gradient.setAttribute("y1", String(geometry.from.y));
+      gradient.setAttribute("x2", String(geometry.to.x));
+      gradient.setAttribute("y2", String(geometry.to.y));
+    });
+    var pathLen = path.getTotalLength();
+    path.style.strokeDasharray = String(pathLen);
+    path.style.strokeDashoffset = "0";
+    path.style.opacity = "1";
+    return pathLen;
+  }
 
-    var gradient = svg.querySelector("#preview-beam-gradient");
-    if (gradient) {
-      gradient.setAttribute("x1", String(from.x));
-      gradient.setAttribute("y1", String(from.y));
-      gradient.setAttribute("x2", String(to.x));
-      gradient.setAttribute("y2", String(to.y));
+  function refreshPersistentBeamGeometry() {
+    if (!persistentBeam) return;
+    var svg = ensureBeamLayer();
+    updateBeamSvgSize(svg);
+    var geometry = computeBeamGeometry(persistentBeam.sourceEl, persistentBeam.landingEl);
+    persistentBeam.pathLen = applyBeamGeometry(svg, persistentBeam.path, geometry);
+    var impact = svg.querySelector(".preview-beam-impact");
+    if (impact) {
+      impact.setAttribute("cx", String(geometry.to.x));
+      impact.setAttribute("cy", String(geometry.to.y));
+    }
+  }
+
+  function applyBeamStroke(path, strong) {
+    if (!path) return;
+    path.classList.toggle("preview-beam-path--focus", !!strong);
+  }
+
+  function connectBeam(sourceEl, landingEl, fieldKey, options) {
+    options = options || {};
+    if (!sourceEl || !landingEl) {
+      if (options.onConnected) options.onConnected();
+      return;
     }
 
-    var d = buildBeamPath(from, to, bend);
+    clearBeamTimers();
+    if (beamAnimRaf) {
+      cancelAnimationFrame(beamAnimRaf);
+      beamAnimRaf = null;
+    }
+
+    var svg = ensureBeamLayer();
+    var linesGroup = svg.querySelector(".preview-beam-lines");
+    var impact = svg.querySelector(".preview-beam-impact");
+    updateBeamSvgSize(svg);
+    svg.classList.add("is-active");
+    svg.classList.remove("is-fading");
+
+    linesGroup.innerHTML = "";
+    var geometry = computeBeamGeometry(sourceEl, landingEl);
     var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path.setAttribute("d", d);
+    path.setAttribute("d", geometry.d);
     path.setAttribute("class", "preview-beam-path");
+    applyBeamStroke(path, !!options.strong);
     linesGroup.appendChild(path);
 
     var pathLen = path.getTotalLength();
@@ -228,56 +300,124 @@
     path.style.strokeDashoffset = String(pathLen);
     path.style.opacity = "1";
 
-    if (dot) {
-      dot.setAttribute("cx", String(from.x));
-      dot.setAttribute("cy", String(from.y));
-      dot.style.opacity = "0";
-    }
-
-    impact.setAttribute("cx", String(to.x));
-    impact.setAttribute("cy", String(to.y));
+    impact.setAttribute("cx", String(geometry.to.x));
+    impact.setAttribute("cy", String(geometry.to.y));
     impact.style.opacity = "0";
 
+    persistentBeam = {
+      fieldKey: fieldKey || null,
+      sourceEl: sourceEl,
+      landingEl: landingEl,
+      path: path,
+      pathLen: pathLen,
+    };
+
+    showLandingFeedback(landingEl);
+
+    function finalizeConnection() {
+      path.style.strokeDashoffset = "0";
+      persistentBeam.pathLen = path.getTotalLength();
+      scheduleBeamDismiss(BEAM_HOLD_MS);
+      if (options.onConnected) options.onConnected();
+    }
+
+    if (options.animateDraw) {
+      var start = 0;
+      function step(ts) {
+        if (!persistentBeam || persistentBeam.path !== path) return;
+        if (!start) start = ts;
+        var t = Math.min((ts - start) / BEAM_MS, 1);
+        path.style.strokeDashoffset = String(pathLen * (1 - easeOutCubic(t)));
+        if (t < 1) {
+          beamAnimRaf = requestAnimationFrame(step);
+        } else {
+          beamAnimRaf = null;
+          finalizeConnection();
+        }
+      }
+      beamAnimRaf = requestAnimationFrame(step);
+    } else {
+      finalizeConnection();
+    }
+  }
+
+  function pulseBeamImpact() {
+    if (!persistentBeam) return;
+    var svg = ensureBeamLayer();
+    var impact = svg.querySelector(".preview-beam-impact");
+    if (!impact) return;
+    var geometry = computeBeamGeometry(persistentBeam.sourceEl, persistentBeam.landingEl);
+    impact.setAttribute("cx", String(geometry.to.x));
+    impact.setAttribute("cy", String(geometry.to.y));
+    impact.style.opacity = "0.65";
+    impact.setAttribute("r", "1.5");
+    requestAnimationFrame(function () {
+      impact.setAttribute("r", "2.5");
+    });
+    beamTimers.push(
+      setTimeout(function () {
+        impact.style.opacity = "0";
+      }, 220)
+    );
+  }
+
+  function travelBeamDot(onDone) {
+    if (!persistentBeam || !persistentBeam.path) {
+      if (onDone) onDone();
+      return;
+    }
+
+    refreshPersistentBeamGeometry();
+    var svg = ensureBeamLayer();
+    var path = persistentBeam.path;
+    var pathLen = persistentBeam.pathLen || path.getTotalLength();
+    var pulses = svg.querySelector(".preview-beam-pulses");
+    var pulse = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    pulse.setAttribute("class", "preview-beam-pulse");
+    var halo = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    halo.setAttribute("class", "preview-beam-dot-halo");
+    halo.setAttribute("r", "4");
+    halo.setAttribute("cx", "0");
+    halo.setAttribute("cy", "0");
+    var dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    dot.setAttribute("class", "preview-beam-dot preview-beam-dot--pulse");
+    dot.setAttribute("r", "2");
+    dot.setAttribute("cx", "0");
+    dot.setAttribute("cy", "0");
+    pulse.appendChild(halo);
+    pulse.appendChild(dot);
+    var startPt = path.getPointAtLength(0);
+    pulse.setAttribute("transform", "translate(" + startPt.x + " " + startPt.y + ")");
+    pulse.style.opacity = "0.92";
+    pulses.appendChild(pulse);
+
     var start = 0;
+    var rafId = 0;
     function step(ts) {
       if (!start) start = ts;
-      var t = Math.min((ts - start) / BEAM_MS, 1);
+      var t = Math.min((ts - start) / DOT_TRAVEL_MS, 1);
       var eased = easeOutCubic(t);
-      path.style.strokeDashoffset = String(pathLen * (1 - eased));
-      if (dot) {
-        var pt = path.getPointAtLength(pathLen * eased);
-        dot.setAttribute("cx", String(pt.x));
-        dot.setAttribute("cy", String(pt.y));
-        dot.style.opacity = t < 1 ? String(0.55 + eased * 0.35) : "0";
-      }
+      var pt = path.getPointAtLength(pathLen * eased);
+      pulse.setAttribute("transform", "translate(" + pt.x + " " + pt.y + ")");
+      pulse.style.opacity = String(0.92 - eased * 0.18);
       if (t < 1) {
-        beamAnimRaf = requestAnimationFrame(step);
+        rafId = requestAnimationFrame(step);
       } else {
-        beamAnimRaf = null;
-        if (dot) dot.style.opacity = "0";
-        showLandingFeedback(landingEl);
+        if (pulse.parentNode) pulse.parentNode.removeChild(pulse);
+        pulseBeamImpact();
         if (onDone) onDone();
-        impact.style.opacity = "0.7";
-        impact.setAttribute("r", "1.5");
-        requestAnimationFrame(function () {
-          impact.setAttribute("r", "2.5");
-        });
-        beamTimers.push(
-          setTimeout(function () {
-            svg.classList.add("is-fading");
-            impact.style.opacity = "0";
-          }, BEAM_HOLD_MS)
-        );
-        beamTimers.push(
-          setTimeout(function () {
-            clearBeam();
-            svg.classList.remove("is-fading");
-          }, BEAM_HOLD_MS + BEAM_FADE_MS)
-        );
       }
     }
-    requestAnimationFrame(function () {
-      beamAnimRaf = requestAnimationFrame(step);
+    rafId = requestAnimationFrame(step);
+  }
+
+  function fireBeam(sourceEl, landingEl, onDone) {
+    connectBeam(sourceEl, landingEl, null, {
+      animateDraw: true,
+      onConnected: function () {
+        showLandingFeedback(landingEl);
+        if (onDone) onDone();
+      },
     });
   }
 
@@ -295,6 +435,9 @@
     if (node.matches(".phone-info-row, .phone-note-item, .phone-title")) return node;
     if (node.matches('[data-preview="price-current"]')) {
       return node.closest(".phone-card") || node;
+    }
+    if (node.matches('[data-preview="price-old"]')) {
+      return node;
     }
     if (node.matches('[data-preview="title"]')) {
       return node.closest(".phone-card") || node;
@@ -438,7 +581,9 @@
     }, HIGHLIGHT_IN_MS + HIGHLIGHT_HOLD_MS);
   }
 
-  function launchFieldBeam(fieldKey, withHighlight) {
+  function ensureFieldBeam(fieldKey, withHighlight, beamOptions) {
+    beamOptions = beamOptions || {};
+    var strong = !!beamOptions.strong;
     var selector = FIELD_TARGETS[fieldKey];
     if (!selector) return;
     var target = resolveTarget(selector);
@@ -448,11 +593,23 @@
 
     requestAnimationFrame(function () {
       if (source) {
-        fireBeam(source, landing, withHighlight
-          ? function () {
-              showHighlight(landing);
-            }
-          : null);
+        var sameField = persistentBeam && persistentBeam.fieldKey === fieldKey;
+        if (sameField) {
+          refreshPersistentBeamGeometry();
+          applyBeamStroke(persistentBeam.path, strong);
+          showLandingFeedback(landing);
+          scheduleBeamDismiss(BEAM_HOLD_MS);
+          return;
+        }
+        connectBeam(source, landing, fieldKey, {
+          animateDraw: true,
+          strong: strong,
+          onConnected: withHighlight
+            ? function () {
+                showHighlight(landing);
+              }
+            : null,
+        });
       } else {
         showLandingFeedback(landing);
         if (withHighlight) showHighlight(landing);
@@ -460,8 +617,13 @@
     });
   }
 
+  function launchFieldBeam(fieldKey, withHighlight) {
+    ensureFieldBeam(fieldKey, withHighlight);
+  }
+
   function onFieldFocus(fieldKey) {
     if (!fieldKey) return;
+    if (fieldKey === "productPhotos") return;
     var isNewField = fieldKey !== focusEffectsField;
     activeField = fieldKey;
     focusEffectsField = fieldKey;
@@ -472,13 +634,15 @@
     if (!target) return;
 
     function afterScroll() {
-      launchFieldBeam(fieldKey, true);
+      ensureFieldBeam(fieldKey, isNewField, { strong: true });
     }
 
     if (isNewField && needsScroll(target)) {
       scrollToTarget(target, afterScroll);
     } else if (isNewField) {
       afterScroll();
+    } else {
+      ensureFieldBeam(fieldKey, false, { strong: true });
     }
   }
 
@@ -493,25 +657,52 @@
     if (nextLen <= prevLen) return;
 
     activeField = fieldKey;
-    launchFieldBeam(fieldKey, false);
+    ensureFieldBeam(fieldKey, false, { strong: false });
+    clearBeamTimers();
+    showLandingFeedback(getLandingElement(fieldKey));
+    scheduleBeamDismiss(BEAM_HOLD_MS);
+  }
+
+  function getSyncCursor(el) {
+    if (!el || !el.querySelector) return null;
+    return el.querySelector(":scope > .preview-sync-cursor");
+  }
+
+  function appendSyncCursor(el) {
+    var cursor = getSyncCursor(el);
+    if (cursor) el.appendChild(cursor);
+  }
+
+  function setTextKeepCursor(el, text) {
+    var cursor = getSyncCursor(el);
+    el.textContent = text;
+    if (cursor) el.appendChild(cursor);
   }
 
   function renderTextWithTypingTail(el, text) {
     text = text == null ? "" : String(text);
+    var cursor = getSyncCursor(el);
     el.textContent = "";
-    if (!text) return null;
+    if (!text) {
+      if (cursor) el.appendChild(cursor);
+      return null;
+    }
     if (text.length === 1) {
       var single = document.createElement("span");
       single.className = "preview-typing-tail";
       single.textContent = text;
       el.appendChild(single);
+      if (cursor) el.appendChild(cursor);
       return single;
     }
-    el.appendChild(document.createTextNode(text.slice(0, -1)));
+    var tailStart = text.lastIndexOf(" ");
+    if (tailStart <= 0) tailStart = text.length - 1;
+    el.appendChild(document.createTextNode(text.slice(0, tailStart)));
     var tail = document.createElement("span");
     tail.className = "preview-typing-tail";
-    tail.textContent = text.slice(-1);
+    tail.textContent = text.slice(tailStart);
     el.appendChild(tail);
+    if (cursor) el.appendChild(cursor);
     return tail;
   }
 
@@ -628,6 +819,7 @@
       setTimeout(function () {
         if (state.streamGen !== fadeGen) return;
         el.textContent = "";
+        appendSyncCursor(el);
         el.classList.remove("is-fading-out");
         streamFromIndex(el, text, 0, state);
       }, FADE_OUT_MS);
@@ -635,7 +827,7 @@
     }
 
     var startIdx = prev.length;
-    el.textContent = text.substring(0, startIdx);
+    setTextKeepCursor(el, text.substring(0, startIdx));
     streamFromIndex(el, text, startIdx, state);
   }
 
@@ -651,7 +843,7 @@
         el.classList.add("is-visible");
         return;
       }
-      el.textContent = text;
+      setTextKeepCursor(el, text);
       el.classList.remove("is-fading-out");
       el.classList.add("is-fading-in");
       requestAnimationFrame(function () {
@@ -668,7 +860,7 @@
 
     if (!animate) {
       cancelTextStream(getTextState(el));
-      el.textContent = text;
+      setTextKeepCursor(el, text);
       return;
     }
 
@@ -752,7 +944,8 @@
 
       heroEmpty.classList.add("is-crossfade-out");
       setTimeout(function () {
-        heroEmpty.classList.remove("is-crossfade-out", "is-hidden");
+        heroEmpty.classList.remove("is-crossfade-out");
+        heroEmpty.classList.add("is-hidden");
         heroImg.src = src;
         heroImg.classList.remove("is-hidden");
         heroImg.classList.add("is-crossfade-in");
@@ -802,7 +995,7 @@
   var CURSOR_FIELDS = {
     productName: "title",
     productNameEn: "title",
-    regularPrice: "price",
+    regularPrice: "regular-price",
     sellingPrice: "price",
   };
 
@@ -835,6 +1028,7 @@
     focusEffectsField = null;
     lastInputLengths = {};
     clearLandingFeedback();
+    clearBeam();
     hidePreviewCursors();
     clearFocusHighlight(true);
   }
@@ -899,7 +1093,6 @@
       var radio = e.target.closest(".radio-item[data-group]");
       if (radio) onFieldFocus(radio.dataset.group);
 
-      if (e.target.closest(".photo-add")) onFieldFocus("productPhotos");
       if (e.target.closest(".add-stores")) onFieldFocus("availableStores");
       if (e.target.closest(".checkbox-item[data-group]")) {
         onFieldFocus(e.target.closest(".checkbox-item").dataset.group);
@@ -920,9 +1113,15 @@
     if (!window.__previewBeamResizeBound) {
       window.__previewBeamResizeBound = true;
       window.addEventListener("resize", function () {
-        clearBeam();
-        clearLandingFeedback();
+        if (persistentBeam) refreshPersistentBeamGeometry();
+        else clearBeam();
       });
+      var phoneContent = document.querySelector(".phone-content");
+      if (phoneContent) {
+        phoneContent.addEventListener("scroll", function () {
+          if (persistentBeam) refreshPersistentBeamGeometry();
+        });
+      }
     }
   }
 
@@ -938,10 +1137,10 @@
     validityPeriod: ["note1", "hiDays"],
     availableHours: ["note2"],
     reservationRules: ["note4"],
-    additionalInfo: ["note4"],
-    additionalInfoEn: ["note4"],
+    additionalInfo: ["note7"],
+    additionalInfoEn: ["note7"],
     salePeriod: ["info0"],
-    limitPurchase: ["note4"],
+    limitPurchase: ["note5"],
     unavailableDays: ["note1"],
     minimumPurchase: ["price"],
   };
