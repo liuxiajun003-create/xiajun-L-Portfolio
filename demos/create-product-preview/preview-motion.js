@@ -159,11 +159,8 @@
       '<stop offset="100%" stop-color="#11B92E" stop-opacity="0.22"/>' +
       "</linearGradient>" +
       '<linearGradient id="preview-beam-gradient-focus" gradientUnits="userSpaceOnUse">' +
-      '<stop offset="0%" stop-color="#11B92E" stop-opacity="0"/>' +
-      '<stop offset="18%" stop-color="#11B92E" stop-opacity="0.05"/>' +
-      '<stop offset="50%" stop-color="#11B92E" stop-opacity="0.52"/>' +
-      '<stop offset="82%" stop-color="#11B92E" stop-opacity="0.05"/>' +
-      '<stop offset="100%" stop-color="#11B92E" stop-opacity="0"/>' +
+      '<stop offset="0%" stop-color="#11B92E" stop-opacity="0.52"/>' +
+      '<stop offset="100%" stop-color="#11B92E" stop-opacity="0.52"/>' +
       "</linearGradient>" +
       "</defs>" +
       '<g class="preview-beam-lines"></g>' +
