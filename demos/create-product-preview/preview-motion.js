@@ -1,8 +1,8 @@
 (function (global) {
   var SCROLL_MS = 400;
-  var BEAM_MS = 420;
-  var BEAM_HOLD_MS = 400;
-  var BEAM_FADE_MS = 220;
+  var BEAM_MS = 260;
+  var BEAM_HOLD_MS = 240;
+  var BEAM_FADE_MS = 140;
   var HIGHLIGHT_IN_MS = 180;
   var HIGHLIGHT_HOLD_MS = 700;
   var HIGHLIGHT_OUT_MS = 250;
@@ -155,12 +155,12 @@
     svg.innerHTML =
       '<defs>' +
       '<linearGradient id="preview-beam-gradient" gradientUnits="userSpaceOnUse">' +
-      '<stop offset="0%" stop-color="#11B92E" stop-opacity="0.16"/>' +
-      '<stop offset="100%" stop-color="#11B92E" stop-opacity="0.16"/>' +
+      '<stop offset="0%" stop-color="#11B92E" stop-opacity="0.12"/>' +
+      '<stop offset="100%" stop-color="#11B92E" stop-opacity="0.12"/>' +
       "</linearGradient>" +
       '<linearGradient id="preview-beam-gradient-focus" gradientUnits="userSpaceOnUse">' +
-      '<stop offset="0%" stop-color="#11B92E" stop-opacity="0.32"/>' +
-      '<stop offset="100%" stop-color="#11B92E" stop-opacity="0.32"/>' +
+      '<stop offset="0%" stop-color="#11B92E" stop-opacity="0.18"/>' +
+      '<stop offset="100%" stop-color="#11B92E" stop-opacity="0.18"/>' +
       "</linearGradient>" +
       "</defs>" +
       '<g class="preview-beam-lines"></g>' +
