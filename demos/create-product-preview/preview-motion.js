@@ -155,8 +155,8 @@
     svg.innerHTML =
       '<defs>' +
       '<linearGradient id="preview-beam-gradient" gradientUnits="userSpaceOnUse">' +
-      '<stop offset="0%" stop-color="#11B92E" stop-opacity="0.72"/>' +
-      '<stop offset="100%" stop-color="#11B92E" stop-opacity="0.72"/>' +
+      '<stop offset="0%" stop-color="#11B92E" stop-opacity="0.22"/>' +
+      '<stop offset="100%" stop-color="#11B92E" stop-opacity="0.22"/>' +
       "</linearGradient>" +
       '<linearGradient id="preview-beam-gradient-focus" gradientUnits="userSpaceOnUse">' +
       '<stop offset="0%" stop-color="#11B92E" stop-opacity="0.92"/>' +
