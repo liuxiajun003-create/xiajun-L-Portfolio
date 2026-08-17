@@ -1483,13 +1483,13 @@ button {
 .preview-beam-path {
   fill: none;
   stroke: url(#preview-beam-gradient);
-  stroke-width: 0.5;
+  stroke-width: 0.35;
   stroke-linecap: round;
 }
 
 .preview-beam-path--focus {
   stroke: url(#preview-beam-gradient-focus);
-  stroke-width: 0.85;
+  stroke-width: 0.55;
 }
 
 .preview-beam-dot-halo {
