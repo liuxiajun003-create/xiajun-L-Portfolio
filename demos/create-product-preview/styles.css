@@ -1,4 +1,4 @@
-/* Figma 605:57670 — Product publish (TTGO tokens) */
+/* Figma 605:57670 — Product publish (TTGO tokens) — form flush 20260818 */
 :root {
   --ttgo-text-body: rgba(4, 26, 29, 0.92);
   --ttgo-text-caption: rgba(4, 26, 29, 0.55);
@@ -32,7 +32,7 @@
   --ui-page-grouped-2: #ffffff;
   --ui-cta-green: #00b14f;
   --form-width: 100%;
-  --form-padding-x: 28px;
+  --form-padding-x: 24px;
   --footer-height: 68px;
   --icon-10: 10px;
   --icon-14: 14px;
@@ -194,7 +194,8 @@ button {
   display: flex;
   align-items: center;
   gap: 0;
-  max-width: var(--form-width);
+  width: 100%;
+  max-width: none;
 }
 
 .inline-banner__images {
@@ -258,7 +259,7 @@ button {
 /* ── Section (collapse) ── */
 .section {
   padding: 32px 0 0;
-  max-width: var(--form-width);
+  max-width: none;
   width: 100%;
 }
 
