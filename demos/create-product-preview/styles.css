@@ -32,7 +32,7 @@
   --ui-page-grouped-2: #ffffff;
   --ui-cta-green: #00b14f;
   --form-width: 100%;
-  --form-padding-x: 64px;
+  --form-padding-x: 28px;
   --footer-height: 68px;
   --icon-10: 10px;
   --icon-14: 14px;
@@ -120,7 +120,7 @@ button {
 
 .header {
   flex-shrink: 0;
-  padding: 24px 28px;
+  padding: 24px var(--form-padding-x);
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -183,7 +183,6 @@ button {
   overflow-y: auto;
   overflow-x: hidden;
   padding: 0 var(--form-padding-x) 24px;
-  scrollbar-gutter: stable;
 }
 
 /* ── Inline banner ── */
@@ -1307,7 +1306,7 @@ button {
 
 @media (max-width: 1100px) {
   :root {
-    --form-padding-x: 32px;
+    --form-padding-x: 16px;
   }
 
   .radio-group {
