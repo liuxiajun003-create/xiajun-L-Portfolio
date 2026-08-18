@@ -110,7 +110,7 @@ button {
 
 /* ── Left panel ── */
 .panel-left {
-  flex: 1 1 50%;
+  flex: 503 1 0%;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -779,7 +779,7 @@ button {
 
 /* ── Right preview ── */
 .panel-right {
-  flex: 1 1 50%;
+  flex: 268 1 0%;
   min-width: 0;
   background: var(--ttgo-bg-greycard);
   padding: var(--ttgo-space-1200);
